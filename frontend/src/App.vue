@@ -1,7 +1,5 @@
 <template>
-  <RouterView />
+  <div class="h-screen w-screen overflow-hidden bg-black">
+    <RouterView />
+  </div>
 </template>
-
-<script setup lang="ts">
-import { RouterView } from 'vue-router'
-</script>
