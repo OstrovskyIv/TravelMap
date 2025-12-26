@@ -1,3 +1,9 @@
+<template>
+  <div class="w-full h-full bg-[#050505] flex items-center justify-center overflow-hidden">
+    <div ref="mapContainer" class="w-full h-full"></div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { onMounted, ref, onUnmounted } from 'vue'
 import * as d3 from 'd3'
@@ -89,9 +95,3 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
 })
 </script>
-
-<template>
-  <div class="w-full h-full bg-[#050505] flex items-center justify-center overflow-hidden">
-    <div ref="mapContainer" class="w-full h-full"></div>
-  </div>
-</template>
