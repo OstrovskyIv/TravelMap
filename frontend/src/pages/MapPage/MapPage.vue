@@ -1,9 +1,10 @@
 <template>
   <div class="w-full h-full flex items-center justify-center overflow-hidden relative transition-colors duration-1000 font-sans select-none" :style="{ backgroundColor: store.currentTheme?.background || '#050505' }">
+    <!-- Прорисовка карты -->
     <div ref="mapContainer" class="w-full h-full transition-opacity duration-700"></div>
 
     <div class="absolute top-10 left-10 flex flex-col gap-1 p-6 bg-white/40 border border-black/5 rounded-3xl backdrop-blur-xl pointer-events-none shadow-sm">
-      <span class="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400" :style="{ color: store.currentTheme?.colors.visited[0] || '#fff' }">Travel Log</span>
+      <span class="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400">Travel Log</span>
       <div class="flex items-baseline gap-2">
         <span class="text-4xl font-black text-stone-800 leading-none">{{ store.visited.length }}</span>
         <span class="text-[10px] text-stone-500 font-bold uppercase tracking-tighter">Regions</span>
@@ -17,14 +18,11 @@
       </div>
     </div>
 
-    <!-- ОКНО ЗАГРУЗКИ БЕЗ БЛОКА STYLE -->
     <Transition
         enter-active-class="transition-opacity duration-500 ease-out"
         enter-from-class="opacity-0"
-        enter-to-class="opacity-100"
-        leave-active-class="transition-opacity duration-500 ease-in"
-        leave-from-class="opacity-100"
         leave-to-class="opacity-0"
+        leave-active-class="transition-opacity duration-500 ease-in"
     >
       <div v-if="isLoading" class="absolute inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-md">
         <div class="flex flex-col items-center gap-5 p-10 bg-white/10 border border-white/10 rounded-[40px] backdrop-blur-2xl shadow-2xl">
@@ -53,6 +51,7 @@ const themesList = Object.values(MAP_THEMES)
 const isLoading = ref(false)
 let cachedFeatures: any[] = []
 
+// Метод для смены темы
 const changeTheme = async (id: string) => {
   if (id === store.currentTheme?.id) return
   isLoading.value = true
@@ -72,10 +71,11 @@ const changeTheme = async (id: string) => {
   }, 300)
 }
 
+// Прорисовка карты (логика)
 const drawMap = async () => {
   if (!mapContainer.value || !store.currentTheme) return
   const container = d3.select(mapContainer.value)
-  container.selectAll('*').remove()
+  container.selectAll('*').remove() // Полная очистка перед перерисовкой
 
   try {
     if (cachedFeatures.length === 0) {
@@ -96,20 +96,34 @@ const drawMap = async () => {
 
     const g = svg.append('g')
 
+    // Слои для стран
     cachedFeatures.forEach((feature: any) => {
       const id = (feature.properties.ISO_A3 || feature.properties.iso_a3) as string
       const countryGroup = g.append('g').style('cursor', 'pointer')
 
-      countryGroup.append('path').datum(feature).attr('class', `country-side side-${id}`).attr('d', pathGenerator as any).attr('transform', 'translate(1, 4.5)')
-      countryGroup.append('path').datum(feature).attr('class', `country-top top-${id} transition-all duration-300 hover:brightness-110`).attr('d', pathGenerator as any).attr('stroke-linejoin', 'round').on('click', () => {
-        store.toggleCountry(id)
-        MapRenderer.applyStyles(svg, store.currentTheme!, store.visited)
-      })
+      // Для толщины
+      countryGroup.append('path')
+          .datum(feature)
+          .attr('class', `country-side side-${id}`)
+          .attr('d', pathGenerator as any)
+          .attr('transform', 'translate(1, 4.5)')
+
+      // Передний слой
+      countryGroup.append('path')
+          .datum(feature)
+          .attr('class', `country-top top-${id} transition-all duration-300 hover:brightness-110`)
+          .attr('d', pathGenerator as any)
+          .attr('stroke-linejoin', 'round')
+          .on('click', () => {
+            store.toggleCountry(id)
+            MapRenderer.applyStyles(svg, store.currentTheme!, store.visited)
+          })
     })
 
     MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
+
   } catch (e) {
-    console.error(e)
+    console.error('Draw failed:', e)
   }
 }
 
