@@ -1,24 +1,30 @@
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { LocalStorage } from '@/utils/LocalStorage'
+// Обновленный путь
+import { MAP_THEMES } from '@/shared/map-themes'
 
 export const useMapStore = defineStore('map', () => {
-    // Загружаем из нашего LocalStorage
     const visited = ref<string[]>(LocalStorage.load<string[]>('visited') || [])
+    const currentThemeId = ref<string>(LocalStorage.load<string>('theme_id') || 'classic')
+
+    // Безопасный расчет темы
+    const currentTheme = computed(() => MAP_THEMES[currentThemeId.value] || MAP_THEMES.classic)
 
     const toggleCountry = (id: string) => {
         const index = visited.value.indexOf(id)
-        if (index > -1) {
-            visited.value.splice(index, 1)
-        } else {
-            visited.value.push(id)
+        if (index > -1) visited.value.splice(index, 1)
+        else visited.value.push(id)
+    }
+
+    const setTheme = (themeId: string) => {
+        if (MAP_THEMES[themeId]) {
+            currentThemeId.value = themeId
+            LocalStorage.save('theme_id', themeId)
         }
     }
 
-    // Следим за изменениями и сохраняем
-    watch(visited, (newVal) => {
-        LocalStorage.save('visited', newVal)
-    }, { deep: true })
+    watch(visited, (newVal) => LocalStorage.save('visited', newVal), { deep: true })
 
-    return { visited, toggleCountry }
+    return { visited, toggleCountry, currentTheme, setTheme }
 })
