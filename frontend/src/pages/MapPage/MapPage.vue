@@ -4,7 +4,7 @@
     <div ref="mapContainer" class="w-full h-full transition-opacity duration-700"></div>
 
     <div class="absolute top-10 left-10 flex flex-col gap-1 p-6 bg-white/40 border border-black/5 rounded-3xl backdrop-blur-xl pointer-events-none shadow-sm">
-      <span class="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400">Travel Log</span>
+      <span class="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400" :style="{ color: (Array.isArray(store.currentTheme?.colors.visited) ? store.currentTheme?.colors.visited[0] : store.currentTheme?.colors.visited) || '#fff' }">Travel Log</span>
       <div class="flex items-baseline gap-2">
         <span class="text-4xl font-black text-stone-800 leading-none">{{ store.visited.length }}</span>
         <span class="text-[10px] text-stone-500 font-bold uppercase tracking-tighter">Regions</span>
@@ -14,7 +14,7 @@
     <div class="absolute bottom-10 right-10 flex flex-col gap-4 p-6 bg-white/40 border border-black/5 rounded-3xl backdrop-blur-xl shadow-sm">
       <span class="text-[10px] text-stone-400 font-black uppercase tracking-[0.3em]">Styles</span>
       <div class="flex gap-3">
-        <button v-for="theme in themesList" :key="theme.id" @click="changeTheme(theme.id)" class="w-10 h-10 rounded-2xl border-2 transition-all duration-300 hover:scale-110 active:scale-90 shadow-sm" :class="store.currentTheme?.id === theme.id ? 'border-stone-800' : 'border-transparent'" :style="{ backgroundColor: Array.isArray(theme.colors.visited) ? theme.colors.visited[0] : theme.colors.visited }"></button>
+        <button v-for="theme in themesList" :key="theme.id" @click="changeTheme(theme.id)" class="w-10 h-10 rounded-2xl border-2 transition-all duration-300 hover:scale-110 active:scale-90 shadow-sm" :class="store.currentTheme?.id === theme.id ? 'border-stone-800' : 'border-transparent'" :style="{ backgroundColor: Array.isArray(theme.colors.visited) ? theme.colors.visited[0] : (theme.colors.visited as string) }"></button>
       </div>
     </div>
 
@@ -45,11 +45,22 @@ import { useMapStore } from '@/stores/mapStore'
 import { MAP_THEMES } from '@/shared/map-themes'
 import { MapRenderer } from '@/shared/lib/MapRenderer'
 
+interface CountryFeature {
+  type: string;
+  properties: {
+    ISO_A3?: string
+    iso_a3?: string
+    name?: string
+    [key: string]: unknown
+  }
+  geometry: unknown
+}
+
 const store = useMapStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const themesList = Object.values(MAP_THEMES)
 const isLoading = ref(false)
-let cachedFeatures: any[] = []
+let cachedFeatures: CountryFeature[] = []
 
 // Метод для смены темы
 const changeTheme = async (id: string) => {
@@ -60,8 +71,8 @@ const changeTheme = async (id: string) => {
     store.setTheme(id)
     await nextTick()
 
-    const svg = d3.select(mapContainer.value).select('svg')
-    if (store.currentTheme) {
+    const svg = d3.select(mapContainer.value).select<SVGSVGElement>('svg')
+    if (store.currentTheme && !svg.empty()) {
       MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
     }
 
@@ -79,25 +90,30 @@ const drawMap = async () => {
 
   try {
     if (cachedFeatures.length === 0) {
-      const worldData = await d3.json('/data/custom.geo.json') as any
-      cachedFeatures = worldData.features.filter((f: any) => {
+      const worldData = await d3.json('/data/custom.geo.json') as { features: CountryFeature[] }
+      cachedFeatures = worldData.features.filter((f: CountryFeature) => {
         const id = f.properties.ISO_A3 || f.properties.iso_a3
-        return ALL_COUNTRIES.some(c => c.id === id)
+        return id && ALL_COUNTRIES.some(c => c.id === id)
       })
     }
 
     const width = mapContainer.value.clientWidth
     const height = mapContainer.value.clientHeight
-    const projection = d3.geoMercator().fitSize([width, height], { type: "FeatureCollection", features: cachedFeatures })
+    const projection = d3.geoMercator().fitSize([width, height], {
+      type: "FeatureCollection",
+      features: cachedFeatures as unknown as d3.ExtendedFeature[]
+    })
     const pathGenerator = d3.geoPath().projection(projection)
-    const svg = container.append('svg').attr('width', width).attr('height', height) as any
+    const svg = container.append('svg')
+        .attr('width', width)
+        .attr('height', height) as unknown as d3.Selection<SVGSVGElement, unknown, null, undefined>
 
     MapRenderer.setupDefinitions(svg)
 
     const g = svg.append('g')
 
     // Слои для стран
-    cachedFeatures.forEach((feature: any) => {
+    cachedFeatures.forEach((feature: CountryFeature) => {
       const id = (feature.properties.ISO_A3 || feature.properties.iso_a3) as string
       const countryGroup = g.append('g').style('cursor', 'pointer')
 
@@ -105,18 +121,20 @@ const drawMap = async () => {
       countryGroup.append('path')
           .datum(feature)
           .attr('class', `country-side side-${id}`)
-          .attr('d', pathGenerator as any)
+          .attr('d', pathGenerator as unknown as (d: CountryFeature) => string)
           .attr('transform', 'translate(1, 4.5)')
 
       // Передний слой
       countryGroup.append('path')
           .datum(feature)
           .attr('class', `country-top top-${id} transition-all duration-300 hover:brightness-110`)
-          .attr('d', pathGenerator as any)
+          .attr('d', pathGenerator as unknown as (d: CountryFeature) => string)
           .attr('stroke-linejoin', 'round')
           .on('click', () => {
             store.toggleCountry(id)
-            MapRenderer.applyStyles(svg, store.currentTheme!, store.visited)
+            if (store.currentTheme) {
+              MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
+            }
           })
     })
 
@@ -130,8 +148,8 @@ const drawMap = async () => {
 watch(
     () => store.currentTheme?.id,
     () => {
-      const svg = d3.select(mapContainer.value).select('svg')
-      if (store.currentTheme) MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
+      const svg = d3.select(mapContainer.value).select<SVGSVGElement>('svg')
+      if (store.currentTheme && !svg.empty()) MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
     }
 )
 

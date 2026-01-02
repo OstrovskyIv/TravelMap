@@ -2,13 +2,12 @@ export interface MapTheme {
     id: string
     name: string
     background: string
-    // Новое: параметры для "движка" отрисовки
-    is3D: boolean         // Нужно ли рисовать торцы (объем)
-    hasGrain: boolean     // Нужна ли текстура дерева
+    is3D: boolean
+    hasGrain: boolean
     colors: {
-        visited: string | string[] // Может быть один цвет или массив для вариаций
+        visited: string | string[]
         unvisited: string | string[]
         border: string
-        side?: string       // Цвет торца для 3D
     }
+    strokeWidth: number
 }
