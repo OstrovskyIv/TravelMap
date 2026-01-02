@@ -1,7 +1,6 @@
 import * as d3 from 'd3'
 import type { MapTheme } from '@/shared/map-themes/types'
 
-// Интерфейс для данных страны из GeoJSON
 interface CountryFeature {
     properties: {
         ISO_A3?: string
@@ -16,12 +15,14 @@ export const MapRenderer = {
         const palette = isVisited ? theme.colors.visited : theme.colors.unvisited
         const colors = Array.isArray(palette) ? palette : [palette]
         const charSum = iso.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+
         return (colors[charSum % colors.length] ?? colors[0]) as string
     },
 
     setupDefinitions(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>): void {
         const defs = svg.append('defs')
 
+        // Создание текстуры волокон дерева
         const grain = defs.append('filter').attr('id', 'wood-grain-filter')
         grain.append('feTurbulence')
             .attr('type', 'fractalNoise')
@@ -31,18 +32,18 @@ export const MapRenderer = {
         grain.append('feComposite')
             .attr('in', 'SourceGraphic')
             .attr('operator', 'arithmetic')
-            .attr('k1', '0.2')
-            .attr('k2', '0.9')
+            .attr('k1', '0.2').attr('k2', '0.9')
 
+        // Создание тени под странами
         const shadow = defs.append('filter').attr('id', 'soft-shadow').attr('height', '150%')
         shadow.append('feDropShadow')
-            .attr('dx', '1.5')
-            .attr('dy', '3.5')
+            .attr('dx', '1.5').attr('dy', '3.5')
             .attr('stdDeviation', '2.5')
             .attr('flood-color', '#261910')
             .attr('flood-opacity', '0.45')
     },
 
+    // Цвета, анимации, фильтры
     applyStyles(
         svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
         theme: MapTheme,
@@ -50,7 +51,7 @@ export const MapRenderer = {
     ): void {
         const isWooden = theme.id === 'wooden'
 
-        // Явно указываем типы для selectAll: <Элемент, Данные>
+        // Боковые грани
         svg.selectAll<SVGPathElement, CountryFeature>('.country-side')
             .transition()
             .duration(800)
@@ -61,6 +62,7 @@ export const MapRenderer = {
                 return d3.color(base)?.darker(1.5).toString() || '#000'
             })
 
+        // Лицевая сторона
         svg.selectAll<SVGPathElement, CountryFeature>('.country-top')
             .transition()
             .duration(800)
@@ -72,7 +74,7 @@ export const MapRenderer = {
                     return this.getWoodColor(id, isVisited, theme)
                 }
 
-                return (isVisited ? (theme.colors.visited as string) : (theme.colors.unvisited as string))
+                return (isVisited ? (theme.colors.visited as string) : (theme.colors.unvisited as string)) || '#333'
             })
             .attr('stroke', theme.colors.border || '#000')
             .attr('stroke-width', theme.strokeWidth)
