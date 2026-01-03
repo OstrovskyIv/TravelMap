@@ -25,7 +25,7 @@
         leave-active-class="transition-all duration-700 ease-in"
     >
       <div v-if="isLoading" class="absolute inset-0 z-50">
-        <WoodenLoader v-if="store.currentTheme?.id === 'wooden'" />
+        <WoodenLoader v-if="nextThemeId === 'wooden'" />
         <ClassicLoader v-else />
       </div>
     </Transition>
@@ -40,7 +40,6 @@ import { useMapStore } from '@/stores/mapStore'
 import { MAP_THEMES } from '@/shared/map-themes'
 import { MapRenderer } from '@/shared/lib/MapRenderer'
 
-// Импорт компонентов лоадеров
 import { WoodenLoader } from '@/shared/loaders/WoodenLoader'
 import { ClassicLoader } from '@/shared/loaders/ClassicLoader'
 
@@ -59,12 +58,15 @@ const store = useMapStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const themesList = Object.values(MAP_THEMES)
 const isLoading = ref(false)
+const nextThemeId = ref<string | null>(null)
 let cachedFeatures: CountryFeature[] = []
 
 // Метод для смены темы
 const changeTheme = async (id: string) => {
   if (id === store.currentTheme?.id) return
-  isLoading.value = true // Включаем плакат
+
+  nextThemeId.value = id
+  isLoading.value = true
 
   setTimeout(async () => {
     store.setTheme(id)
@@ -77,6 +79,7 @@ const changeTheme = async (id: string) => {
 
     setTimeout(() => {
       isLoading.value = false
+      setTimeout(() => { nextThemeId.value = null }, 500)
     }, 1000)
   }, 1000)
 }
