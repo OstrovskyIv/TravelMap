@@ -19,19 +19,14 @@
     </div>
 
     <Transition
-        enter-active-class="transition-opacity duration-500 ease-out"
-        enter-from-class="opacity-0"
-        leave-to-class="opacity-0"
-        leave-active-class="transition-opacity duration-500 ease-in"
+        enter-active-class="transition-all duration-700 ease-out"
+        enter-from-class="opacity-0 scale-105"
+        leave-to-class="opacity-0 scale-95"
+        leave-active-class="transition-all duration-700 ease-in"
     >
-      <div v-if="isLoading" class="absolute inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-md">
-        <div class="flex flex-col items-center gap-5 p-10 bg-white/10 border border-white/10 rounded-[40px] backdrop-blur-2xl shadow-2xl">
-          <div class="w-12 h-12 border-4 border-t-white/80 border-white/10 rounded-full animate-spin"></div>
-          <div class="flex flex-col items-center gap-1 text-center">
-            <span class="text-[10px] text-white/60 font-black uppercase tracking-[0.5em]">Reconfiguring</span>
-            <span class="text-[9px] text-white/30 font-mono uppercase tracking-widest italic leading-none">Applying visual engine...</span>
-          </div>
-        </div>
+      <div v-if="isLoading" class="absolute inset-0 z-50">
+        <WoodenLoader v-if="store.currentTheme?.id === 'wooden'" />
+        <ClassicLoader v-else />
       </div>
     </Transition>
   </div>
@@ -44,6 +39,10 @@ import { ALL_COUNTRIES } from '@/countries'
 import { useMapStore } from '@/stores/mapStore'
 import { MAP_THEMES } from '@/shared/map-themes'
 import { MapRenderer } from '@/shared/lib/MapRenderer'
+
+// Импорт компонентов лоадеров
+import { WoodenLoader } from '@/shared/loaders/WoodenLoader'
+import { ClassicLoader } from '@/shared/loaders/ClassicLoader'
 
 interface CountryFeature {
   type: string;
@@ -65,7 +64,7 @@ let cachedFeatures: CountryFeature[] = []
 // Метод для смены темы
 const changeTheme = async (id: string) => {
   if (id === store.currentTheme?.id) return
-  isLoading.value = true
+  isLoading.value = true // Включаем плакат
 
   setTimeout(async () => {
     store.setTheme(id)
@@ -78,15 +77,15 @@ const changeTheme = async (id: string) => {
 
     setTimeout(() => {
       isLoading.value = false
-    }, 600)
-  }, 300)
+    }, 1000)
+  }, 1000)
 }
 
 // Прорисовка карты (логика)
 const drawMap = async () => {
   if (!mapContainer.value || !store.currentTheme) return
   const container = d3.select(mapContainer.value)
-  container.selectAll('*').remove() // Полная очистка перед перерисовкой
+  container.selectAll('*').remove()
 
   try {
     if (cachedFeatures.length === 0) {
@@ -99,11 +98,13 @@ const drawMap = async () => {
 
     const width = mapContainer.value.clientWidth
     const height = mapContainer.value.clientHeight
+
     const projection = d3.geoMercator().fitSize([width, height], {
       type: "FeatureCollection",
       features: cachedFeatures as unknown as d3.ExtendedFeature[]
     })
     const pathGenerator = d3.geoPath().projection(projection)
+
     const svg = container.append('svg')
         .attr('width', width)
         .attr('height', height) as unknown as d3.Selection<SVGSVGElement, unknown, null, undefined>
@@ -112,19 +113,16 @@ const drawMap = async () => {
 
     const g = svg.append('g')
 
-    // Слои для стран
     cachedFeatures.forEach((feature: CountryFeature) => {
       const id = (feature.properties.ISO_A3 || feature.properties.iso_a3) as string
       const countryGroup = g.append('g').style('cursor', 'pointer')
 
-      // Для толщины
       countryGroup.append('path')
           .datum(feature)
           .attr('class', `country-side side-${id}`)
           .attr('d', pathGenerator as unknown as (d: CountryFeature) => string)
           .attr('transform', 'translate(1, 4.5)')
 
-      // Передний слой
       countryGroup.append('path')
           .datum(feature)
           .attr('class', `country-top top-${id} transition-all duration-300 hover:brightness-110`)

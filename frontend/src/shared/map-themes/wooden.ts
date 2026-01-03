@@ -1,4 +1,5 @@
 import type { MapTheme } from './types'
+
 export const wooden: MapTheme = {
     id: 'wooden',
     name: 'Woodcraft 3D',
@@ -9,5 +10,12 @@ export const wooden: MapTheme = {
         visited: ['#5a3d2b', '#4a3222', '#6b4a36'],
         unvisited: ['#c4a484', '#b8926a', '#d2b48c'],
         border: '#261910'
+    },
+    strokeWidth: 1.2,
+    loader: {
+        overlayColor: '#f3efe9',
+        blur: 'backdrop-blur-3xl',
+        spinnerColor: '#5a3d2b',
+        accentColor: '#2b1a10'
     }
 }

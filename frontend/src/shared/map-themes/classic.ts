@@ -11,5 +11,11 @@ export const classic: MapTheme = {
         unvisited: '#2c2c2c',
         border: '#555555'
     },
-    strokeWidth: 0.8
+    strokeWidth: 0.8,
+    loader: {
+        overlayColor: '#0a0a0a',
+        blur: 'backdrop-blur-3xl',
+        spinnerColor: '#3b82f6',
+        accentColor: '#3b82f6'
+    }
 }
