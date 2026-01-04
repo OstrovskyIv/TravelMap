@@ -11,9 +11,9 @@ export interface MapTheme {
     }
     strokeWidth: number
     loader: {
-        overlayColor: string    // Цвет фона оверлея (например, прозрачный черный или бежевый)
-        blur: string            // Степень размытия (Tailwind класс: backdrop-blur-md, xl и т.д.)
-        spinnerColor: string    // Цвет крутящегося кольца
+        overlayColor: string
+        blur: string
+        spinnerColor: string
         accentColor: string
     }
 }
