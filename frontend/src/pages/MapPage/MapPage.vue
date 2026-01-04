@@ -18,12 +18,16 @@
       </div>
     </div>
 
+    <!-- Поиск -->
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-40 w-full flex justify-center px-6 pointer-events-none">
+      <SearchDock class="pointer-events-auto" :theme="store.currentTheme" @select="handleCountrySelect"/>
+    </div>
+
     <Transition
         enter-active-class="transition-all duration-700 ease-out"
         enter-from-class="opacity-0 scale-105"
         leave-to-class="opacity-0 scale-95"
-        leave-active-class="transition-all duration-700 ease-in"
-    >
+        leave-active-class="transition-all duration-700 ease-in">
       <div v-if="isLoading" class="absolute inset-0 z-50">
         <WoodenLoader v-if="nextThemeId === 'wooden'" />
         <ClassicLoader v-else />
@@ -39,6 +43,7 @@ import { ALL_COUNTRIES } from '@/countries'
 import { useMapStore } from '@/stores/mapStore'
 import { MAP_THEMES } from '@/shared/map-themes'
 import { MapRenderer } from '@/shared/lib/MapRenderer'
+import { SearchDock } from '@/shared/ui/SearchDock'
 
 import { WoodenLoader } from '@/shared/loaders/WoodenLoader'
 import { ClassicLoader } from '@/shared/loaders/ClassicLoader'
@@ -61,6 +66,15 @@ const isLoading = ref(false)
 const nextThemeId = ref<string | null>(null)
 let cachedFeatures: CountryFeature[] = []
 
+// Обработка выбора из поиска
+const handleCountrySelect = (id: string) => {
+  store.toggleCountry(id)
+  const svg = d3.select(mapContainer.value).select<SVGSVGElement>('svg')
+  if (store.currentTheme && !svg.empty()) {
+    MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
+  }
+}
+
 // Метод для смены темы
 const changeTheme = async (id: string) => {
   if (id === store.currentTheme?.id) return
@@ -79,7 +93,9 @@ const changeTheme = async (id: string) => {
 
     setTimeout(() => {
       isLoading.value = false
-      setTimeout(() => { nextThemeId.value = null }, 500)
+      setTimeout(() => {
+        nextThemeId.value = null
+      }, 500)
     }, 1000)
   }, 1000)
 }
@@ -88,14 +104,14 @@ const changeTheme = async (id: string) => {
 const drawMap = async () => {
   if (!mapContainer.value || !store.currentTheme) return
   const container = d3.select(mapContainer.value)
-  container.selectAll('*').remove()
+  container.selectAll('*').remove() // Полная очистка перед перерисовкой
 
   try {
     if (cachedFeatures.length === 0) {
       const worldData = await d3.json('/data/custom.geo.json') as { features: CountryFeature[] }
       cachedFeatures = worldData.features.filter((f: CountryFeature) => {
         const id = f.properties.ISO_A3 || f.properties.iso_a3
-        return id && ALL_COUNTRIES.some(c => c.id === id)
+        return !!id && ALL_COUNTRIES.some(c => c.id === id)
       })
     }
 
@@ -116,16 +132,19 @@ const drawMap = async () => {
 
     const g = svg.append('g')
 
+    // Слои для стран
     cachedFeatures.forEach((feature: CountryFeature) => {
       const id = (feature.properties.ISO_A3 || feature.properties.iso_a3) as string
       const countryGroup = g.append('g').style('cursor', 'pointer')
 
+      // Для толщины
       countryGroup.append('path')
           .datum(feature)
           .attr('class', `country-side side-${id}`)
           .attr('d', pathGenerator as unknown as (d: CountryFeature) => string)
           .attr('transform', 'translate(1, 4.5)')
 
+      // Передний слой
       countryGroup.append('path')
           .datum(feature)
           .attr('class', `country-top top-${id} transition-all duration-300 hover:brightness-110`)
