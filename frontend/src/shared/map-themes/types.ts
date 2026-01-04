@@ -16,4 +16,12 @@ export interface MapTheme {
         spinnerColor: string
         accentColor: string
     }
+    searchDock: {
+        bg: string
+        border: string
+        text: string
+        placeholder: string
+        iconBg: string
+        accent: string
+    }
 }
