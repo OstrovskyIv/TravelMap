@@ -17,5 +17,13 @@ export const classic: MapTheme = {
         blur: 'backdrop-blur-3xl',
         spinnerColor: '#3b82f6',
         accentColor: '#3b82f6'
+    },
+    searchDock: {
+        bg: 'rgba(28, 28, 30, 0.8)',
+        border: 'rgba(255, 255, 255, 0.1)',
+        text: '#ffffff',
+        placeholder: '#666666',
+        iconBg: 'rgba(59, 130, 246, 0.2)',
+        accent: '#3b82f6'
     }
 }
