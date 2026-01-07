@@ -66,13 +66,8 @@ const isLoading = ref(false)
 const nextThemeId = ref<string | null>(null)
 let cachedFeatures: CountryFeature[] = []
 
-// Обработка выбора из поиска
 const handleCountrySelect = (id: string) => {
   store.toggleCountry(id)
-  const svg = d3.select(mapContainer.value).select<SVGSVGElement>('svg')
-  if (store.currentTheme && !svg.empty()) {
-    MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
-  }
 }
 
 // Метод для смены темы
@@ -104,7 +99,7 @@ const changeTheme = async (id: string) => {
 const drawMap = async () => {
   if (!mapContainer.value || !store.currentTheme) return
   const container = d3.select(mapContainer.value)
-  container.selectAll('*').remove() // Полная очистка перед перерисовкой
+  container.selectAll('*').remove()
 
   try {
     if (cachedFeatures.length === 0) {
@@ -132,19 +127,16 @@ const drawMap = async () => {
 
     const g = svg.append('g')
 
-    // Слои для стран
     cachedFeatures.forEach((feature: CountryFeature) => {
       const id = (feature.properties.ISO_A3 || feature.properties.iso_a3) as string
       const countryGroup = g.append('g').style('cursor', 'pointer')
 
-      // Для толщины
       countryGroup.append('path')
           .datum(feature)
           .attr('class', `country-side side-${id}`)
           .attr('d', pathGenerator as unknown as (d: CountryFeature) => string)
           .attr('transform', 'translate(1, 4.5)')
 
-      // Передний слой
       countryGroup.append('path')
           .datum(feature)
           .attr('class', `country-top top-${id} transition-all duration-300 hover:brightness-110`)
@@ -152,9 +144,6 @@ const drawMap = async () => {
           .attr('stroke-linejoin', 'round')
           .on('click', () => {
             store.toggleCountry(id)
-            if (store.currentTheme) {
-              MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
-            }
           })
     })
 
@@ -167,6 +156,14 @@ const drawMap = async () => {
 
 watch(
     () => store.currentTheme?.id,
+    () => {
+      const svg = d3.select(mapContainer.value).select<SVGSVGElement>('svg')
+      if (store.currentTheme && !svg.empty()) MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
+    }
+)
+
+watch(
+    () => store.visited.length,
     () => {
       const svg = d3.select(mapContainer.value).select<SVGSVGElement>('svg')
       if (store.currentTheme && !svg.empty()) MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
