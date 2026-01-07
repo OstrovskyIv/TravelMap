@@ -1,5 +1,3 @@
-// src/shared/lib/LocalStorage.ts
-
 const PREFIX = 'travel_map_'
 const VERSION = '1.0'
 
@@ -24,7 +22,7 @@ export const LocalStorage = {
                 return null
             }
             return parsed.data as T
-        } catch (e) {
+        } catch {
             return null
         }
     }
