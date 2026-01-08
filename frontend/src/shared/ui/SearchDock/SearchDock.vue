@@ -1,22 +1,43 @@
 <template>
-  <div class="flex flex-col gap-2 w-full max-w-[400px]">
+  <div class="flex flex-col gap-3 w-full max-w-[450px]">
     <Transition
-        enter-active-class="transition-all duration-300 ease-out"
-        enter-from-class="opacity-0 translate-y-4 scale-95"
-        leave-active-class="transition-all duration-200 ease-in"
-        leave-to-class="opacity-0 translate-y-4 scale-95">
-      <div v-if="searchQuery && filteredCountries.length > 0" class="flex flex-col gap-1 p-2 border backdrop-blur-2xl shadow-2xl max-h-[200px] overflow-y-auto rounded-2xl" :style="{ backgroundColor: theme?.searchDock?.bg, borderColor: theme?.searchDock?.border }">
-        <div v-for="country in filteredCountries" :key="country.id" @click="selectCountry(country.id)" class="flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors group hover:bg-black/5">
-          <span class="text-sm font-bold" :style="{ color: theme?.searchDock?.text }">{{ country.name }}</span>
-          <span class="text-[10px] opacity-40 font-mono uppercase" :style="{ color: theme?.searchDock?.text }">{{ country.id }}</span>
+        enter-active-class="transition-all duration-400 ease-out"
+        enter-from-class="opacity-0 -translate-y-4 scale-[0.98]"
+        leave-active-class="transition-all duration-300 ease-in"
+        leave-to-class="opacity-0 -translate-y-4 scale-[0.98]"
+    >
+      <div v-if="searchQuery && filteredCountries.length > 0" class="flex flex-col gap-1 p-2 border backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-[24px] overflow-hidden" :style="{ backgroundColor: theme?.searchDock.bg, borderColor: theme?.searchDock.border }">
+        <div v-for="country in filteredCountries" :key="country.id" @click="selectCountry(country.id)" class="flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 group active:scale-[0.97]" :class="theme?.id === 'wooden' ? 'hover:bg-[#2b1a10]/5' : 'hover:bg-white/5'">
+          <div class="flex flex-col gap-0.5">
+            <span class="text-sm font-bold tracking-tight" :style="{ color: theme?.searchDock.text }">{{ country.name }}</span>
+            <span class="text-[9px] uppercase tracking-widest opacity-40 font-mono" :style="{ color: theme?.searchDock.text }">Territory Profile</span>
+          </div>
+          <span class="text-[10px] font-black font-mono px-2 py-1 rounded-md bg-black/20" :style="{ color: theme?.searchDock.accent }">{{ country.id }}</span>
         </div>
       </div>
     </Transition>
+    <div class="group relative flex items-center gap-4 p-2 border backdrop-blur-2xl rounded-[28px] transition-all duration-500" :class="isFocused ? 'shadow-2xl scale-[1.02]' : 'shadow-lg'"
+        :style="{
+        backgroundColor: theme?.searchDock.bg,
+        borderColor: isFocused ? theme?.searchDock.accent : theme?.searchDock.border,
+        boxShadow: isFocused ? `0 0 25px ${theme?.searchDock.glow}` : 'none'
+      }">
+      <div class="flex items-center justify-center w-12 h-12 rounded-[20px] transition-all duration-500" :style="{ backgroundColor: theme?.searchDock.iconBg }">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="theme?.searchDock.accent" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <input v-model="searchQuery" @focus="isFocused = true" @blur="isFocused = false" type="text" placeholder="Search territories..." class="flex-1 bg-transparent border-none outline-none text-[15px] font-bold tracking-tight" :style="{ color: theme?.searchDock.text, '--tw-placeholder-color': theme?.searchDock.placeholder }"/>
 
-    <div class="flex items-center gap-3 p-2 border backdrop-blur-xl shadow-lg rounded-2xl transition-all duration-500" :style="{ backgroundColor: theme?.searchDock?.bg, borderColor: theme?.searchDock?.border }">
-      <div class="flex items-center justify-center w-10 h-10 rounded-xl" :style="{ backgroundColor: theme?.searchDock?.iconBg, color: theme?.searchDock?.accent }">🔍</div>
-      <input v-model="searchQuery" type="text" placeholder="Find country..." class="flex-1 bg-transparent border-none outline-none text-sm font-medium pr-4" :style="{ color: theme?.searchDock?.text }"/>
-      <button v-if="searchQuery" @click="searchQuery = ''" class="w-8 h-8 flex items-center justify-center rounded-lg opacity-40 hover:opacity-100" :style="{ color: theme?.searchDock?.text }">✕</button>
+      <Transition enter-active-class="transition-opacity" enter-from-class="opacity-0" leave-to-class="opacity-0">
+        <button v-if="searchQuery" @click="searchQuery = ''" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors pr-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" :stroke="theme?.searchDock.text" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-30">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </Transition>
     </div>
   </div>
 </template>
@@ -27,13 +48,21 @@ import { ALL_COUNTRIES } from '@/countries'
 import type { MapTheme } from '@/shared/map-themes/types'
 
 defineProps<{ theme: MapTheme | undefined }>()
-const emit = defineEmits<{ (e: 'select', id: string): void }>()
+
+const emit = defineEmits<{
+  (e: 'select', id: string): void
+}>()
+
 const searchQuery = ref('')
+const isFocused = ref(false)
 
 const filteredCountries = computed(() => {
   if (!searchQuery.value) return []
   const q = searchQuery.value.toLowerCase().trim()
-  return ALL_COUNTRIES.filter(c => c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q))
+  return ALL_COUNTRIES.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      c.id.toLowerCase().includes(q)
+  )
 })
 
 const selectCountry = (id: string) => {

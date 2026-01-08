@@ -23,5 +23,6 @@ export interface MapTheme {
         placeholder: string
         iconBg: string
         accent: string
+        glow: string
     }
 }

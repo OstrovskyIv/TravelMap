@@ -19,11 +19,12 @@ export const classic: MapTheme = {
         accentColor: '#ffffff'
     },
     searchDock: {
-        bg: 'rgba(23, 23, 23, 0.8)',
-        border: 'rgba(255, 255, 255, 0.1)',
+        bg: 'rgba(10, 10, 10, 0.7)',
+        border: 'rgba(59, 130, 246, 0.2)',
         text: '#ffffff',
-        placeholder: '#737373',
-        iconBg: 'rgba(59, 130, 246, 0.2)',
-        accent: '#3b82f6'
+        placeholder: '#4b5563',
+        iconBg: 'rgba(59, 130, 246, 0.1)',
+        accent: '#3b82f6',
+        glow: 'rgba(59, 130, 246, 0.3)'
     }
 }
