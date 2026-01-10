@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { ref } from 'vue' // Убрали watch
 import { LocalStorage } from '@/shared/lib/LocalStorage'
 
 export type Language = 'ru' | 'en'
