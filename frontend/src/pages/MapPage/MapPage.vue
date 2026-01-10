@@ -3,12 +3,22 @@
     <!-- Прорисовка карты -->
     <div ref="mapContainer" class="w-full h-full transition-opacity duration-700"></div>
 
+    <!-- Тексты теперь зависят от стора языка -->
     <div class="absolute top-10 left-10 flex flex-col gap-1 p-6 bg-white/40 border border-black/5 rounded-3xl backdrop-blur-xl pointer-events-none shadow-sm">
-      <span class="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400" :style="{ color: (Array.isArray(store.currentTheme?.colors.visited) ? store.currentTheme?.colors.visited[0] : store.currentTheme?.colors.visited) || '#fff' }">Travel Log</span>
+      <span class="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400" :style="{ color: (Array.isArray(store.currentTheme?.colors.visited) ? store.currentTheme?.colors.visited[0] : store.currentTheme?.colors.visited) || '#fff' }">
+        {{ langStore.currentLang === 'ru' ? 'Журнал' : 'Travel Log' }}
+      </span>
       <div class="flex items-baseline gap-2">
         <span class="text-4xl font-black text-stone-800 leading-none">{{ store.visited.length }}</span>
-        <span class="text-[10px] text-stone-500 font-bold uppercase tracking-tighter">Regions</span>
+        <span class="text-[10px] text-stone-500 font-bold uppercase tracking-tighter">
+          {{ langStore.currentLang === 'ru' ? 'Регионы' : 'Regions' }}
+        </span>
       </div>
+    </div>
+
+    <!-- Переключатель языка -->
+    <div class="absolute bottom-32 right-10 z-40">
+      <LangSwitcher :theme="store.currentTheme" />
     </div>
 
     <div class="absolute bottom-10 right-10 flex flex-col gap-4 p-6 bg-white/40 border border-black/5 rounded-3xl backdrop-blur-xl shadow-sm">
@@ -41,9 +51,11 @@ import { onMounted, ref, onUnmounted, watch, nextTick } from 'vue'
 import * as d3 from 'd3'
 import { ALL_COUNTRIES } from '@/countries'
 import { useMapStore } from '@/stores/mapStore'
+import { useLangStore } from '@/stores/langStore'
 import { MAP_THEMES } from '@/shared/map-themes'
 import { MapRenderer } from '@/shared/lib/MapRenderer'
 import { SearchDock } from '@/shared/ui/SearchDock'
+import { LangSwitcher } from '@/shared/ui/LangSwitcher'
 
 import { WoodenLoader } from '@/shared/loaders/WoodenLoader'
 import { ClassicLoader } from '@/shared/loaders/ClassicLoader'
@@ -60,6 +72,7 @@ interface CountryFeature {
 }
 
 const store = useMapStore()
+const langStore = useLangStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const themesList = Object.values(MAP_THEMES)
 const isLoading = ref(false)
@@ -99,7 +112,7 @@ const changeTheme = async (id: string) => {
 const drawMap = async () => {
   if (!mapContainer.value || !store.currentTheme) return
   const container = d3.select(mapContainer.value)
-  container.selectAll('*').remove()
+  container.selectAll('*').remove() // Полная очистка перед перерисовкой
 
   try {
     if (cachedFeatures.length === 0) {
@@ -127,16 +140,19 @@ const drawMap = async () => {
 
     const g = svg.append('g')
 
+    // Слои для стран
     cachedFeatures.forEach((feature: CountryFeature) => {
       const id = (feature.properties.ISO_A3 || feature.properties.iso_a3) as string
       const countryGroup = g.append('g').style('cursor', 'pointer')
 
+      // Для толщины
       countryGroup.append('path')
           .datum(feature)
           .attr('class', `country-side side-${id}`)
           .attr('d', pathGenerator as unknown as (d: CountryFeature) => string)
           .attr('transform', 'translate(1, 4.5)')
 
+      // Передний слой
       countryGroup.append('path')
           .datum(feature)
           .attr('class', `country-top top-${id} transition-all duration-300 hover:brightness-110`)

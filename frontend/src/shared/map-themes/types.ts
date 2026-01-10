@@ -25,4 +25,11 @@ export interface MapTheme {
         accent: string
         glow: string
     }
+    langSwitcher: {
+        bg: string
+        text: string
+        activeBg: string
+        activeText: string
+        border: string
+    }
 }

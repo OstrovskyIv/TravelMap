@@ -26,5 +26,12 @@ export const classic: MapTheme = {
         iconBg: 'rgba(59, 130, 246, 0.1)',
         accent: '#3b82f6',
         glow: 'rgba(59, 130, 246, 0.3)'
+    },
+    langSwitcher: {
+        bg: 'rgba(255, 255, 255, 0.05)',
+        text: '#9ca3af',
+        activeBg: '#3b82f6',
+        activeText: '#ffffff',
+        border: 'rgba(255, 255, 255, 0.1)'
     }
 }

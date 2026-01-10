@@ -26,5 +26,12 @@ export const wooden: MapTheme = {
         iconBg: 'rgba(90, 61, 43, 0.05)',
         accent: '#5a3d2b',
         glow: 'rgba(90, 61, 43, 0.15)'
+    },
+    langSwitcher: {
+        bg: 'rgba(90, 61, 43, 0.05)',
+        text: '#8c7e6d',
+        activeBg: '#5a3d2b',
+        activeText: '#f3efe9',
+        border: 'rgba(43, 26, 16, 0.1)'
     }
 }
