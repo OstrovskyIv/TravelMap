@@ -3,7 +3,6 @@
     <!-- Прорисовка карты -->
     <div ref="mapContainer" class="w-full h-full transition-opacity duration-700"></div>
 
-    <!-- Тексты теперь зависят от стора языка -->
     <div class="absolute top-10 left-10 flex flex-col gap-1 p-6 bg-white/40 border border-black/5 rounded-3xl backdrop-blur-xl pointer-events-none shadow-sm">
       <span class="text-[10px] font-black uppercase tracking-[0.3em] text-stone-400" :style="{ color: (Array.isArray(store.currentTheme?.colors.visited) ? store.currentTheme?.colors.visited[0] : store.currentTheme?.colors.visited) || '#fff' }">
         {{ langStore.currentLang === 'ru' ? 'Журнал' : 'Travel Log' }}
@@ -16,13 +15,14 @@
       </div>
     </div>
 
-    <!-- Переключатель языка -->
     <div class="absolute bottom-32 right-10 z-40">
       <LangSwitcher :theme="store.currentTheme" />
     </div>
 
     <div class="absolute bottom-10 right-10 flex flex-col gap-4 p-6 bg-white/40 border border-black/5 rounded-3xl backdrop-blur-xl shadow-sm">
-      <span class="text-[10px] text-stone-400 font-black uppercase tracking-[0.3em]">Styles</span>
+      <span class="text-[10px] text-stone-400 font-black uppercase tracking-[0.3em]">
+        {{ langStore.currentLang === 'ru' ? 'Стили' : 'Styles' }}
+      </span>
       <div class="flex gap-3">
         <button v-for="theme in themesList" :key="theme.id" @click="changeTheme(theme.id)" class="w-10 h-10 rounded-2xl border-2 transition-all duration-300 hover:scale-110 active:scale-90 shadow-sm" :class="store.currentTheme?.id === theme.id ? 'border-stone-800' : 'border-transparent'" :style="{ backgroundColor: Array.isArray(theme.colors.visited) ? theme.colors.visited[0] : (theme.colors.visited as string) }"></button>
       </div>
@@ -119,7 +119,7 @@ const drawMap = async () => {
       const worldData = await d3.json('/data/custom.geo.json') as { features: CountryFeature[] }
       cachedFeatures = worldData.features.filter((f: CountryFeature) => {
         const id = f.properties.ISO_A3 || f.properties.iso_a3
-        return !!id && ALL_COUNTRIES.some(c => c.id === id)
+        return id && ALL_COUNTRIES.some(c => c.id === id)
       })
     }
 
@@ -160,6 +160,9 @@ const drawMap = async () => {
           .attr('stroke-linejoin', 'round')
           .on('click', () => {
             store.toggleCountry(id)
+            if (store.currentTheme) {
+              MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
+            }
           })
     })
 
