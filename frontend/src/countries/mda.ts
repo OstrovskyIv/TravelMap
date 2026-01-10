@@ -1,7 +1,6 @@
 export default {
     id: "MDA",
-    name: "Молдова",
+    names: { ru: "Молдова", en: "Moldova" },
     keywords: ["mda", "moldova", "молдова", "молдавия"],
-    cities: ["Кишинев", "Тирасполь", "Бельцы", "Бендеры", "Рыбница"],
-    geoUrl: "/data/custom.geo.json"
+    cities: ["Кишинев", "Тирасполь", "Бельцы", "Бендеры", "Рыбница"]
 }

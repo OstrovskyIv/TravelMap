@@ -1,7 +1,6 @@
 export default {
     id: "TJK",
-    name: "Таджикистан",
+    names: { ru: "Таджикистан", en: "Tajikistan" },
     keywords: ["tjk", "tajikistan", "таджикистан"],
-    cities: ["Душанбе", "Худжанд", "Бохтар", "Куляб", "Истаравшан"],
-    geoUrl: "/data/custom.geo.json"
+    cities: ["Душанбе", "Худжанд", "Бохтар", "Куляб", "Истаравшан"]
 }

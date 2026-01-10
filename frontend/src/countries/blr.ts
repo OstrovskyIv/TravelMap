@@ -1,7 +1,6 @@
 export default {
     id: "BLR",
-    name: "Беларусь",
+    names: { ru: "Беларусь", en: "Belarus" },
     keywords: ["blr", "belarus", "беларусь", "рб"],
-    cities: ["Минск", "Гомель", "Гродно", "Брест", "Витебск", "Могилев"],
-    geoUrl: "/data/custom.geo.json"
+    cities: ["Минск", "Гомель", "Гродно", "Брест", "Витебск", "Могилев"]
 }

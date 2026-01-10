@@ -1,7 +1,6 @@
 export default {
     id: "KGZ",
-    name: "Кыргызстан",
+    names: { ru: "Кыргызстан", en: "Kyrgyzstan" },
     keywords: ["kgz", "kyrgyzstan", "кыргызстан", "киргизия"],
-    cities: ["Бишкек", "Ош", "Джалал-Абад", "Каракол", "Токмок"],
-    geoUrl: "/data/custom.geo.json"
+    cities: ["Бишкек", "Ош", "Джалал-Абад", "Каракол", "Токмок"]
 }
