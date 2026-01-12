@@ -11,11 +11,7 @@
           leave-active-class="transition-all duration-200"
           leave-to-class="opacity-0 -translate-x-10"
       >
-        <button
-            v-if="!uiStore.isSidebarOpen"
-            @click="uiStore.toggleSidebar"
-            class="absolute top-10 left-6 z-40 w-12 h-12 flex items-center justify-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl hover:bg-white/10 transition-all shadow-2xl"
-        >
+        <button v-if="!uiStore.isSidebarOpen" @click="uiStore.toggleSidebar" class="absolute top-10 left-6 z-40 w-12 h-12 flex items-center justify-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl hover:bg-white/10 transition-all shadow-2xl">
           <span class="text-xs opacity-50">▶</span>
         </button>
       </Transition>
