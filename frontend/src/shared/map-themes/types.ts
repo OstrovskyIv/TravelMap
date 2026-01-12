@@ -32,4 +32,11 @@ export interface MapTheme {
         activeText: string
         border: string
     }
+    sidebar: {
+        bg: string
+        border: string
+        text: string
+        accent: string
+        activeBg: string
+    }
 }

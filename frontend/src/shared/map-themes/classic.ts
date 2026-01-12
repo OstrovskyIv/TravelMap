@@ -33,5 +33,12 @@ export const classic: MapTheme = {
         activeBg: '#3b82f6',
         activeText: '#ffffff',
         border: 'rgba(255, 255, 255, 0.1)'
+    },
+    sidebar: {
+        bg: '#0a0a0a',
+        border: 'rgba(255, 255, 255, 0.05)',
+        text: '#9ca3af',
+        accent: '#ffffff',
+        activeBg: 'rgba(59, 130, 246, 0.1)'
     }
 }

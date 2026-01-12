@@ -33,5 +33,12 @@ export const wooden: MapTheme = {
         activeBg: '#5a3d2b',
         activeText: '#f3efe9',
         border: 'rgba(43, 26, 16, 0.1)'
+    },
+    sidebar: {
+        bg: '#f3efe9',
+        border: 'rgba(43, 26, 16, 0.1)',
+        text: '#8c7e6d',
+        accent: '#2b1a10',
+        activeBg: 'rgba(90, 61, 43, 0.05)'
     }
 }
