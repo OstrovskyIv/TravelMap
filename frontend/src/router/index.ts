@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { MapPage } from '../pages/MapPage'
+import { MapPage } from '@/pages/MapPage'
+import { AdminPage } from '@/pages/AdminPage'
 
 const router = createRouter({
   history: createWebHistory('/'),
@@ -8,6 +9,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: MapPage
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: AdminPage
     }
   ]
 })
