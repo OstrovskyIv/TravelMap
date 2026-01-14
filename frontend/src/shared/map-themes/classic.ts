@@ -3,42 +3,42 @@ import type { MapTheme } from './types'
 export const classic: MapTheme = {
     id: 'classic',
     name: 'Standard Dark',
-    background: '#0a0a0a',
+    background: '#09090b',
     is3D: false,
     hasGrain: false,
     colors: {
-        visited: '#3b82f6',
-        unvisited: '#1c1c1c',
-        border: '#2a2a2a'
+        visited: '#fbbf24',
+        unvisited: '#18181b',
+        border: '#27272a'
     },
     strokeWidth: 1,
     loader: {
-        overlayColor: '#0a0a0a',
+        overlayColor: '#09090b',
         blur: 'backdrop-blur-2xl',
-        spinnerColor: '#3b82f6',
+        spinnerColor: '#fbbf24',
         accentColor: '#ffffff'
     },
     searchDock: {
-        bg: 'rgba(10, 10, 10, 0.7)',
-        border: 'rgba(59, 130, 246, 0.2)',
+        bg: 'rgba(24, 24, 27, 0.8)',
+        border: 'rgba(251, 191, 36, 0.2)',
         text: '#ffffff',
-        placeholder: '#4b5563',
-        iconBg: 'rgba(59, 130, 246, 0.1)',
-        accent: '#3b82f6',
-        glow: 'rgba(59, 130, 246, 0.3)'
+        placeholder: '#71717a',
+        iconBg: 'rgba(251, 191, 36, 0.1)',
+        accent: '#fbbf24',
+        glow: 'rgba(251, 191, 36, 0.2)'
     },
     langSwitcher: {
         bg: 'rgba(255, 255, 255, 0.05)',
-        text: '#9ca3af',
-        activeBg: '#3b82f6',
-        activeText: '#ffffff',
+        text: '#a1a1aa',
+        activeBg: '#fbbf24',
+        activeText: '#000000',
         border: 'rgba(255, 255, 255, 0.1)'
     },
     sidebar: {
-        bg: '#0a0a0a',
+        bg: '#09090b',
         border: 'rgba(255, 255, 255, 0.05)',
-        text: '#9ca3af',
+        text: '#71717a',
         accent: '#ffffff',
-        activeBg: 'rgba(59, 130, 246, 0.1)'
+        activeBg: 'rgba(251, 191, 36, 0.1)'
     }
 }
