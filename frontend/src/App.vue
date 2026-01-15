@@ -1,23 +1,14 @@
 <template>
-  <div class="flex h-screen w-screen bg-[#050505] text-white overflow-hidden font-sans">
+  <div class="h-screen w-screen bg-black overflow-hidden font-sans relative">
+    <div class="absolute inset-0 z-10 w-full h-full">
+      <RouterView />
+    </div>
+
+    <div v-if="!uiStore.isSidebarOpen" @click="uiStore.toggleSidebar" class="absolute left-0 top-0 h-full w-3 z-40 cursor-pointer group transition-all duration-300 hover:w-6 flex items-center justify-center">
+      <div class="h-20 w-1 rounded-full bg-white/10 group-hover:bg-blue-500/40 transition-all blur-[1px]"></div>
+    </div>
 
     <MainSidebar :theme="mapStore.currentTheme" />
-
-    <main class="flex-1 relative h-full overflow-hidden transition-all duration-500">
-
-      <Transition
-          enter-active-class="transition-all duration-300 delay-300"
-          enter-from-class="opacity-0 -translate-x-10"
-          leave-active-class="transition-all duration-200"
-          leave-to-class="opacity-0 -translate-x-10"
-      >
-        <button v-if="!uiStore.isSidebarOpen" @click="uiStore.toggleSidebar" class="absolute top-10 left-6 z-40 w-12 h-12 flex items-center justify-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl hover:bg-white/10 transition-all shadow-2xl">
-          <span class="text-xs opacity-50">▶</span>
-        </button>
-      </Transition>
-
-      <RouterView />
-    </main>
 
   </div>
 </template>
