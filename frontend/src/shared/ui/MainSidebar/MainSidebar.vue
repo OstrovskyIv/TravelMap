@@ -1,27 +1,16 @@
 <template>
-  <!-- Transition для плавного выезда слева -->
   <Transition
       enter-active-class="transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
       leave-active-class="transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
       enter-from-class="-translate-x-full"
       leave-to-class="-translate-x-full"
   >
-    <!--
-      КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: absolute.
-      Теперь меню не расталкивает карту, а ложится сверху.
-    -->
-    <aside
-        v-if="ui.isSidebarOpen"
-        class="absolute left-0 top-0 h-full w-80 flex flex-col gap-10 p-8 z-50 shadow-[20px_0_60px_rgba(0,0,0,0.5)] border-r backdrop-blur-3xl"
-        :style="{ backgroundColor: theme?.sidebar.bg, borderColor: theme?.sidebar.border }"
-    >
-      <!-- Хедр меню -->
+    <aside v-if="ui.isSidebarOpen" class="absolute left-0 top-0 h-full w-80 flex flex-col gap-10 p-8 z-50 shadow-[20px_0_60px_rgba(0,0,0,0.5)] border-r backdrop-blur-3xl" :style="{ backgroundColor: theme?.sidebar.bg, borderColor: theme?.sidebar.border }">
       <header class="flex flex-col gap-1">
         <div class="flex items-center justify-between">
           <h1 class="text-2xl font-black tracking-tighter uppercase leading-none" :style="{ color: theme?.sidebar.accent }">
             Traveler
           </h1>
-          <!-- Кнопка "Свернуть" -->
           <button @click="ui.toggleSidebar" class="opacity-20 hover:opacity-100 transition-all hover:scale-110 active:scale-90 p-1">
             <span class="text-xs" :style="{ color: theme?.sidebar.text }">◀</span>
           </button>
@@ -32,13 +21,8 @@
         </div>
       </header>
 
-      <!-- Навигация -->
       <nav class="flex flex-col gap-2">
-        <RouterLink
-            v-for="item in menuItems" :key="item.id" :to="item.path"
-            class="group flex items-center gap-5 p-4 rounded-2xl cursor-pointer transition-all duration-300 hover:translate-x-1 active:scale-95"
-            :style="$route.name === item.id ? { backgroundColor: theme?.sidebar.activeBg } : {}"
-        >
+        <RouterLink v-for="item in menuItems" :key="item.id" :to="item.path" class="group flex items-center gap-5 p-4 rounded-2xl cursor-pointer transition-all duration-300 hover:translate-x-1 active:scale-95" :style="$route.name === item.id ? { backgroundColor: theme?.sidebar.activeBg } : {}">
           <span class="text-xl filter drop-shadow-md group-hover:scale-110 transition-transform">{{ item.icon }}</span>
           <span class="text-[13px] font-bold tracking-tight uppercase transition-colors" :style="$route.name === item.id ? { color: theme?.sidebar.accent } : { color: theme?.sidebar.text }">
             {{ langStore.currentLang === 'ru' ? item.nameRu : item.nameEn }}
@@ -46,7 +30,6 @@
         </RouterLink>
       </nav>
 
-      <!-- Секция прогресса -->
       <section class="mt-auto flex flex-col gap-4">
         <div class="flex flex-col gap-3 p-6 rounded-[32px] border transition-all shadow-inner overflow-hidden" :style="{ backgroundColor: theme?.sidebar.activeBg, borderColor: theme?.sidebar.border }">
           <header class="flex justify-between items-center text-[9px] font-black uppercase tracking-[0.2em] opacity-40">
@@ -62,7 +45,6 @@
           </div>
         </div>
 
-        <!-- Профиль пользователя -->
         <div class="flex items-center gap-4 p-2 group cursor-pointer">
           <div class="w-11 h-11 rounded-2xl shadow-lg flex items-center justify-center text-white font-bold text-xs transition-transform group-hover:scale-105" :style="{ backgroundColor: theme?.searchDock.accent }">
             {{ userStore.userName.charAt(0) }}
