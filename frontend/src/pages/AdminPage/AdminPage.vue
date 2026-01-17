@@ -1,116 +1,104 @@
 <template>
-  <div class="fixed inset-0 z-[60] flex bg-[#0c0c0e] text-white font-sans overflow-hidden">
+  <div class="fixed inset-0 z-[100] flex flex-col font-sans transition-colors duration-1000 border border-white/5 shadow-2xl overflow-hidden" :style="{ backgroundColor: store.currentTheme?.background || '#0c0c0e' }">
+    <header class="h-9 border-b flex items-center justify-between px-3 select-none transition-colors duration-500" :style="{ backgroundColor: store.currentTheme?.sidebar.bg, borderColor: store.currentTheme?.sidebar.border }">
+      <div class="flex items-center gap-2">
+        <span class="text-sm">🖥️</span>
+        <span class="text-[11px] font-medium tracking-tight opacity-60 transition-colors" :style="{ color: store.currentTheme?.sidebar.accent }">
+          Computer Management (Local) \ System Tools \ Traveler Admin
+        </span>
+      </div>
+      <div class="flex h-full items-center">
+        <button @click="router.push('/')" class="h-full px-4 hover:bg-red-500 transition-colors group outline-none border-none bg-transparent">
+          <span class="text-xs group-hover:text-white opacity-40 transition-opacity" :style="{ color: store.currentTheme?.sidebar.accent }">✕</span>
+        </button>
+      </div>
+    </header>
 
-    <button
-        @click="router.push('/')"
-        class="absolute top-6 right-8 z-50 px-5 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-2xl backdrop-blur-xl"
-    >
-      {{ langStore.currentLang === 'ru' ? 'Выйти из панели' : 'Exit Console' }}
-    </button>
+    <div class="flex flex-1 overflow-hidden">
+      <aside class="w-72 h-full border-r flex flex-col overflow-hidden transition-colors duration-500" :style="{ backgroundColor: store.currentTheme?.sidebar.bg, borderColor: store.currentTheme?.sidebar.border }">
+        <header class="p-4 border-b bg-white/[0.02]" :style="{ borderColor: store.currentTheme?.sidebar.border }">
+          <span class="text-[10px] font-bold uppercase tracking-widest" :style="{ color: Array.isArray(store.currentTheme?.colors.visited) ? store.currentTheme?.colors.visited[0] : store.currentTheme?.colors.visited }">
+            Navigator
+          </span>
+        </header>
 
-    <aside class="w-72 h-full border-r border-white/5 flex flex-col bg-white/[0.01]">
-      <header class="p-8 pb-4 flex flex-col gap-3">
-        <div class="flex flex-col gap-1">
-          <h2 class="text-lg font-black uppercase tracking-tighter italic text-blue-500">System</h2>
-          <div class="h-[1px] w-8 bg-white/10"></div>
-        </div>
-        <div class="flex flex-col gap-0.5">
-          <span class="text-[9px] font-black text-white/60 uppercase tracking-widest leading-none">Admin Console</span>
-          <span class="text-[8px] font-mono text-white/20 uppercase tracking-tighter">v.1.0.1 Stable</span>
-        </div>
-      </header>
-
-      <nav class="flex-1 overflow-y-auto p-4 flex flex-col gap-1 custom-scrollbar">
-        <button
-            v-for="tab in tabs" :key="tab.id"
-            @click="activeTabId = tab.id"
-            class="w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group text-left"
-            :class="activeTabId === tab.id ? 'bg-white/5 shadow-inner' : 'hover:bg-white/[0.03]'"
-        >
-          <span class="text-xl transition-transform group-hover:scale-110">{{ tab.icon }}</span>
-          <div class="flex flex-col gap-0.5">
-            <span class="text-[11px] font-bold uppercase tracking-wider" :class="activeTabId === tab.id ? 'text-white' : 'text-stone-500 group-hover:text-stone-300'">
+        <nav class="flex-1 overflow-y-auto p-2 flex flex-col gap-0.5 custom-scrollbar">
+          <button v-for="tab in tabs" :key="tab.id" @click="activeTabId = tab.id" class="w-full flex items-center gap-3 p-2.5 rounded transition-all text-left outline-none border-l-2 border-transparent bg-transparent" :class="{ '!bg-white/5 shadow-inner !border-current': activeTabId === tab.id }" :style="activeTabId === tab.id ? { color: Array.isArray(store.currentTheme?.colors.visited) ? store.currentTheme?.colors.visited[0] : store.currentTheme?.colors.visited } : { color: store.currentTheme?.sidebar.text }">
+            <span class="text-base">{{ tab.icon }}</span>
+            <span class="text-[12px] font-medium tracking-tight">
               {{ langStore.currentLang === 'ru' ? tab.nameRu : tab.nameEn }}
             </span>
-            <span class="text-[8px] font-mono opacity-20 uppercase tracking-tighter">Module 0x{{ tab.id.charAt(0) }}</span>
+          </button>
+        </nav>
+      </aside>
+
+      <main class="flex-1 h-full relative overflow-hidden flex flex-col bg-black/5 backdrop-blur-sm">
+        <Transition
+            mode="out-in"
+            enter-active-class="transition-all duration-300 ease-out"
+            enter-from-class="opacity-0 translate-y-1"
+            leave-active-class="transition-all duration-200 ease-in"
+            leave-to-class="opacity-0 -translate-y-1"
+        >
+          <div v-if="!activeTabId" class="w-full h-full flex flex-col items-center justify-center gap-4">
+            <div class="w-10 h-10 border-2 border-white/5 rounded-full animate-spin" :style="{ borderTopColor: Array.isArray(store.currentTheme?.colors.visited) ? store.currentTheme?.colors.visited[0] : store.currentTheme?.colors.visited }"
+            ></div>
+            <span class="flex flex-col items-center gap-1 text-center px-6">
+              <span class="text-xs font-bold tracking-wide uppercase opacity-50" :style="{ color: store.currentTheme?.sidebar.accent }">System Management Console</span>
+              <span class="text-[11px] font-mono italic opacity-30" :style="{ color: store.currentTheme?.sidebar.accent }">Please select an object in the left pane to view its properties.</span>
+            </span>
           </div>
-        </button>
-      </nav>
-    </aside>
 
-    <main class="flex-1 h-full relative overflow-hidden bg-black/20">
-      <Transition
-          mode="out-in"
-          enter-active-class="transition-all duration-500 ease-out"
-          enter-from-class="opacity-0 translate-x-4"
-          leave-active-class="transition-all duration-300 ease-in"
-          leave-to-class="opacity-0 -translate-x-4"
-      >
-        <div v-if="!activeTabId" class="w-full h-full flex flex-col items-center justify-center gap-6">
-          <div class="w-12 h-12 border-2 border-white/5 border-t-blue-500 rounded-full animate-spin"></div>
-          <div class="flex flex-col items-center gap-1 text-center px-6">
-            <span class="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Waiting for command</span>
-            <span class="text-[9px] text-stone-600 font-mono italic">Select a module from the left panel to begin configuration</span>
-          </div>
-        </div>
-
-        <div v-else-if="activeTabId === 'general'" class="w-full h-full p-16 flex flex-col gap-12 overflow-y-auto custom-scrollbar">
-          <header class="flex flex-col gap-2">
-            <h3 class="text-5xl font-black tracking-tighter uppercase italic drop-shadow-2xl">General</h3>
-            <div class="h-1 w-20 bg-blue-600 rounded-full"></div>
-          </header>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-stone-500 uppercase font-black text-[10px] tracking-[0.3em]">
-            <div class="p-10 bg-white/[0.03] border border-white/5 rounded-[40px] flex flex-col gap-6 backdrop-blur-3xl shadow-2xl">
-              <span>Language Engine</span>
-              <LangSwitcher :theme="mapStore.currentTheme" />
-            </div>
-
-            <div class="p-10 bg-white/[0.03] border border-white/5 rounded-[40px] flex flex-col gap-4 backdrop-blur-3xl shadow-2xl justify-center">
-              <span>Core Status</span>
-              <div class="flex items-center gap-4">
-                <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse shadow-[0_0_15px_rgba(34,197,94,0.5)]"></div>
-                <span class="text-sm font-black tracking-tight text-white uppercase">Encrypted Connection OK</span>
-              </div>
+          <div v-else-if="activeTabId === 'general'" class="w-full h-full flex flex-col overflow-hidden">
+            <header class="p-6 border-b bg-white/[0.01]" :style="{ borderColor: store.currentTheme?.sidebar.border }">
+              <h3 class="text-xl font-bold tracking-tight" :style="{ color: store.currentTheme?.sidebar.accent }">General Properties</h3>
+            </header>
+            <div class="flex-1 overflow-y-auto p-8 flex flex-col gap-8 custom-scrollbar">
+              <span class="p-6 border rounded-lg flex flex-col gap-4 max-w-xl shadow-sm transition-all" :style="{ backgroundColor: store.currentTheme?.sidebar.bg, borderColor: store.currentTheme?.sidebar.border }">
+                <span class="text-[10px] font-bold uppercase tracking-widest opacity-40" :style="{ color: store.currentTheme?.sidebar.text }">Interface Language Selection</span>
+                <LangSwitcher :theme="store.currentTheme" />
+                <span class="text-[10px] font-mono opacity-20" :style="{ color: store.currentTheme?.sidebar.accent }">Current Build: 1.0.1 (Stable Release)</span>
+              </span>
             </div>
           </div>
-        </div>
 
-        <div v-else-if="activeTabId === 'themes'" class="w-full h-full p-16 flex flex-col gap-12 overflow-y-auto custom-scrollbar">
-          <header class="flex flex-col gap-2">
-            <h3 class="text-5xl font-black tracking-tighter uppercase italic drop-shadow-2xl">Environment</h3>
-            <div class="h-1 w-20 bg-amber-500 rounded-full"></div>
-          </header>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <button
-                v-for="theme in themesList" :key="theme.id"
-                @click="mapStore.setTheme(theme.id)"
-                class="p-8 rounded-[40px] border transition-all duration-500 cursor-pointer flex flex-col gap-8 group hover:scale-[1.03] shadow-xl text-left"
-                :style="{
-                backgroundColor: theme.background,
-                borderColor: mapStore.currentTheme?.id === theme.id
-                  ? (Array.isArray(theme.colors.visited) ? theme.colors.visited[0] : theme.colors.visited)
-                  : 'rgba(255,255,255,0.05)'
-              }"
-            >
-              <div class="flex justify-between items-start w-full">
-                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-2xl" :style="{ backgroundColor: Array.isArray(theme.colors.visited) ? theme.colors.visited[0] : theme.colors.visited }">
-                  {{ theme.id === 'wooden' ? '🪵' : '✨' }}
-                </div>
-                <div v-if="mapStore.currentTheme?.id === theme.id" class="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10">
-                  <span class="text-[8px] font-black uppercase tracking-widest text-white">Active</span>
-                </div>
-              </div>
-              <div class="flex flex-col gap-1">
-                <h4 class="text-xl font-black uppercase tracking-tight">{{ theme.name }}</h4>
-                <span class="text-[9px] font-mono opacity-30 uppercase tracking-widest">{{ theme.id }}_protocol.sys</span>
-              </div>
-            </button>
+          <div v-else-if="activeTabId === 'themes'" class="w-full h-full flex flex-col overflow-hidden">
+            <header class="p-6 border-b bg-white/[0.01]" :style="{ borderColor: store.currentTheme?.colors.border }">
+              <h3 class="text-xl font-bold tracking-tight" :style="{ color: store.currentTheme?.sidebar.accent }">Theme Engine Management</h3>
+            </header>
+            <div class="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 custom-scrollbar">
+              <button
+                  v-for="theme in themesList" :key="theme.id"
+                  @click="store.setTheme(theme.id)"
+                  class="p-5 border transition-all hover:brightness-110 text-left rounded flex flex-col gap-4 outline-none shadow-sm"
+                  :style="{
+                  backgroundColor: theme.background,
+                  borderColor: store.currentTheme?.id === theme.id
+                    ? (Array.isArray(theme.colors.visited) ? theme.colors.visited[0] : theme.colors.visited)
+                    : 'rgba(255,255,255,0.05)'
+                }"
+              >
+                <span class="flex justify-between items-center w-full">
+                  <span class="w-8 h-8 rounded bg-white/5 flex items-center justify-center border border-white/5 text-sm shadow-inner transition-colors" :style="{ color: store.currentTheme?.sidebar.accent }">
+                    {{ theme.id === 'wooden' ? '🪵' : '✨' }}
+                  </span>
+                  <span v-if="store.currentTheme?.id === theme.id" class="text-[9px] font-black uppercase tracking-widest" :style="{ color: Array.isArray(theme.colors.visited) ? theme.colors.visited[0] : theme.colors.visited }">Selected</span>
+                </span>
+                <span class="flex flex-col gap-0.5">
+                  <span class="text-sm font-bold uppercase transition-colors" :style="{ color: theme.id === 'wooden' ? '#2b1a10' : '#fff' }">{{ theme.name }}</span>
+                  <span class="text-[9px] font-mono opacity-30 uppercase" :style="{ color: theme.id === 'wooden' ? '#2b1a10' : '#fff' }">{{ theme.id }}.theme_config</span>
+                </span>
+              </button>
+            </div>
           </div>
-        </div>
-      </Transition>
-    </main>
+        </Transition>
+      </main>
+    </div>
+
+    <footer class="h-6 border-t flex items-center px-4 justify-between select-none transition-colors duration-500" :style="{ backgroundColor: store.currentTheme?.sidebar.bg, borderColor: store.currentTheme?.sidebar.border }">
+      <span class="text-[10px] font-mono tracking-tight uppercase italic opacity-40" :style="{ color: store.currentTheme?.sidebar.text }">Admin level: local\navigator</span>
+      <span class="text-[10px] font-mono opacity-20" :style="{ color: store.currentTheme?.sidebar.accent }">Process: travel_map_core.exe | 0x824</span>
+    </footer>
   </div>
 </template>
 
@@ -125,16 +113,17 @@ import { LangSwitcher } from '@/shared/ui/LangSwitcher'
 
 const router = useRouter()
 const langStore = useLangStore()
-const mapStore = useMapStore()
+const store = useMapStore()
 const uiStore = useUiStore()
 const themesList = Object.values(MAP_THEMES)
 
 const activeTabId = ref<string | null>(null)
 
 const tabs = [
-  { id: 'general', icon: '🛠️', nameRu: 'Общее', nameEn: 'General' },
-  { id: 'themes', icon: '🎨', nameRu: 'Оформление', nameEn: 'Themes' },
-  { id: 'users', icon: '👥', nameRu: 'Доступ', nameEn: 'Access' }
+  { id: 'general', icon: '📁', nameRu: 'Общие параметры', nameEn: 'General Settings' },
+  { id: 'themes', icon: '🎨', nameRu: 'Стили интерфейса', nameEn: 'Interface Styles' },
+  { id: 'users', icon: '👤', nameRu: 'Пользователи', nameEn: 'Local Users' },
+  { id: 'storage', icon: '💾', nameRu: 'Хранилище данных', nameEn: 'Disk Management' }
 ]
 
 onMounted(() => {
@@ -149,7 +138,7 @@ onMounted(() => {
   width: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(155, 155, 155, 0.2);
   border-radius: 10px;
 }
 </style>
