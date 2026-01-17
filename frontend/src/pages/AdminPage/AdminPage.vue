@@ -1,22 +1,39 @@
 <template>
   <div class="fixed inset-0 z-[60] flex bg-[#0c0c0e] text-white font-sans overflow-hidden">
-    <button @click="router.push('/')" class="absolute top-6 right-8 z-50 px-5 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-2xl backdrop-blur-xl">
+
+    <button
+        @click="router.push('/')"
+        class="absolute top-6 right-8 z-50 px-5 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-2xl backdrop-blur-xl"
+    >
       {{ langStore.currentLang === 'ru' ? 'Выйти из панели' : 'Exit Console' }}
     </button>
+
     <aside class="w-72 h-full border-r border-white/5 flex flex-col bg-white/[0.01]">
-      <header class="p-8 pb-4 flex flex-col gap-1">
-        <h2 class="text-lg font-black uppercase tracking-tighter italic text-blue-500">System</h2>
-        <div class="h-[1px] w-8 bg-white/10"></div>
+      <header class="p-8 pb-4 flex flex-col gap-3">
+        <div class="flex flex-col gap-1">
+          <h2 class="text-lg font-black uppercase tracking-tighter italic text-blue-500">System</h2>
+          <div class="h-[1px] w-8 bg-white/10"></div>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[9px] font-black text-white/60 uppercase tracking-widest leading-none">Admin Console</span>
+          <span class="text-[8px] font-mono text-white/20 uppercase tracking-tighter">v.1.0.1 Stable</span>
+        </div>
       </header>
+
       <nav class="flex-1 overflow-y-auto p-4 flex flex-col gap-1 custom-scrollbar">
-        <button v-for="tab in tabs" :key="tab.id" @click="activeTabId = tab.id" class="w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group text-left" :class="activeTabId === tab.id ? 'bg-white/5 shadow-inner' : 'hover:bg-white/[0.03]'">
+        <button
+            v-for="tab in tabs" :key="tab.id"
+            @click="activeTabId = tab.id"
+            class="w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-200 group text-left"
+            :class="activeTabId === tab.id ? 'bg-white/5 shadow-inner' : 'hover:bg-white/[0.03]'"
+        >
           <span class="text-xl transition-transform group-hover:scale-110">{{ tab.icon }}</span>
-          <span class="flex flex-col gap-0.5">
+          <div class="flex flex-col gap-0.5">
             <span class="text-[11px] font-bold uppercase tracking-wider" :class="activeTabId === tab.id ? 'text-white' : 'text-stone-500 group-hover:text-stone-300'">
               {{ langStore.currentLang === 'ru' ? tab.nameRu : tab.nameEn }}
             </span>
             <span class="text-[8px] font-mono opacity-20 uppercase tracking-tighter">Module 0x{{ tab.id.charAt(0) }}</span>
-          </span>
+          </div>
         </button>
       </nav>
     </aside>
@@ -31,9 +48,9 @@
       >
         <div v-if="!activeTabId" class="w-full h-full flex flex-col items-center justify-center gap-6">
           <div class="w-12 h-12 border-2 border-white/5 border-t-blue-500 rounded-full animate-spin"></div>
-          <div class="flex flex-col items-center gap-1">
+          <div class="flex flex-col items-center gap-1 text-center px-6">
             <span class="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Waiting for command</span>
-            <p class="text-[9px] text-stone-600 font-mono italic">Select a module from the left panel to begin configuration</p>
+            <span class="text-[9px] text-stone-600 font-mono italic">Select a module from the left panel to begin configuration</span>
           </div>
         </div>
 
@@ -43,17 +60,17 @@
             <div class="h-1 w-20 bg-blue-600 rounded-full"></div>
           </header>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-stone-500 uppercase font-black text-[10px] tracking-[0.3em]">
             <div class="p-10 bg-white/[0.03] border border-white/5 rounded-[40px] flex flex-col gap-6 backdrop-blur-3xl shadow-2xl">
-              <span class="text-[10px] font-black text-stone-500 uppercase tracking-[0.3em]">Language Engine</span>
+              <span>Language Engine</span>
               <LangSwitcher :theme="mapStore.currentTheme" />
             </div>
 
             <div class="p-10 bg-white/[0.03] border border-white/5 rounded-[40px] flex flex-col gap-4 backdrop-blur-3xl shadow-2xl justify-center">
-              <span class="text-[10px] font-black text-stone-500 uppercase tracking-[0.3em]">Core Status</span>
+              <span>Core Status</span>
               <div class="flex items-center gap-4">
                 <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse shadow-[0_0_15px_rgba(34,197,94,0.5)]"></div>
-                <span class="text-sm font-black tracking-tight">ENCRYPTED CONNECTION OK</span>
+                <span class="text-sm font-black tracking-tight text-white uppercase">Encrypted Connection OK</span>
               </div>
             </div>
           </div>
@@ -66,10 +83,10 @@
           </header>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div
+            <button
                 v-for="theme in themesList" :key="theme.id"
                 @click="mapStore.setTheme(theme.id)"
-                class="p-8 rounded-[40px] border transition-all duration-500 cursor-pointer flex flex-col gap-8 group hover:scale-[1.03] shadow-xl"
+                class="p-8 rounded-[40px] border transition-all duration-500 cursor-pointer flex flex-col gap-8 group hover:scale-[1.03] shadow-xl text-left"
                 :style="{
                 backgroundColor: theme.background,
                 borderColor: mapStore.currentTheme?.id === theme.id
@@ -77,7 +94,7 @@
                   : 'rgba(255,255,255,0.05)'
               }"
             >
-              <div class="flex justify-between items-start">
+              <div class="flex justify-between items-start w-full">
                 <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-2xl" :style="{ backgroundColor: Array.isArray(theme.colors.visited) ? theme.colors.visited[0] : theme.colors.visited }">
                   {{ theme.id === 'wooden' ? '🪵' : '✨' }}
                 </div>
@@ -89,7 +106,7 @@
                 <h4 class="text-xl font-black uppercase tracking-tight">{{ theme.name }}</h4>
                 <span class="text-[9px] font-mono opacity-30 uppercase tracking-widest">{{ theme.id }}_protocol.sys</span>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </Transition>
