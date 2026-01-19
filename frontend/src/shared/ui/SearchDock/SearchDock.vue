@@ -37,9 +37,11 @@
         </svg>
       </div>
       <input
+          ref="searchInput"
           v-model="searchQuery"
           @focus="isFocused = true"
           @blur="isFocused = false"
+          @keydown.esc="handleEscape"
           type="text"
           :placeholder="langStore.currentLang === 'ru' ? 'Поиск территорий...' : 'Search territories...'"
           class="flex-1 bg-transparent border-none outline-none text-[15px] font-bold tracking-tight pr-4"
@@ -72,6 +74,7 @@ const emit = defineEmits<{ (e: 'select', id: string): void }>()
 const langStore = useLangStore()
 const searchQuery = ref('')
 const isFocused = ref(false)
+const searchInput = ref<HTMLInputElement | null>(null)
 
 const filteredCountries = computed(() => {
   if (!searchQuery.value) return []
@@ -86,6 +89,11 @@ const filteredCountries = computed(() => {
 const selectCountry = (id: string) => {
   emit('select', id)
   searchQuery.value = ''
+}
+
+const handleEscape = () => {
+searchQuery.value = ''
+searchInput.value?.blur()
 }
 </script>
 
