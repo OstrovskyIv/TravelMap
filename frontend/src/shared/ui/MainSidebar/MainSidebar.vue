@@ -21,7 +21,7 @@
         </div>
       </header>
 
-      <nav class="flex flex-col gap-3">
+      <nav class="flex flex-col gap-3 font-sans">
         <RouterLink
             v-for="item in menuItems" :key="item.id" :to="item.path"
             class="group flex items-center gap-5 p-4 rounded-2xl transition-all duration-300 hover:translate-x-1 active:scale-95 border border-transparent shadow-sm"
@@ -33,28 +33,22 @@
           </span>
         </RouterLink>
 
-        <div class="flex flex-col gap-4 mt-2 p-1 border-t border-white/5 pt-6">
-          <span class="text-[9px] font-black uppercase tracking-[0.3em] opacity-20 px-4" :style="{ color: theme?.sidebar.text }">Interface styles</span>
-          <div class="flex gap-3 px-4">
-            <button v-for="t in themesList" :key="t.id" @click="store.setTheme(t.id)" class="w-10 h-10 rounded-xl border-2 transition-all hover:scale-110 shadow-lg" :class="store.currentTheme?.id === t.id ? 'border-white' : 'border-transparent'" :style="{ backgroundColor: Array.isArray(t.colors.visited) ? t.colors.visited[0] : t.colors.visited }"></button>
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-4 mt-2 p-1 border-t border-white/5 pt-6">
-          <div class="flex items-center justify-between px-4">
-            <span class="text-[9px] font-black uppercase tracking-[0.3em] opacity-20" :style="{ color: theme?.sidebar.text }">Settings</span>
-            <span class="text-xs opacity-20">⚙️</span>
-          </div>
-          <div class="px-4">
-            <LangSwitcher :theme="theme" />
-          </div>
-        </div>
+        <RouterLink
+            v-if="userStore.isAdmin" to="/admin"
+            class="group flex items-center gap-5 p-4 rounded-2xl transition-all duration-300 hover:translate-x-1 border border-dashed border-white/5 mt-4"
+            :class="{ 'bg-white/5': $route.name === 'admin' }"
+        >
+          <span class="text-xl opacity-40 group-hover:opacity-100 transition-opacity">⚙️</span>
+          <span class="text-[11px] font-bold uppercase tracking-widest" :style="{ color: theme?.sidebar.text }">
+             {{ langStore.currentLang === 'ru' ? 'Консоль' : 'Console' }}
+          </span>
+        </RouterLink>
       </nav>
 
       <section class="mt-auto flex flex-col gap-6">
         <div class="flex flex-col gap-4 p-6 rounded-[32px] border transition-all shadow-inner bg-black/10" :style="{ borderColor: theme?.sidebar.border }">
           <div class="flex justify-between items-center text-[9px] font-black uppercase tracking-[0.2em] opacity-40">
-            <span :style="{ color: theme?.sidebar.text }">Exploration</span>
+            <span :style="{ color: theme?.sidebar.text }">Mission</span>
             <span :style="{ color: theme?.sidebar.accent }">{{ Math.round((store.visited.length / ALL_COUNTRIES.length) * 100) }}%</span>
           </div>
           <div class="flex items-baseline gap-2 font-black tracking-tighter">
@@ -83,8 +77,6 @@ import { useLangStore } from '@/stores/langStore'
 import { useUiStore } from '@/stores/uiStore'
 import { useUserStore } from '@/stores/userStore'
 import { ALL_COUNTRIES } from '@/countries'
-import { MAP_THEMES } from '@/shared/map-themes'
-import { LangSwitcher } from '@/shared/ui/LangSwitcher'
 import { RouterLink, useRoute } from 'vue-router'
 import type { MapTheme } from '@/shared/map-themes/types'
 
@@ -95,10 +87,11 @@ const langStore = useLangStore()
 const userStore = useUserStore()
 const ui = useUiStore()
 const $route = useRoute()
-const themesList = Object.values(MAP_THEMES)
 
 const menuItems = [
-  { id: 'home', path: '/', icon: '🌍', nameRu: 'Атлас', nameEn: 'World Atlas' },
-  { id: 'stats', path: '/stats', icon: '📊', nameRu: 'Инфо', nameEn: 'Analytics' }
+  { id: 'home', path: '/', icon: '🌍', nameRu: 'Атлас', nameEn: 'Atlas' },
+  { id: 'shop', path: '/shop', icon: '💎', nameRu: 'Магазин', nameEn: 'Shop' },
+  { id: 'stats', path: '/stats', icon: '📊', nameRu: 'Обзор', nameEn: 'Stats' },
+  { id: 'settings', path: '/settings', icon: '🔮', nameRu: 'Настройки', nameEn: 'Settings' }
 ]
 </script>
