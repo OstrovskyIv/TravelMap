@@ -1,15 +1,16 @@
 <template>
-  <div class="w-full h-full flex items-center justify-center overflow-hidden relative transition-colors duration-1000 font-sans select-none" :style="{ backgroundColor: store.currentTheme?.background || '#050505' }">
+  <div class="w-full h-full flex items-center justify-center overflow-hidden relative transition-colors duration-1000 font-sans select-none" :style="{ backgroundColor: store.currentTheme?.background || '#1c1c1f' }">
     <!-- Прорисовка карты -->
     <div ref="mapContainer" class="w-full h-full transition-opacity duration-700"></div>
 
-    <div class="absolute top-12 left-12 flex flex-col gap-2 p-8 bg-white/40 border border-white/10 rounded-[40px] backdrop-blur-xl pointer-events-none shadow-2xl transition-all">
-      <span class="text-[11px] font-black uppercase tracking-[0.4em] opacity-40" :style="{ color: (Array.isArray(store.currentTheme?.colors.visited) ? store.currentTheme?.colors.visited[0] : store.currentTheme?.colors.visited) || '#fff' }">
+    <!-- Виджет статистики: НОВАЯ ЦВЕТОВАЯ ГАММА (Графит + Янтарный акцент) -->
+    <div class="absolute top-12 left-12 flex flex-col gap-2 p-8 bg-[#18181b]/80 border border-[#fbbf24]/20 rounded-[40px] backdrop-blur-3xl pointer-events-none shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all">
+      <span class="text-[11px] font-black uppercase tracking-[0.4em] text-[#fbbf24]">
         {{ langStore.currentLang === 'ru' ? 'Журнал' : 'Travel Log' }}
       </span>
       <div class="flex items-baseline gap-3">
-        <span class="text-5xl font-black text-stone-800 leading-none tracking-tighter">{{ store.visited.length }}</span>
-        <span class="text-[11px] text-stone-500 font-bold uppercase tracking-widest">
+        <span class="text-5xl font-black text-white leading-none tracking-tighter">{{ store.visited.length }}</span>
+        <span class="text-[11px] text-white/40 font-bold uppercase tracking-widest">
           {{ langStore.currentLang === 'ru' ? 'Регионы' : 'Regions' }}
         </span>
       </div>
@@ -26,6 +27,7 @@
         leave-active-class="transition-all duration-700 ease-in"
     >
       <div v-if="isLoading" class="absolute inset-0 z-50">
+        <!-- ВАЖНО: используем nextThemeId, чтобы сразу видеть будущую тему -->
         <WoodenLoader v-if="nextThemeId === 'wooden'" />
         <ClassicLoader v-else />
       </div>
@@ -97,7 +99,8 @@ const drawMap = async () => {
 
     const svg = container.append('svg')
         .attr('width', width)
-        .attr('height', height) as unknown as d3.Selection<SVGSVGElement, unknown, null, undefined>
+        .attr('height', height)
+        .attr('viewBox', `0 0 ${width} ${height}`) as unknown as d3.Selection<SVGSVGElement, unknown, null, undefined>
 
     MapRenderer.setupDefinitions(svg)
     const g = svg.append('g').attr('transform', 'translate(75, 75)')
@@ -114,27 +117,39 @@ const drawMap = async () => {
 
       countryGroup.append('path')
           .datum(feature)
-          .attr('class', `country-top top-${id} transition-all duration-300 hover:brightness-110`)
+          .attr('class', `country-top top-${id}`)
           .attr('d', (d) => pathGenerator(d as d3.GeoPermissibleObjects) || '')
           .attr('stroke-linejoin', 'round')
           .on('click', () => {
             store.toggleCountry(id)
           })
-          .on('mouseover', function(this: SVGPathElement) {
-            if (store.currentTheme?.id === 'classic') d3.select(this).attr('fill', '#444')
+          .on('mouseover', function (this: SVGPathElement) {
+            if (store.currentTheme?.id === 'classic') {
+              const hoverColor = store.currentTheme.colors.map.hover
+              // ПЛАВНОЕ НАВЕДЕНИЕ
+              d3.select(this)
+                  .interrupt() // Прерываем старую анимацию
+                  .transition()
+                  .duration(300)
+                  .attr('fill', hoverColor)
+            }
           })
-          .on('mouseout', function(this: SVGPathElement) {
-            if (store.currentTheme?.id === 'classic') MapRenderer.applyStyles(svg, store.currentTheme!, store.visited)
+          .on('mouseout', function (this: SVGPathElement) {
+            if (store.currentTheme?.id === 'classic') {
+              const isVisited = store.visited.includes(id)
+              const originalColor = isVisited
+                  ? store.currentTheme.colors.map.visited[0]
+                  : store.currentTheme.colors.map.unvisited[0]
+
+              // ПЛАВНОЕ ЗАТУХАНИЕ
+              d3.select(this)
+                  .interrupt()
+                  .transition()
+                  .duration(300)
+                  .attr('fill', originalColor as string)
+            }
           })
     })
-
-    if (store.currentTheme.id === 'wooden') {
-      g.append('g').attr('class', 'map-labels').selectAll('text').data(cachedFeatures).enter().append('text')
-          .attr('x', (d) => (projection(d3.geoCentroid(d as d3.GeoPermissibleObjects)) || [0, 0])[0])
-          .attr('y', (d) => (projection(d3.geoCentroid(d as d3.GeoPermissibleObjects)) || [0, 0])[1])
-          .attr('text-anchor', 'middle').attr('font-size', '7px').attr('font-weight', 'bold').attr('fill', '#1a0f08').attr('pointer-events', 'none')
-          .text((d) => d.properties.name?.toString().toUpperCase() || '')
-    }
 
     MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
   } catch (e) {
@@ -142,6 +157,7 @@ const drawMap = async () => {
   }
 }
 
+// Слушатель смены темы
 watch(
     () => store.currentTheme?.id,
     async (newId) => {
@@ -151,10 +167,7 @@ watch(
 
       setTimeout(async () => {
         await nextTick()
-        const svg = d3.select(mapContainer.value).select<SVGSVGElement>('svg')
-        if (store.currentTheme && !svg.empty()) {
-          MapRenderer.applyStyles(svg, store.currentTheme, store.visited)
-        }
+        await drawMap()
         setTimeout(() => {
           isLoading.value = false
           setTimeout(() => { nextThemeId.value = null }, 500)
@@ -172,7 +185,9 @@ watch(
 )
 
 onMounted(() => {
-  drawMap()
+  setTimeout(() => {
+    drawMap()
+  }, 50)
   window.addEventListener('resize', drawMap)
 })
 
