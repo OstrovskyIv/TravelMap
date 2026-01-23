@@ -7,9 +7,19 @@ export const wooden: MapTheme = {
     is3D: true,
     hasGrain: true,
     colors: {
-        visited: ['#5a3d2b', '#4a3222', '#6b4a36'],
-        unvisited: ['#c4a484', '#b8926a', '#d2b48c'],
-        border: '#261910'
+        map: {
+            visited: ['#5a3d2b', '#4a3222', '#6b4a36'],
+            unvisited: ['#c4a484', '#b8926a', '#d2b48c'],
+            border: '#261910',
+            hover: '#78350f'
+        },
+        ui: {
+            accent: '#5a3d2b',
+            textMain: '#2b1a10',
+            textMuted: '#8c7e6d',
+            border: 'rgba(43, 26, 16, 0.1)',
+            activeBg: 'rgba(90, 61, 43, 0.1)'
+        }
     },
     strokeWidth: 1.2,
     loader: {
@@ -19,10 +29,10 @@ export const wooden: MapTheme = {
         accentColor: '#2b1a10'
     },
     searchDock: {
-        bg: 'rgba(243, 239, 233, 0.8)',
-        border: 'rgba(43, 26, 16, 0.15)',
+        bg: 'rgba(243, 239, 233, 0.7)',
+        border: 'rgba(43, 26, 16, 0.1)',
         text: '#2b1a10',
-        placeholder: '#a8a29e',
+        placeholder: '#8c7e6d',
         iconBg: 'rgba(90, 61, 43, 0.05)',
         accent: '#5a3d2b',
         glow: 'rgba(90, 61, 43, 0.15)'
@@ -38,7 +48,7 @@ export const wooden: MapTheme = {
         bg: '#f3efe9',
         border: 'rgba(43, 26, 16, 0.1)',
         text: '#8c7e6d',
-        accent: '#2b1a10',
+        accent: '#5a3d2b',
         activeBg: 'rgba(90, 61, 43, 0.05)'
     }
 }
