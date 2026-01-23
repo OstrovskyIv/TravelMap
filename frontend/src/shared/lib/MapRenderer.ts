@@ -11,72 +11,42 @@ interface CountryFeature {
 }
 
 export const MapRenderer = {
-    getWoodColor(iso: string, isVisited: boolean, theme: MapTheme): string {
-        const palette = isVisited ? theme.colors.visited : theme.colors.unvisited
-        const colors = Array.isArray(palette) ? palette : [palette]
-        const charSum = iso.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-
-        return (colors[charSum % colors.length] ?? colors[0]) as string
+    getDynamicColor(iso: string, isVisited: boolean, theme: MapTheme): string {
+        const palette = isVisited ? theme.colors.map.visited : theme.colors.map.unvisited
+        if (theme.id === 'wooden') {
+            const charSum = iso.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+            return (palette[charSum % palette.length] as string) || (palette[0] as string)
+        }
+        return (palette[0] as string) || '#333'
     },
 
     setupDefinitions(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>): void {
         const defs = svg.append('defs')
-
-        // Создание текстуры волокон дерева
         const grain = defs.append('filter').attr('id', 'wood-grain-filter')
-        grain.append('feTurbulence')
-            .attr('type', 'fractalNoise')
-            .attr('baseFrequency', '0.02 0.4')
-            .attr('numOctaves', '3')
+        grain.append('feTurbulence').attr('type', 'fractalNoise').attr('baseFrequency', '0.02 0.4').attr('numOctaves', '3')
+        grain.append('feComposite').attr('in', 'SourceGraphic').attr('operator', 'arithmetic').attr('k1', '0.2').attr('k2', '0.9')
 
-        grain.append('feComposite')
-            .attr('in', 'SourceGraphic')
-            .attr('operator', 'arithmetic')
-            .attr('k1', '0.2').attr('k2', '0.9')
-
-        // Создание тени под странами
         const shadow = defs.append('filter').attr('id', 'soft-shadow').attr('height', '150%')
-        shadow.append('feDropShadow')
-            .attr('dx', '1.5').attr('dy', '3.5')
-            .attr('stdDeviation', '2.5')
-            .attr('flood-color', '#261910')
-            .attr('flood-opacity', '0.45')
+        shadow.append('feDropShadow').attr('dx', '1.5').attr('dy', '3.5').attr('stdDeviation', '2.5').attr('flood-color', '#000').attr('flood-opacity', '0.45')
     },
 
-    // Цвета, анимации, фильтры
-    applyStyles(
-        svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
-        theme: MapTheme,
-        visited: string[]
-    ): void {
-        const isWooden = theme.id === 'wooden'
-
-        // Боковые грани
+    applyStyles(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, theme: MapTheme, visited: string[]): void {
         svg.selectAll<SVGPathElement, CountryFeature>('.country-side')
-            .transition()
-            .duration(800)
+            .transition().duration(600)
             .attr('opacity', theme.is3D ? 1 : 0)
             .attr('fill', (d) => {
                 const id = d.properties.ISO_A3 || d.properties.iso_a3 || ''
-                const base = this.getWoodColor(id, visited.includes(id), theme)
+                const base = this.getDynamicColor(id, visited.includes(id), theme)
                 return d3.color(base)?.darker(1.5).toString() || '#000'
             })
 
-        // Лицевая сторона
         svg.selectAll<SVGPathElement, CountryFeature>('.country-top')
-            .transition()
-            .duration(800)
+            .transition().duration(600)
             .attr('fill', (d) => {
                 const id = d.properties.ISO_A3 || d.properties.iso_a3 || ''
-                const isVisited = visited.includes(id)
-
-                if (isWooden) {
-                    return this.getWoodColor(id, isVisited, theme)
-                }
-
-                return (isVisited ? (theme.colors.visited as string) : (theme.colors.unvisited as string)) || '#333'
+                return this.getDynamicColor(id, visited.includes(id), theme)
             })
-            .attr('stroke', theme.colors.border || '#000')
+            .attr('stroke', theme.colors.map.border)
             .attr('stroke-width', theme.strokeWidth)
             .attr('filter', theme.hasGrain ? 'url(#wood-grain-filter) url(#soft-shadow)' : (theme.is3D ? 'url(#soft-shadow)' : null))
     }
