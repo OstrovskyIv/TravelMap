@@ -5,9 +5,19 @@ export interface MapTheme {
     is3D: boolean
     hasGrain: boolean
     colors: {
-        visited: string | string[]
-        unvisited: string | string[]
-        border: string
+        map: {
+            visited: string[]
+            unvisited: string[]
+            border: string
+            hover: string
+        },
+        ui: {
+            accent: string
+            textMain: string
+            textMuted: string
+            border: string
+            activeBg: string
+        }
     }
     strokeWidth: number
     loader: {
