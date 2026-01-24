@@ -3,6 +3,7 @@ import type { MapTheme } from './types'
 export const classic: MapTheme = {
     id: 'classic',
     name: 'Classic Luxury',
+    price: 0,
     background: '#0c0c0e',
     is3D: false,
     hasGrain: false,

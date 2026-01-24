@@ -3,6 +3,7 @@ import type { MapTheme } from './types'
 export const wooden: MapTheme = {
     id: 'wooden',
     name: 'Woodcraft 3D',
+    price: 1000,
     background: '#edeae4',
     is3D: true,
     hasGrain: true,

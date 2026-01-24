@@ -1,6 +1,7 @@
 export interface MapTheme {
     id: string
     name: string
+    price: number
     background: string
     is3D: boolean
     hasGrain: boolean
