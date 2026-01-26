@@ -1,13 +1,28 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { LocalStorage } from '@/shared/lib/LocalStorage'
 
 export const useUserStore = defineStore('user', () => {
-    // В будущем здесь будет логика авторизации
+    const balance = ref<number>(LocalStorage.load<number>('user_balance') || 0)
+    const purchasedThemes = ref<string[]>(LocalStorage.load<string[]>('purchased_themes') || ['classic'])
     const isAdmin = ref(true)
     const userName = ref('Ivan Admin')
 
-    return {
-        isAdmin,
-        userName
+    const addBalance = (amount: number) => {
+        balance.value += amount
     }
+
+    const buyTheme = (themeId: string, price: number): boolean => {
+        if (balance.value >= price && !purchasedThemes.value.includes(themeId)) {
+            balance.value -= price
+            purchasedThemes.value.push(themeId)
+            return true
+        }
+        return false
+    }
+
+    watch(balance, (val) => LocalStorage.save('user_balance', val))
+    watch(purchasedThemes, (val) => LocalStorage.save('purchased_themes', val), { deep: true })
+
+    return { balance, purchasedThemes, isAdmin, userName, addBalance, buyTheme }
 })
