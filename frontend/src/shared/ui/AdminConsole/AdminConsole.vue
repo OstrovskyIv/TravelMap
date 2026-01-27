@@ -38,14 +38,45 @@
         </button>
       </header>
 
-      <!-- Основной блок -->
+      <!-- main окна -->
       <div class="flex-1 overflow-hidden relative flex">
-        <div class="w-64,border-r">
-          <!-- Левый блок -->
+
+        <!-- Левый блок -->
+        <div class="w-64 border-r overflow-hidden flex flex-col items-center" :style="{ borderColor: store.currentTheme?.sidebar.border }">
+          <div class="px-5 py-4 border-b" :style="{ borderColor: store.currentTheme?.sidebar.border }">
+            <h3 class="text-xs font-bold uppercase tracking-wider opacity-70" :style="{ color: store.currentTheme?.sidebar.text }">
+              Панель управления
+            </h3>
+          </div>
+          <div class="flex-1 overflow-y-auto custom-scrollbar py-3">
+            <nav class="px-3 space-y-1">
+              <button
+                  v-for="item in navItems"
+                  :key="item.id"
+                  @click="activeSection = item.id"
+                  class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:scale-[1.02] border border-transparent text-left"
+                  :style="{
+          backgroundColor: activeSection === item.id
+            ? store.currentTheme?.sidebar.activeBg
+            : 'transparent',
+          borderColor: activeSection === item.id
+            ? store.currentTheme?.sidebar.accent + '40'
+            : 'transparent',
+          color: activeSection === item.id
+            ? store.currentTheme?.sidebar.accent
+            : store.currentTheme?.sidebar.text
+        }"
+              >
+                <span class="text-base">{{ item.icon }}</span>
+                <span class="text-sm font-medium">{{ item.title }}</span>
+              </button>
+            </nav>
+          </div>
         </div>
 
-        <div class="flex-1 overflow-hidden">
-          <!-- Правый блок -->
+        <!-- Правый блок -->
+        <div class="flex-1 overflow-hidden relative flex flex-col">
+
         </div>
 
         <!-- Уголок -->
@@ -67,6 +98,16 @@ import { useUiStore } from '@/stores/uiStore'
 
 const store = useMapStore()
 const uiStore = useUiStore()
+
+const navItems = [
+  { id: 'general', title: 'Общие настройки', icon: '⚙️' },
+  { id: 'currency', title: 'Валюта', icon: '💰' },
+  { id: 'theme', title: 'Магазин тем', icon: '🎨' },
+  { id: 'users', title: 'Пользователи', icon: '👥' },
+  { id: 'backup', title: 'Резервное копирование', icon: '💾' },
+]
+
+const activeSection = ref('general')
 
 const position = ref({ x: 0, y: 0 })
 const size = ref({ w: 900, h: 600 })
@@ -132,6 +173,18 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.custom-scrollbar::-webkit-scrollbar { width: 3px; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(155, 155, 155, 0.2); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(155, 155, 155, 0.3);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(155, 155, 155, 0.5);
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
 </style>
