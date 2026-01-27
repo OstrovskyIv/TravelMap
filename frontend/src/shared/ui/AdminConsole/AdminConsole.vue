@@ -39,10 +39,14 @@
       </header>
 
       <!-- Основной блок -->
-      <div class="flex-1 overflow-hidden relative">
-        <main class="h-full overflow-y-auto custom-scrollbar p-10 text-white font-sans">
-          <!-- Добавить логику -->
-        </main>
+      <div class="flex-1 overflow-hidden relative flex">
+        <div class="w-64,border-r">
+          <!-- Левый блок -->
+        </div>
+
+        <div class="flex-1 overflow-hidden">
+          <!-- Правый блок -->
+        </div>
 
         <!-- Уголок -->
         <div @mousedown="startResizing" class="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-50 group pointer-events-auto">
