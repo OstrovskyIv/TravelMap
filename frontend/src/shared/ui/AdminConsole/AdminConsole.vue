@@ -5,7 +5,7 @@
       leave-active-class="transition-all duration-200 ease-in"
       leave-to-class="opacity-0 scale-95 translate-y-4"
   >
-    <!-- КОРПУС ОКНА -->
+    <!-- Корпус окна -->
     <div
         v-if="uiStore.isAdminConsoleOpen"
         class="fixed z-[100] flex flex-col overflow-hidden border shadow-[0_40px_100px_rgba(0,0,0,0.7)] backdrop-blur-3xl transition-colors duration-500 rounded-2xl"
@@ -18,7 +18,7 @@
         borderColor: store.currentTheme?.sidebar.border
       }"
     >
-      <!-- ШАПКА (DRAG ZONE) -->
+      <!-- Верхняя панель в терминале -->
       <header
           @mousedown="startDragging"
           class="h-11 flex items-center justify-between px-5 cursor-grab active:cursor-grabbing border-b select-none transition-colors shrink-0"
@@ -28,48 +28,27 @@
           <span class="text-sm">🖥️</span>
           <span class="flex flex-col">
             <span class="text-[10px] font-black uppercase tracking-widest leading-none" :style="{ color: store.currentTheme?.sidebar.accent }">
-              Admin Terminal v.1.0.1
+              Admin Terminal "Test.v.1.0"
             </span>
           </span>
         </span>
 
-        <button
-            @click="uiStore.toggleAdminConsole"
-            class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-500 transition-all active:scale-90 group border-none outline-none bg-transparent cursor-pointer"
-        >
+        <button @click="uiStore.toggleAdminConsole" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-500 transition-all active:scale-90 group border-none outline-none bg-transparent cursor-pointer">
           <span class="text-xs opacity-40 group-hover:opacity-100 group-hover:text-white" :style="{ color: store.currentTheme?.sidebar.text }">✕</span>
         </button>
       </header>
 
-      <!-- ТЕЛО (CONTENT AREA) -->
+      <!-- Основной блок -->
       <div class="flex-1 overflow-hidden relative">
         <main class="h-full overflow-y-auto custom-scrollbar p-10 text-white font-sans">
-          <!-- ТВОЙ КОНТЕНТ ТУТ -->
+          <!-- Добавить логику -->
         </main>
 
-        <!-- МИНИАТЮРНЫЙ ТРИГГЕР РЕСАЙЗА (СТИЛЬНЫЙ УГОЛОК) -->
-        <div
-            @mousedown="startResizing"
-            class="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-50 group pointer-events-auto"
-        >
+        <!-- Уголок -->
+        <div @mousedown="startResizing" class="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-50 group pointer-events-auto">
           <svg viewBox="0 0 16 16" class="w-full h-full transition-all duration-300 overflow-visible">
-            <!-- Эффект заворота (маленький треугольник) -->
-            <path
-                d="M16 0 L16 16 L0 16 Z"
-                class="transition-all duration-300"
-                :style="{
-                fill: store.currentTheme?.sidebar.accent,
-                opacity: isResizing ? '0.4' : '0.1'
-              }"
-            />
-            <!-- Линия сгиба -->
-            <path
-                d="M0 16 L16 0"
-                class="transition-opacity duration-300 opacity-20 group-hover:opacity-60"
-                :style="{ stroke: store.currentTheme?.sidebar.accent }"
-                stroke-width="1.5"
-                stroke-linecap="round"
-            />
+            <path d="M16 0 L16 16 L0 16 Z" class="transition-all duration-300" :style="{fill: store.currentTheme?.sidebar.accent,opacity: isResizing ? '0.4' : '0.1'}"/>
+            <path d="M0 16 L16 0" class="transition-opacity duration-300 opacity-20 group-hover:opacity-60" :style="{ stroke: store.currentTheme?.sidebar.accent }" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
         </div>
       </div>
@@ -88,7 +67,6 @@ const uiStore = useUiStore()
 const position = ref({ x: 0, y: 0 })
 const size = ref({ w: 900, h: 600 })
 
-// ЛОГИКА ПЕРЕТАСКИВАНИЯ (DRAG)
 const dragOffset = { x: 0, y: 0 }
 let isDragging = false
 
@@ -112,7 +90,6 @@ const stopDragging = () => {
   window.removeEventListener('mouseup', stopDragging)
 }
 
-// ЛОГИКА ИЗМЕНЕНИЯ РАЗМЕРА (RESIZE)
 const isResizing = ref(false)
 const initialMousePos = { x: 0, y: 0 }
 const initialSize = { w: 0, h: 0 }
