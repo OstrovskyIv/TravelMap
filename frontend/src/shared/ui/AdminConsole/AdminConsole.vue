@@ -18,7 +18,7 @@
         borderColor: store.currentTheme?.sidebar.border
       }"
     >
-      <!-- Верхняя панель в терминале (Зона перетаскивания) -->
+      <!-- Верхняя панель в терминале -->
       <header
           @mousedown="startDragging"
           class="h-11 flex items-center justify-between px-5 cursor-grab active:cursor-grabbing border-b select-none transition-colors shrink-0"
@@ -38,12 +38,10 @@
         </button>
       </header>
 
-      <!-- main окна (Разделение на две колонки) -->
       <div class="flex-1 overflow-hidden relative flex">
 
-        <!-- ЛЕВЫЙ БЛОК: НАВИГАЦИЯ -->
+        <!-- Левый блок - навигация -->
         <aside class="w-64 border-r overflow-hidden flex flex-col items-center shrink-0" :style="{ borderColor: store.currentTheme?.sidebar.border }">
-          <!-- ИСПРАВЛЕНО: Добавлен w-full и text-center для центрирования заголовка -->
           <div class="w-full px-5 py-4 border-b flex justify-center items-center text-center" :style="{ borderColor: store.currentTheme?.sidebar.border }">
             <h3 class="text-[10px] font-black uppercase tracking-[0.2em] opacity-50" :style="{ color: store.currentTheme?.sidebar.text }">
               {{ langStore.currentLang === 'ru' ? 'Панель управления' : 'Control Panel' }}
@@ -69,11 +67,11 @@
           </div>
         </aside>
 
-        <!-- ПРАВЫЙ БЛОК: КОНТЕНТ -->
+        <!-- Правый блок - Основа -->
         <main class="flex-1 overflow-hidden relative flex flex-col bg-black/10">
           <Transition mode="out-in" enter-active-class="transition-all duration-300" enter-from-class="opacity-0 translate-y-2">
 
-            <!-- СОСТОЯНИЕ 1: ЭКРАН ОЖИДАНИЯ (ЛОАДЕР) -->
+            <!-- Экран загрузки -->
             <div v-if="!activeSection" class="w-full h-full flex flex-col items-center justify-center gap-6">
               <div class="w-10 h-10 border-2 border-white/5 border-t-white/60 rounded-full animate-spin" :style="{ borderTopColor: Array.isArray(store.currentTheme?.colors.map.visited) ? store.currentTheme?.colors.map.visited[0] : store.currentTheme?.colors.map.visited }"></div>
               <div class="flex flex-col items-center gap-1 opacity-40 text-center px-10">
@@ -82,7 +80,7 @@
               </div>
             </div>
 
-            <!-- СОСТОЯНИЕ 2: ОБЩИЕ НАСТРОЙКИ -->
+            <!-- Общие настройки -->
             <div v-else-if="activeSection === 'general'" class="w-full h-full p-10 flex flex-col gap-8 overflow-y-auto custom-scrollbar">
               <h3 class="text-2xl font-black uppercase tracking-tighter italic text-white">General Settings</h3>
               <div class="flex flex-col gap-4 p-8 bg-white/5 border border-white/5 rounded-[32px] shadow-xl text-white">
@@ -91,7 +89,7 @@
               </div>
             </div>
 
-            <!-- СОСТОЯНИЕ 3: ЭКОНОМИКА (ВАЛЮТА) -->
+            <!-- Валюта -->
             <div v-else-if="activeSection === 'currency'" class="w-full h-full p-10 flex flex-col gap-8 overflow-y-auto custom-scrollbar text-white">
               <h3 class="text-2xl font-black uppercase tracking-tighter italic">Economic Control</h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -114,7 +112,7 @@
               </div>
             </div>
 
-            <!-- СОСТОЯНИЕ 4: МАГАЗИН (УПРАВЛЕНИЕ ТЕМАМИ) -->
+            <!-- Темы -->
             <div v-else-if="activeSection === 'theme'" class="w-full h-full p-10 flex flex-col gap-8 overflow-y-auto custom-scrollbar text-white font-sans">
               <h3 class="text-2xl font-black uppercase tracking-tighter italic">Theme Engine</h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-white">
@@ -136,7 +134,7 @@
           </Transition>
         </main>
 
-        <!-- Уголок (Изменение размера) -->
+        <!-- Уголок -->
         <div @mousedown="startResizing" class="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-50 group pointer-events-auto">
           <svg viewBox="0 0 16 16" class="w-full h-full transition-all duration-300 overflow-visible">
             <path d="M16 0 L16 16 L0 16 Z" class="transition-all duration-300" :style="{fill: store.currentTheme?.sidebar.accent, opacity: isResizing ? '0.4' : '0.1'}"/>
@@ -149,7 +147,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue' // УДАЛЕН НЕИСПОЛЬЗУЕМЫЙ COMPUTED
+import { ref, onMounted } from 'vue'
 import { useMapStore } from '@/stores/mapStore'
 import { useUiStore } from '@/stores/uiStore'
 import { useLangStore } from '@/stores/langStore'
@@ -163,7 +161,6 @@ const langStore = useLangStore()
 const userStore = useUserStore()
 const themesList = Object.values(MAP_THEMES)
 
-// --- СПИСОК ПУНКТОВ МЕНЮ ---
 const navItems = [
   { id: 'general', nameRu: 'Общие настройки', nameEn: 'General Settings', icon: '⚙️' },
   { id: 'currency', nameRu: 'Экономика', nameEn: 'Economics', icon: '💰' },
@@ -176,7 +173,6 @@ const activeSection = ref<string | null>(null)
 const position = ref({ x: 0, y: 0 })
 const size = ref({ w: 900, h: 600 })
 
-// ИСПРАВЛЕНО: const для объекта offset
 const dragOffset = { x: 0, y: 0 }
 let isDragging = false
 
