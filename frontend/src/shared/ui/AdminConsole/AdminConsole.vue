@@ -43,7 +43,8 @@
 
         <!-- ЛЕВЫЙ БЛОК: НАВИГАЦИЯ -->
         <aside class="w-64 border-r overflow-hidden flex flex-col items-center shrink-0" :style="{ borderColor: store.currentTheme?.sidebar.border }">
-          <div class="w-full px-5 py-4 border-b" :style="{ borderColor: store.currentTheme?.sidebar.border }">
+          <!-- ИСПРАВЛЕНО: Добавлен w-full и text-center для центрирования заголовка -->
+          <div class="w-full px-5 py-4 border-b flex justify-center items-center text-center" :style="{ borderColor: store.currentTheme?.sidebar.border }">
             <h3 class="text-[10px] font-black uppercase tracking-[0.2em] opacity-50" :style="{ color: store.currentTheme?.sidebar.text }">
               {{ langStore.currentLang === 'ru' ? 'Панель управления' : 'Control Panel' }}
             </h3>
@@ -74,7 +75,7 @@
 
             <!-- СОСТОЯНИЕ 1: ЭКРАН ОЖИДАНИЯ (ЛОАДЕР) -->
             <div v-if="!activeSection" class="w-full h-full flex flex-col items-center justify-center gap-6">
-              <div class="w-10 h-10 border-2 border-white/5 border-t-white/60 rounded-full animate-spin"></div>
+              <div class="w-10 h-10 border-2 border-white/5 border-t-white/60 rounded-full animate-spin" :style="{ borderTopColor: Array.isArray(store.currentTheme?.colors.map.visited) ? store.currentTheme?.colors.map.visited[0] : store.currentTheme?.colors.map.visited }"></div>
               <div class="flex flex-col items-center gap-1 opacity-40 text-center px-10">
                 <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white">System Standby</span>
                 <span class="text-[9px] font-mono italic text-white">Please select a module from the sidebar</span>
@@ -93,20 +94,20 @@
             <!-- СОСТОЯНИЕ 3: ЭКОНОМИКА (ВАЛЮТА) -->
             <div v-else-if="activeSection === 'currency'" class="w-full h-full p-10 flex flex-col gap-8 overflow-y-auto custom-scrollbar text-white">
               <h3 class="text-2xl font-black uppercase tracking-tighter italic">Economic Control</h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="p-8 bg-white/5 border border-white/5 rounded-[32px] flex flex-col gap-6">
-                  <span class="text-[9px] font-black uppercase tracking-widest opacity-30 text-white">Inject Funds</span>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="p-8 bg-white/5 border border-white/5 rounded-[40px] flex flex-col gap-6 shadow-xl">
+                  <span class="text-[9px] font-black uppercase tracking-widest opacity-30 text-white">Fund Injection</span>
                   <div class="flex gap-2">
                     <button
                         v-for="val in [100, 500, 1000]" :key="val"
                         @click="userStore.addBalance(val)"
-                        class="flex-1 py-3 rounded-xl bg-[#fbbf24] text-black font-black text-[10px] uppercase hover:brightness-110 transition-all active:scale-95"
+                        class="flex-1 py-3 rounded-xl bg-[#fbbf24] text-black font-black text-[10px] uppercase hover:brightness-110 transition-all active:scale-95 border-none outline-none cursor-pointer"
                     >
                       +{{ val }} ⭐
                     </button>
                   </div>
                 </div>
-                <div class="p-8 bg-white/5 border border-white/10 rounded-[32px] flex flex-col gap-2 justify-center text-center">
+                <div class="p-8 bg-white/5 border border-white/10 rounded-[40px] flex flex-col gap-2 justify-center text-center">
                   <span class="text-[9px] font-black uppercase tracking-widest opacity-30 text-white">Account Balance</span>
                   <span class="text-4xl font-black text-[#fbbf24] tracking-tighter leading-none">{{ userStore.balance }} ⭐</span>
                 </div>
@@ -120,7 +121,7 @@
                 <button
                     v-for="t in themesList" :key="t.id"
                     @click="store.setTheme(t.id)"
-                    class="p-5 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between hover:bg-white/10 transition-all group outline-none"
+                    class="p-5 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-between hover:bg-white/10 transition-all group outline-none border-none"
                     :style="store.currentTheme?.id === t.id ? { borderColor: '#fbbf24', backgroundColor: 'rgba(251, 191, 36, 0.05)' } : {}"
                 >
                   <span class="flex items-center gap-4">
@@ -148,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue' // УДАЛЕН НЕИСПОЛЬЗУЕМЫЙ COMPUTED
 import { useMapStore } from '@/stores/mapStore'
 import { useUiStore } from '@/stores/uiStore'
 import { useLangStore } from '@/stores/langStore'
@@ -171,14 +172,11 @@ const navItems = [
   { id: 'backup', nameRu: 'Резерв', nameEn: 'Backup', icon: '💾' },
 ]
 
-// --- СОСТОЯНИЕ (ПО УМОЛЧАНИЮ NULL ДЛЯ ЭКРАНА ОЖИДАНИЯ) ---
 const activeSection = ref<string | null>(null)
-
-// --- ПОЗИЦИОНИРОВАНИЕ И РАЗМЕР ---
 const position = ref({ x: 0, y: 0 })
 const size = ref({ w: 900, h: 600 })
 
-// --- ЛОГИКА DRAG (ПЕРЕТАСКИВАНИЕ) ---
+// ИСПРАВЛЕНО: const для объекта offset
 const dragOffset = { x: 0, y: 0 }
 let isDragging = false
 
@@ -202,7 +200,6 @@ const stopDragging = () => {
   window.removeEventListener('mouseup', stopDragging)
 }
 
-// --- ЛОГИКА RESIZE (ИЗМЕНЕНИЕ РАЗМЕРА) ---
 const isResizing = ref(false)
 const initialMousePos = { x: 0, y: 0 }
 const initialSize = { w: 0, h: 0 }
@@ -232,7 +229,6 @@ const stopResizing = () => {
   window.removeEventListener('mouseup', stopResizing)
 }
 
-// --- ЦЕНТРИРОВАНИЕ ПРИ СТАРТЕ ---
 onMounted(() => {
   position.value.x = (window.innerWidth - size.value.w) / 2
   position.value.y = (window.innerHeight - size.value.h) / 2
@@ -240,18 +236,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(155, 155, 155, 0.3);
-  border-radius: 10px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(155, 155, 155, 0.5);
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(155, 155, 155, 0.3); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(155, 155, 155, 0.5); }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 </style>
