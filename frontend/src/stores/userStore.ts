@@ -9,7 +9,8 @@ export const useUserStore = defineStore('user', () => {
     const userName = ref('Ivan Admin')
 
     const addBalance = (amount: number) => {
-        balance.value += amount
+        const nextBalance = balance.value + amount
+        balance.value = nextBalance < 0 ? 0 : nextBalance
     }
 
     const buyTheme = (themeId: string, price: number): boolean => {
