@@ -24,7 +24,7 @@
           class="h-11 flex items-center justify-between px-5 cursor-grab active:cursor-grabbing border-b select-none transition-colors shrink-0"
           :style="{ backgroundColor: store.currentTheme?.sidebar.activeBg, borderColor: store.currentTheme?.sidebar.border }"
       >
-        <span class="flex items-center gap-3 pointer-events-none">
+        <span class="flex items-center gap-3 pointer-events-none text-white font-sans">
           <span class="text-sm">🖥️</span>
           <span class="flex flex-col">
             <span class="text-[10px] font-black uppercase tracking-widest leading-none" :style="{ color: store.currentTheme?.sidebar.accent }">
@@ -32,6 +32,7 @@
             </span>
           </span>
         </span>
+
         <button @click="uiStore.toggleAdminConsole" class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-500 transition-all active:scale-90 group border-none outline-none bg-transparent cursor-pointer">
           <span class="text-xs opacity-40 group-hover:opacity-100 text-white font-bold">✕</span>
         </button>
@@ -87,7 +88,7 @@
                   <span class="text-7xl font-black tracking-tighter leading-none">{{ userStore.balance }}</span>
                   <span class="text-4xl animate-pulse">⭐</span>
                 </div>
-                <button @click="userStore.balance = 0" class="px-8 py-2.5 rounded-full bg-red-500/10 border border-red-500/40 text-red-500 hover:bg-red-500 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest outline-none cursor-pointer">
+                <button @click="userStore.balance = 0" class="px-8 py-2.5 rounded-full bg-red-500/10 border border-red-500/40 text-red-500 hover:bg-red-500 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest outline-none border-none bg-transparent cursor-pointer">
                   Reset to zero
                 </button>
               </div>
@@ -96,10 +97,10 @@
                 <div class="flex-1 min-w-[300px] p-8 bg-white/5 border border-white/10 rounded-[36px] flex flex-col gap-6 shadow-xl">
                   <span class="text-[9px] font-black uppercase tracking-[0.3em] opacity-30">Quick Adjustment</span>
                   <div class="grid grid-cols-2 gap-2">
-                    <button @click="userStore.addBalance(100)" class="py-4 rounded-2xl bg-green-500/10 border border-green-500/20 text-green-400 font-black text-xs uppercase hover:bg-green-500/20 transition-all">+100</button>
-                    <button @click="userStore.addBalance(500)" class="py-4 rounded-2xl bg-green-500/10 border border-green-500/20 text-green-400 font-black text-xs uppercase hover:bg-green-500/20 transition-all">+500</button>
-                    <button @click="userStore.addBalance(-100)" class="py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-black text-xs uppercase hover:bg-red-500/20 transition-all">-100</button>
-                    <button @click="userStore.addBalance(-500)" class="py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-black text-xs uppercase hover:bg-red-500/20 transition-all">-500</button>
+                    <button @click="userStore.addBalance(100)" class="py-4 rounded-2xl bg-green-500/10 border border-green-500/20 text-green-400 font-black text-xs uppercase hover:bg-green-500/20 transition-all active:scale-95 border-none outline-none">+100</button>
+                    <button @click="userStore.addBalance(500)" class="py-4 rounded-2xl bg-green-500/10 border border-green-500/20 text-green-400 font-black text-xs uppercase hover:bg-green-500/20 transition-all active:scale-95 border-none outline-none">+500</button>
+                    <button @click="userStore.addBalance(-100)" class="py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-black text-xs uppercase hover:bg-red-500/20 transition-all active:scale-95">-100</button>
+                    <button @click="userStore.addBalance(-500)" class="py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-black text-xs uppercase hover:bg-red-500/20 transition-all active:scale-95">-500</button>
                   </div>
                 </div>
 
@@ -115,28 +116,33 @@
 
             <!-- Общие настройки -->
             <div v-else-if="activeSection === 'general'" class="w-full h-full p-10 flex flex-col gap-8 overflow-y-auto custom-scrollbar">
-              <h3 class="text-2xl font-black uppercase tracking-tighter italic">General</h3>
+              <h3 class="text-2xl font-black uppercase tracking-tighter italic text-white">General</h3>
               <div class="p-8 bg-white/5 border border-white/10 rounded-[40px] flex flex-col gap-6">
                 <span class="text-[10px] font-black uppercase tracking-[0.3em] opacity-30">System Language</span>
                 <LangSwitcher :theme="store.currentTheme" />
               </div>
             </div>
 
-            <!-- Темы -->
+            <!-- ТЕМЫ (ОБНОВЛЕНО: ЛОГИКА ЛИЦЕНЗИЙ) -->
             <div v-else-if="activeSection === 'theme'" class="w-full h-full p-10 flex flex-col gap-8 overflow-y-auto custom-scrollbar">
-              <h3 class="text-2xl font-black uppercase tracking-tighter italic text-white">Theme Engine</h3>
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <button
-                    v-for="t in themesList" :key="t.id"
-                    @click="store.setTheme(t.id)"
-                    class="p-6 bg-white/5 border border-white/5 rounded-[32px] flex items-center justify-between hover:bg-white/10 transition-all outline-none border-none cursor-pointer text-white"
-                    :style="store.currentTheme?.id === t.id ? { borderColor: '#fbbf24', backgroundColor: 'rgba(251, 191, 36, 0.05)' } : {}"
-                >
-                  <span class="flex items-center gap-5">
-                    <span class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-2xl shadow-inner">{{ t.id === 'wooden' ? '🪵' : '✨' }}</span>
-                    <span class="text-sm font-black uppercase tracking-widest leading-none">{{ t.name }}</span>
-                  </span>
-                </button>
+              <h3 class="text-2xl font-black uppercase tracking-tighter italic text-white">Theme Access Management</h3>
+              <div class="grid grid-cols-1 gap-3">
+                <div v-for="t in themesList" :key="t.id" class="p-6 bg-white/5 border border-white/5 rounded-3xl flex items-center justify-between transition-all group">
+                  <div class="flex items-center gap-5">
+                    <span class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-2xl shadow-inner">{{ t.id === 'wooden' ? '🪵' : '✨' }}</span>
+                    <div class="flex flex-col gap-1">
+                      <span class="text-sm font-black uppercase tracking-widest text-white">{{ t.name }}</span>
+                      <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded-md w-fit" :class="userStore.purchasedThemes.includes(t.id) ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'">
+                        {{ userStore.purchasedThemes.includes(t.id) ? 'Owned' : 'Locked' }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <button v-if="userStore.purchasedThemes.includes(t.id) && t.id !== 'classic'" @click="userStore.lockTheme(t.id)" class="px-4 py-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all text-[9px] font-black uppercase border-none outline-none cursor-pointer">Revoke License</button>
+                    <button v-if="!userStore.purchasedThemes.includes(t.id)" @click="userStore.unlockTheme(t.id)" class="px-4 py-2 rounded-xl bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white transition-all text-[9px] font-black uppercase border-none outline-none cursor-pointer">Grant License</button>
+                    <button @click="store.setTheme(t.id)" class="px-4 py-2 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all text-[9px] font-black uppercase border-none outline-none cursor-pointer">Equip</button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -183,7 +189,9 @@ const setExactBalance = () => {
 const navItems = [
   { id: 'general', nameRu: 'Общие настройки', nameEn: 'General Settings', icon: '⚙️' },
   { id: 'currency', nameRu: 'Экономика', nameEn: 'Economics', icon: '💰' },
-  { id: 'theme', nameRu: 'Магазин тем', nameEn: 'Theme Engine', icon: '🎨' }
+  { id: 'theme', nameRu: 'Магазин тем', nameEn: 'Theme Engine', icon: '🎨' },
+  { id: 'users', nameRu: 'Пользователи', nameEn: 'User Access', icon: '👥' },
+  { id: 'backup', nameRu: 'Резерв', nameEn: 'Backup', icon: '💾' },
 ]
 
 const activeSection = ref<string | null>(null)
@@ -225,6 +233,7 @@ const startResizing = (e: MouseEvent) => {
   initialMousePos.y = e.clientY
   initialSize.w = size.value.w
   initialSize.h = size.value.h
+
   window.addEventListener('mousemove', handleResizing)
   window.addEventListener('mouseup', stopResizing)
 }
