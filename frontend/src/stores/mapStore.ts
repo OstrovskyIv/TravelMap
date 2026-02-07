@@ -1,13 +1,15 @@
 import { defineStore } from 'pinia'
 import { ref, watch, computed } from 'vue'
 import { LocalStorage } from '@/shared/lib/LocalStorage'
-import { MAP_THEMES } from '@/shared/map-themes'
+import { MAP_THEMES, type MapTheme } from '@/shared/map-themes'
 
 export const useMapStore = defineStore('map', () => {
     const visited = ref<string[]>(LocalStorage.load<string[]>('visited') || [])
     const currentThemeId = ref<string>(LocalStorage.load<string>('theme_id') || 'classic')
 
-    const currentTheme = computed(() => MAP_THEMES[currentThemeId.value] || MAP_THEMES.classic)
+    const themes = ref<Record<string, MapTheme>>({...MAP_THEMES})
+
+    const currentTheme = computed(() => themes.value[currentThemeId.value] || themes.value.classic)
 
     const toggleCountry = (id: string) => {
         const index = visited.value.indexOf(id)
@@ -19,18 +21,23 @@ export const useMapStore = defineStore('map', () => {
     }
 
     const setTheme = (themeId: string) => {
-        if (MAP_THEMES[themeId]) {
+        if (themes.value[themeId]) {
             currentThemeId.value = themeId
             LocalStorage.save('theme_id', themeId)
         }
     }
+    
+    const addTheme = (newTheme: MapTheme) => {
+        themes.value[newTheme.id] = newTheme
+    }
 
-    watch(
-        visited,
-        (newVal) => {
-            LocalStorage.save('visited', newVal)
-        },
-        { deep: true }
-    )
-    return { visited, toggleCountry, currentTheme, setTheme }
+    const deleteTheme = (id: string) => {
+        if (id === 'classic') return
+        if (currentThemeId.value === id) setTheme('classic')
+        delete themes.value[id]
+    }
+
+    watch(visited, (newVal) => LocalStorage.save('visited', newVal), { deep: true })
+
+    return { visited, currentTheme, themes, setTheme, toggleCountry, addTheme, deleteTheme }
 })
