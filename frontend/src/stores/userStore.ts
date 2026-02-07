@@ -13,6 +13,17 @@ export const useUserStore = defineStore('user', () => {
         balance.value = nextBalance < 0 ? 0 : nextBalance
     }
 
+    const lockTheme = (themeId: string) => {
+        if (themeId === 'classic') return
+        purchasedThemes.value = purchasedThemes.value.filter(id => id !== themeId)
+    }
+
+    const unlockTheme = (themeId: string) => {
+        if (!purchasedThemes.value.includes(themeId)) {
+            purchasedThemes.value.push(themeId)
+        }
+    }
+
     const buyTheme = (themeId: string, price: number): boolean => {
         if (balance.value >= price && !purchasedThemes.value.includes(themeId)) {
             balance.value -= price
@@ -25,5 +36,5 @@ export const useUserStore = defineStore('user', () => {
     watch(balance, (val) => LocalStorage.save('user_balance', val))
     watch(purchasedThemes, (val) => LocalStorage.save('purchased_themes', val), { deep: true })
 
-    return { balance, purchasedThemes, isAdmin, userName, addBalance, buyTheme }
+    return { balance, purchasedThemes, isAdmin, userName, addBalance, buyTheme, lockTheme, unlockTheme }
 })
