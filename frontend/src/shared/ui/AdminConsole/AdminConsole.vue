@@ -39,7 +39,7 @@
       </header>
 
       <div class="flex-1 overflow-hidden relative flex">
-        <!-- Лево: Навигация -->
+        <!-- Лево - Навигация -->
         <aside class="w-64 border-r overflow-hidden flex flex-col items-center shrink-0" :style="{ borderColor: store.currentTheme?.sidebar.border }">
           <div class="w-full px-5 py-4 border-b flex justify-center items-center text-center" :style="{ borderColor: store.currentTheme?.sidebar.border }">
             <h3 class="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 text-white" :style="{ color: store.currentTheme?.sidebar.text }">
@@ -64,7 +64,7 @@
           </div>
         </aside>
 
-        <!-- Правый блок: Контент -->
+        <!-- Право - Контент -->
         <main class="flex-1 overflow-hidden relative flex flex-col bg-black/10">
           <Transition mode="out-in" enter-active-class="transition-all duration-300" enter-from-class="opacity-0 translate-y-2">
 
@@ -119,7 +119,6 @@
               <h3 class="text-2xl font-black uppercase tracking-tighter italic text-white">General</h3>
               <div class="p-8 bg-white/5 border border-white/10 rounded-[40px] flex flex-col gap-6 text-white shadow-xl">
                 <span class="text-[10px] font-black uppercase tracking-[0.3em] opacity-30">System Language</span>
-                <!-- ИСПРАВЛЕНО: возвращен LangSwitcher -->
                 <LangSwitcher :theme="store.currentTheme" />
               </div>
             </div>
@@ -139,7 +138,6 @@
                     </div>
                   </div>
                   <div class="flex flex-col gap-2 shrink-0 w-full md:w-auto">
-                    <!-- ИСПРАВЛЕНО: убран bg-transparent для исключения конфликта -->
                     <button v-if="userStore.purchasedThemes.includes(t.id) && t.id !== 'classic'" @click="userStore.lockTheme(t.id)" class="px-4 py-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all text-[9px] font-black uppercase whitespace-nowrap border-none outline-none cursor-pointer">Lock</button>
                     <button v-if="!userStore.purchasedThemes.includes(t.id)" @click="userStore.unlockTheme(t.id)" class="px-4 py-2.5 rounded-xl bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white transition-all text-[9px] font-black uppercase whitespace-nowrap border-none outline-none cursor-pointer">Grant</button>
                     <button @click="store.setTheme(t.id)" class="px-4 py-2.5 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all text-[9px] font-black uppercase outline-none border-none cursor-pointer">Equip</button>
@@ -175,8 +173,6 @@ const store = useMapStore()
 const uiStore = useUiStore()
 const langStore = useLangStore()
 const userStore = useUserStore()
-
-// ИСПРАВЛЕНО: убран неиспользуемый themesList и computed
 
 const customBalance = ref<number | null>(null)
 const setExactBalance = () => {
