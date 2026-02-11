@@ -117,7 +117,6 @@ const ownedThemes = computed(() => {
   return themesList.filter((t) => userStore.purchasedThemes.includes(t.id))
 })
 
-// Фильтр: темы, которые еще не куплены
 const availableThemes = computed(() => {
   return themesList.filter((t) => !userStore.purchasedThemes.includes(t.id))
 })
