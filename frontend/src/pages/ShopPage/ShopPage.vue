@@ -112,7 +112,6 @@ const langStore = useLangStore()
 const userStore = useUserStore()
 const themesList = Object.values(MAP_THEMES)
 
-// Фильтр: темы, которые уже куплены
 const ownedThemes = computed(() => {
   return themesList.filter((t) => userStore.purchasedThemes.includes(t.id))
 })
