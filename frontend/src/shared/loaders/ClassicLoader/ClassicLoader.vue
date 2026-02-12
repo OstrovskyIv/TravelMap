@@ -11,7 +11,7 @@
           <span class="text-white/10 font-mono text-[8px] uppercase tracking-widest">Global Atlas Protocol</span>
         </div>
         <div class="h-[1px] w-20 bg-[#fbbf24]/20"></div>
-      </div>Поменял тте
+      </div>
     </div>
   </div>
 </template>
