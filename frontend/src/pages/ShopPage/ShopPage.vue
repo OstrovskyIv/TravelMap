@@ -1,6 +1,7 @@
 <template>
   <div class="w-full h-full p-12 flex flex-col gap-16 overflow-y-auto custom-scrollbar font-sans transition-colors duration-1000" :style="{ backgroundColor: store.currentTheme?.background }">
 
+    <!-- ХЕДЕР И БАЛАНС -->
     <header class="flex justify-between items-start">
       <div class="flex flex-col gap-2">
         <h1 class="text-7xl font-black uppercase tracking-tighter italic text-white leading-none">
@@ -18,6 +19,7 @@
       </div>
     </header>
 
+    <!-- СЕКЦИЯ 1: ТВОЯ КОЛЛЕКЦИЯ -->
     <section class="flex flex-col gap-8">
       <div class="flex items-center gap-4 px-4">
         <h2 class="text-xs font-black uppercase tracking-[0.4em] text-white opacity-30">
@@ -52,7 +54,7 @@
       </div>
     </section>
 
-
+    <!-- СЕКЦИЯ 2: РЫНОК -->
     <section v-if="availableThemes.length > 0" class="flex flex-col gap-8">
       <div class="flex items-center gap-4 px-4">
         <h2 class="text-xs font-black uppercase tracking-[0.4em] text-white opacity-30">
@@ -78,20 +80,27 @@
             <span class="text-[9px] font-mono opacity-10 uppercase tracking-widest text-white">Requires purchase</span>
           </span>
 
+          <!-- КНОПКА С УЛУЧШЕННОЙ ИНДИКАЦИЕЙ ЦЕНЫ -->
           <button
-              @click="userStore.buyTheme(theme.id, theme.price)"
-              class="w-full py-5 rounded-2xl flex items-center justify-center gap-3 transition-all active:scale-95 border border-transparent shadow-2xl relative z-10"
-              :class="userStore.balance >= theme.price ? 'bg-white text-black hover:bg-[#fbbf24]' : 'bg-white/5 text-white/20 cursor-not-allowed'"
+              @click="userStore.buyTheme(theme.id, theme.price || 0)"
+              :disabled="userStore.balance < (theme.price || 0)"
+              class="w-full py-5 rounded-2xl flex items-center justify-center gap-3 transition-all active:scale-95 border shadow-2xl relative z-10 outline-none cursor-pointer"
+              :class="userStore.balance >= (theme.price || 0)
+                ? 'bg-white text-black border-transparent hover:bg-[#fbbf24]'
+                : 'bg-red-500/5 border-red-500/20 text-red-500/40 cursor-not-allowed'"
           >
-            <span class="text-xs font-black uppercase tracking-[0.2em]">
-              {{ userStore.balance >= theme.price ? `${theme.price}` : 'Need funds' }}
-            </span>
-            <span v-if="userStore.balance >= theme.price" class="text-sm">⭐</span>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-black uppercase tracking-[0.2em]">
+                {{ theme.price || 0 }} ⭐
+              </span>
+              <span v-if="userStore.balance < (theme.price || 0)" class="text-[9px] font-bold opacity-60 italic">
+                ({{ langStore.currentLang === 'ru' ? 'Нужно еще' : 'Need' }} {{ (theme.price || 0) - userStore.balance }})
+              </span>
+            </div>
           </button>
         </div>
       </div>
     </section>
-
   </div>
 </template>
 
@@ -100,18 +109,25 @@ import { computed } from 'vue'
 import { useMapStore } from '@/stores/mapStore'
 import { useLangStore } from '@/stores/langStore'
 import { useUserStore } from '@/stores/userStore'
-import { MAP_THEMES } from '@/shared/map-themes'
 
 const store = useMapStore()
 const langStore = useLangStore()
 const userStore = useUserStore()
-const themesList = Object.values(MAP_THEMES)
+
+const themesList = computed(() => {
+  return Object.values(store.themes)
+})
 
 const ownedThemes = computed(() => {
-  return themesList.filter((t) => userStore.purchasedThemes.includes(t.id))
+  return themesList.value.filter((t) => userStore.purchasedThemes.includes(t.id))
 })
 
 const availableThemes = computed(() => {
-  return themesList.filter((t) => !userStore.purchasedThemes.includes(t.id))
+  return themesList.value.filter((t) => !userStore.purchasedThemes.includes(t.id))
 })
 </script>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+</style>
