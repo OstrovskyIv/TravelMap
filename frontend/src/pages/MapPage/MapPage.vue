@@ -3,7 +3,7 @@
     <!-- Прорисовка карты -->
     <div ref="mapContainer" class="w-full h-full transition-opacity duration-700"></div>
 
-    <!-- Виджет статистики: НОВАЯ ЦВЕТОВАЯ ГАММА (Графит + Янтарный акцент) -->
+    <!-- Виджет статистики -->
     <div class="absolute top-12 left-12 flex flex-col gap-2 p-8 bg-[#18181b]/80 border border-[#fbbf24]/20 rounded-[40px] backdrop-blur-3xl pointer-events-none shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all">
       <span class="text-[11px] font-black uppercase tracking-[0.4em] text-[#fbbf24]">
         {{ langStore.currentLang === 'ru' ? 'Журнал' : 'Travel Log' }}
@@ -27,7 +27,6 @@
         leave-active-class="transition-all duration-700 ease-in"
     >
       <div v-if="isLoading" class="absolute inset-0 z-50">
-        <!-- ВАЖНО: используем nextThemeId, чтобы сразу видеть будущую тему -->
         <WoodenLoader v-if="nextThemeId === 'wooden'" />
         <ClassicLoader v-else />
       </div>
@@ -126,9 +125,8 @@ const drawMap = async () => {
           .on('mouseover', function (this: SVGPathElement) {
             if (store.currentTheme?.id === 'classic') {
               const hoverColor = store.currentTheme.colors.map.hover
-              // ПЛАВНОЕ НАВЕДЕНИЕ
               d3.select(this)
-                  .interrupt() // Прерываем старую анимацию
+                  .interrupt()
                   .transition()
                   .duration(300)
                   .attr('fill', hoverColor)
@@ -141,7 +139,6 @@ const drawMap = async () => {
                   ? store.currentTheme.colors.map.visited[0]
                   : store.currentTheme.colors.map.unvisited[0]
 
-              // ПЛАВНОЕ ЗАТУХАНИЕ
               d3.select(this)
                   .interrupt()
                   .transition()
@@ -157,7 +154,6 @@ const drawMap = async () => {
   }
 }
 
-// Слушатель смены темы
 watch(
     () => store.currentTheme?.id,
     async (newId) => {
