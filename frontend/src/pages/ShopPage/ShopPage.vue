@@ -1,8 +1,8 @@
 <template>
   <div class="w-full h-full p-12 flex flex-col gap-16 overflow-y-auto custom-scrollbar font-sans transition-colors duration-1000" :style="{ backgroundColor: store.currentTheme?.background }">
 
-    <!-- ХЕДЕР И БАЛАНС (АВИАБИЛЕТЫ) -->
-    <header class="flex justify-between items-start">
+    <!-- ХЕДЕР И БАЛАНС (МИНИ-БИЛЕТ) -->
+    <header class="flex justify-between items-center">
       <div class="flex flex-col gap-2">
         <h1 class="text-7xl font-black uppercase tracking-tighter italic text-white leading-none">
           {{ langStore.currentLang === 'ru' ? 'Магазин' : 'Style Shop' }}
@@ -10,13 +10,17 @@
         <span class="text-xs font-mono uppercase tracking-[0.5em] opacity-40 text-white">Visual Engine Marketplace</span>
       </div>
 
-      <div class="flex flex-col gap-2 items-end p-8 bg-[#18181b]/80 border border-blue-500/20 rounded-[40px] backdrop-blur-xl shadow-2xl">
-        <span class="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">
-          {{ langStore.currentLang === 'ru' ? 'Доступные билеты' : 'Available Tickets' }}
-        </span>
-        <div class="flex items-center gap-4">
-          <span class="text-5xl font-black text-white leading-none tracking-tighter">{{ userStore.balance }}</span>
-          <span class="text-3xl animate-bounce">🎫</span>
+      <!-- Кошелек в стиле билета -->
+      <div class="flex overflow-hidden rounded-2xl shadow-2xl transition-transform hover:scale-105">
+        <div class="bg-[#3b82f6] px-4 py-8 flex items-center justify-center border-r border-white/10">
+          <span class="[writing-mode:vertical-lr] rotate-180 text-[8px] font-black uppercase tracking-[0.4em] text-white/60">Tickets</span>
+        </div>
+        <div class="bg-white px-8 py-6 flex flex-col items-center justify-center gap-1">
+          <span class="text-[9px] font-black uppercase text-slate-400 tracking-widest leading-none">Balance</span>
+          <span class="text-4xl font-black text-slate-900 leading-none tracking-tighter">{{ userStore.balance }}</span>
+        </div>
+        <div class="bg-white border-l-2 border-dashed border-slate-200 px-4 py-6 flex items-center justify-center">
+          <span class="text-2xl">🎟️</span>
         </div>
       </div>
     </header>
