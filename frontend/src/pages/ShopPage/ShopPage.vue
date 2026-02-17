@@ -39,12 +39,12 @@
         <div class="bg-white px-8 py-6 flex flex-col justify-between items-end gap-3 shrink-0">
           <div class="flex flex-col items-end gap-0.5">
             <span class="text-[7px] font-black text-slate-300 uppercase leading-none">Flight</span>
-            <span class="text-xs font-black text-slate-800 leading-none tracking-tighter">TM-2025</span>
+            <span class="text-xs font-black text-slate-800 leading-none tracking-tighter">TM-{{ currentYear }}</span>
           </div>
 
           <div class="flex flex-col items-end gap-0.5">
             <span class="text-[7px] font-black text-slate-300 uppercase leading-none">Date</span>
-            <span class="text-xs font-black text-slate-800 leading-none tracking-tighter">12 MAY</span>
+            <span class="text-xs font-black text-slate-800 leading-none tracking-tighter">{{ formattedDate }}</span>
           </div>
 
           <div class="flex flex-col items-end gap-0.5">
@@ -152,6 +152,17 @@ const store = useMapStore()
 const langStore = useLangStore()
 const userStore = useUserStore()
 
+// --- ЛОГИКА ДАТЫ ДЛЯ БИЛЕТА ---
+const formattedDate = computed(() => {
+  const date = new Date()
+  const day = date.getDate()
+  const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase()
+  return `${day} ${month}`
+})
+
+const currentYear = computed(() => new Date().getFullYear())
+
+// --- ЛОГИКА ТЕМ ---
 const themesList = computed(() => {
   return Object.values(store.themes)
 })
