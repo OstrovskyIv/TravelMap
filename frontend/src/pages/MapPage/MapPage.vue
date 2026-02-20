@@ -21,6 +21,7 @@
     </div>
 
     <CountryModal v-if = "store.currentTheme" :theme="store.currentTheme" />
+    <InfoModal v-if="store.currentTheme" :theme="store.currentTheme" />
 
     <Transition
         enter-active-class="transition-all duration-700 ease-out"
@@ -46,8 +47,8 @@ import { MapRenderer } from '@/shared/lib/MapRenderer'
 import { SearchDock } from '@/shared/ui/SearchDock'
 import { WoodenLoader } from '@/shared/loaders/WoodenLoader'
 import { ClassicLoader } from '@/shared/loaders/ClassicLoader'
-// ... существующие импорты
-import { CountryModal } from '@/shared/ui/CountryModal' // Не забудь создать index.ts в папке модалки
+import { CountryModal } from '@/shared/ui/CountryModal'
+import { InfoModal } from '@/shared/ui/InfoModal'
 import { useUiStore } from '@/stores/uiStore'
 
 interface CountryProperties {
@@ -126,9 +127,12 @@ const drawMap = async () => {
           .attr('d', (d) => pathGenerator(d as d3.GeoPermissibleObjects) || '')
           .attr('stroke-linejoin', 'round')
           .on('click', () => {
-            // Вместо store.toggleCountry(id)
             store.pendingCountryId = id
-            uiStore.setCountryModal(true)
+            if (store.visited.includes(id)) {
+              uiStore.setInfoModal(true)
+            } else {
+              uiStore.setCountryModal(true)
+            }
           })
           .on('mouseover', function (this: SVGPathElement) {
             if (store.currentTheme?.id === 'classic') {

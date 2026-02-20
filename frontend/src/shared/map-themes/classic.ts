@@ -32,6 +32,14 @@ export const classic: MapTheme = {
         buttonCancelBg: 'rgba(255, 255, 255, 0.05)',
         buttonCancelText: '#a1a1aa'
     },
+    infoModal: {
+        bg: '#0c0c0e',
+        border: 'rgba(251, 191, 36, 0.3)',
+        text: '#ffffff',
+        accent: '#fbbf24',
+        overlay: 'rgba(0, 0, 0, 0.6)',
+        closeBtnBg: 'rgba(255, 255, 255, 0.05)'
+    },
     strokeWidth: 1,
     loader: {
         overlayColor: 'rgba(12, 12, 14, 0.9)',

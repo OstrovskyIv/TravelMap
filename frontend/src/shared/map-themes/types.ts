@@ -30,6 +30,14 @@ export interface MapTheme {
         buttonCancelBg: string
         buttonCancelText: string
     }
+    infoModal: {
+        bg: string
+        border: string
+        text: string
+        accent: string
+        overlay: string
+        closeBtnBg: string
+    }
     strokeWidth: number
     loader: {
         overlayColor: string
