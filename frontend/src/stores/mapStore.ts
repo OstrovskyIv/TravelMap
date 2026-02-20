@@ -24,6 +24,11 @@ export const useMapStore = defineStore('map', () => {
         }
     }
 
+    const resetVisited = () => {
+        visited.value = []
+        LocalStorage.save('visited', [])
+    }
+
     watch(visited, (newVal) => LocalStorage.save('visited', newVal), { deep: true })
 
     return {
@@ -32,6 +37,7 @@ export const useMapStore = defineStore('map', () => {
         themes,
         pendingCountryId,
         setTheme,
-        toggleCountry
+        toggleCountry,
+        resetVisited
     }
 })

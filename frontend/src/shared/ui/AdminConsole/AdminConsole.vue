@@ -151,10 +151,32 @@
 
             <!-- Общие настройки -->
             <div v-else-if="activeSection === 'general'" class="w-full h-full p-10 flex flex-col gap-8 overflow-y-auto custom-scrollbar">
-              <h3 class="text-2xl font-black uppercase tracking-tighter italic text-white">General</h3>
+              <h3 class="text-2xl font-black uppercase tracking-tighter italic text-white">
+                {{ langStore.currentLang === 'ru' ? 'Общие настройки' : 'General Settings' }}
+              </h3>
+
               <div class="p-8 bg-white/5 border border-white/10 rounded-[40px] flex flex-col gap-6 text-white shadow-xl">
-                <span class="text-[10px] font-black uppercase tracking-[0.3em] opacity-30">System Language</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] opacity-30">
+                  {{ langStore.currentLang === 'ru' ? 'Язык системы' : 'System Language' }}
+                </span>
                 <LangSwitcher :theme="store.currentTheme" />
+              </div>
+
+              <div class="p-8 bg-white/5 border border-white/10 rounded-[40px] flex flex-col gap-6 text-white shadow-xl">
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] opacity-30">
+                  {{ langStore.currentLang === 'ru' ? 'Параметры журнала' : 'Travel Log Options' }}
+                </span>
+
+                <button
+                    @click="store.resetVisited()"
+                    class="w-full py-4 rounded-2xl bg-red-600/10 border border-red-400 text-red-400 font-bold text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all outline-none border-none cursor-pointer"
+                >
+                  {{ langStore.currentLang === 'ru' ? 'Сбросить историю путешествий' : 'Reset Travel History' }}
+                </button>
+
+                <p class="text-[9px] font-medium opacity-20 uppercase tracking-widest text-center">
+                  {{ langStore.currentLang === 'ru' ? 'Внимание: действие необратимо' : 'Warning: this action is irreversible' }}
+                </p>
               </div>
             </div>
 
