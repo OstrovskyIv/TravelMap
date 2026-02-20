@@ -20,6 +20,8 @@
       <SearchDock :key="store.currentTheme?.id" class="pointer-events-auto" :theme="store.currentTheme" @select="handleCountrySelect"/>
     </div>
 
+    <CountryModal v-if = "store.currentTheme" :theme="store.currentTheme" />
+
     <Transition
         enter-active-class="transition-all duration-700 ease-out"
         enter-from-class="opacity-0 scale-105"
@@ -44,6 +46,9 @@ import { MapRenderer } from '@/shared/lib/MapRenderer'
 import { SearchDock } from '@/shared/ui/SearchDock'
 import { WoodenLoader } from '@/shared/loaders/WoodenLoader'
 import { ClassicLoader } from '@/shared/loaders/ClassicLoader'
+// ... существующие импорты
+import { CountryModal } from '@/shared/ui/CountryModal' // Не забудь создать index.ts в папке модалки
+import { useUiStore } from '@/stores/uiStore'
 
 interface CountryProperties {
   ISO_A3?: string
@@ -58,6 +63,7 @@ interface CountryFeature extends d3.ExtendedFeature<d3.GeoGeometryObjects | null
 
 const store = useMapStore()
 const langStore = useLangStore()
+const uiStore = useUiStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const isLoading = ref(false)
 const nextThemeId = ref<string | null>(null)
@@ -120,7 +126,9 @@ const drawMap = async () => {
           .attr('d', (d) => pathGenerator(d as d3.GeoPermissibleObjects) || '')
           .attr('stroke-linejoin', 'round')
           .on('click', () => {
-            store.toggleCountry(id)
+            // Вместо store.toggleCountry(id)
+            store.pendingCountryId = id
+            uiStore.setCountryModal(true)
           })
           .on('mouseover', function (this: SVGPathElement) {
             if (store.currentTheme?.id === 'classic') {
