@@ -22,6 +22,16 @@ export const classic: MapTheme = {
             activeBg: 'rgba(251, 191, 36, 0.15)'
         }
     },
+    countryModal: {
+        bg: '#1a1a1c',
+        border: '#fbbf24',
+        text: '#ffffff',
+        overlay: 'rgba(0, 0, 0, 0.8)',
+        buttonConfirmBg: '#fbbf24',
+        buttonConfirmText: '#0c0c0e',
+        buttonCancelBg: 'rgba(255, 255, 255, 0.05)',
+        buttonCancelText: '#a1a1aa'
+    },
     strokeWidth: 1,
     loader: {
         overlayColor: 'rgba(12, 12, 14, 0.9)',
