@@ -20,6 +20,16 @@ export interface MapTheme {
             activeBg: string
         }
     }
+    countryModal: {
+        bg: string
+        border: string
+        text: string
+        overlay: string
+        buttonConfirmBg: string
+        buttonConfirmText: string
+        buttonCancelBg: string
+        buttonCancelText: string
+    }
     strokeWidth: number
     loader: {
         overlayColor: string
