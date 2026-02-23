@@ -4,16 +4,8 @@
     <div ref="mapContainer" class="w-full h-full transition-opacity duration-700"></div>
 
     <!-- Виджет статистики -->
-    <div class="absolute top-12 left-12 flex flex-col gap-2 p-8 bg-[#18181b]/80 border border-[#fbbf24]/20 rounded-[40px] backdrop-blur-3xl pointer-events-none shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all">
-      <span class="text-[11px] font-black uppercase tracking-[0.4em] text-[#fbbf24]">
-        {{ langStore.currentLang === 'ru' ? 'Журнал' : 'Travel Log' }}
-      </span>
-      <div class="flex items-baseline gap-3">
-        <span class="text-5xl font-black text-white leading-none tracking-tighter">{{ store.visited.length }}</span>
-        <span class="text-[11px] text-white/40 font-bold uppercase tracking-widest">
-          {{ langStore.currentLang === 'ru' ? 'Регионы' : 'Regions' }}
-        </span>
-      </div>
+    <div class="absolute top-12 left-12 z-40 pointer-events-none">
+      <StatsWidget :theme="store.currentTheme" />
     </div>
 
     <div class="absolute bottom-12 left-1/2 -translate-x-1/2 z-40 w-full flex justify-center px-8 pointer-events-none">
@@ -42,13 +34,13 @@ import { onMounted, ref, onUnmounted, watch, nextTick } from 'vue'
 import * as d3 from 'd3'
 import { ALL_COUNTRIES } from '@/countries'
 import { useMapStore } from '@/stores/mapStore'
-import { useLangStore } from '@/stores/langStore'
 import { MapRenderer } from '@/shared/lib/MapRenderer'
 import { SearchDock } from '@/shared/ui/SearchDock'
 import { WoodenLoader } from '@/shared/loaders/WoodenLoader'
 import { ClassicLoader } from '@/shared/loaders/ClassicLoader'
 import { CountryModal } from '@/shared/ui/CountryModal'
 import { InfoModal } from '@/shared/ui/InfoModal'
+import { StatsWidget } from "@/shared/ui/StatsWidget";
 import { useUiStore } from '@/stores/uiStore'
 
 interface CountryProperties {
@@ -63,7 +55,6 @@ interface CountryFeature extends d3.ExtendedFeature<d3.GeoGeometryObjects | null
 }
 
 const store = useMapStore()
-const langStore = useLangStore()
 const uiStore = useUiStore()
 const mapContainer = ref<HTMLElement | null>(null)
 const isLoading = ref(false)
