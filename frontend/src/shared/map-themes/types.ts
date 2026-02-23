@@ -38,6 +38,13 @@ export interface MapTheme {
         overlay: string
         closeBtnBg: string
     }
+    mapTools: {
+        bg: string
+        border: string
+        accent: string
+        activeBg: string
+        btnBg: string
+    }
     strokeWidth: number
     loader: {
         overlayColor: string

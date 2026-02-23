@@ -40,6 +40,13 @@ export const classic: MapTheme = {
         overlay: 'rgba(0, 0, 0, 0.6)',
         closeBtnBg: 'rgba(255, 255, 255, 0.05)'
     },
+    mapTools: {
+        bg: 'rgba(24, 24, 27, 0.8)',
+        border: 'rgba(251, 191, 36, 0.2)',
+        accent: '#fbbf24',
+        activeBg: 'rgba(251, 191, 36, 0.2)',
+        btnBg: 'rgba(255, 255, 255, 0.05)'
+    },
     strokeWidth: 1,
     loader: {
         overlayColor: 'rgba(12, 12, 14, 0.9)',
