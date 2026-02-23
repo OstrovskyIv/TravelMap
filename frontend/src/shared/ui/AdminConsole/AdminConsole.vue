@@ -64,86 +64,146 @@
           </div>
         </aside>
 
-        <!-- Право - Контент -->
+        <!-- Право --- Контент -->
         <main class="flex-1 overflow-hidden relative flex flex-col bg-black/10">
           <Transition mode="out-in" enter-active-class="transition-all duration-300" enter-from-class="opacity-0 translate-y-2">
 
             <!-- Экран загрузки -->
             <div v-if="!activeSection" class="w-full h-full flex flex-col items-center justify-center gap-6">
-              <div class="w-10 h-10 border-2 border-white/5 border-t-white/60 rounded-full animate-spin" :style="{ borderTopColor: store.currentTheme?.colors.map.visited[0] }"></div>
-              <div class="flex flex-col items-center gap-1 opacity-40 text-center px-10 text-white font-sans">
-                <span class="text-[10px] font-black uppercase tracking-[0.3em]">System Standby</span>
-                <span class="text-[9px] font-mono italic text-white text-center">Please select a module from the sidebar</span>
+              <div
+                  class="w-10 h-10 border-2 border-white/5 border-t-white/60 rounded-full animate-spin"
+                  :style="{ borderTopColor: store.currentTheme?.colors.map.visited[0] }"
+              ></div>
+
+              <div class="flex flex-col items-center gap-2 opacity-40 text-center px-10 text-white font-sans">
+                <span class="text-[10px] font-black uppercase tracking-[0.3em]">
+                  {{ langStore.currentLang === 'ru' ? 'Система в режиме ожидания' : 'System Standby' }}
+                </span>
+
+                <span class="text-[9px] font-mono italic text-white text-center leading-relaxed max-w-[200px]">
+                  {{ langStore.currentLang === 'ru'
+                    ? 'Пожалуйста, выберите модуль на панели управления для начала работы'
+                    : 'Please select a module from the control panel to begin'
+                  }}
+                </span>
               </div>
             </div>
 
             <!-- Экономика -->
             <div v-else-if="activeSection === 'currency'" class="w-full h-full p-8 lg:p-12 flex flex-col gap-10 overflow-y-auto custom-scrollbar text-white">
 
-              <div class="w-full relative flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform hover:scale-[1.01] shrink-0 overflow-hidden rounded-3xl">
-                <div class="bg-[#3b82f6] px-8 py-4 flex justify-between items-center border-b border-white/10">
-                  <div class="flex flex-col gap-1">
-                    <span class="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">Boarding Pass</span>
-                    <span class="text-xs font-bold text-white">First Class Passenger</span>
+              <div class="w-full flex flex-col shadow-[0_30px_70px_rgba(0,0,0,0.6)] rounded-[32px] overflow-hidden transition-transform duration-500 hover:scale-[1.01] shrink-0">
+
+                <div class="bg-blue-600 px-8 py-4 flex justify-between items-center border-b border-white/10">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-[9px] font-black uppercase tracking-[0.4em] text-white/70 leading-none">
+                      {{ langStore.currentLang === 'ru' ? 'Реестр управления полетами' : 'Aviation Control Registry' }}
+                    </span>
+                    <span class="text-xs font-bold text-white leading-none">
+                      {{ langStore.currentLang === 'ru' ? 'Внутренний терминал системы v.1.0' : 'Internal System Terminal v.1.0' }}
+                    </span>
                   </div>
-                  <div class="text-2xl">✈️</div>
+                  <div class="px-3 py-1 rounded bg-black/20 border border-white/10">
+                    <span class="text-[9px] font-black text-white uppercase tracking-widest">
+                      {{ langStore.currentLang === 'ru' ? 'Админ-доступ' : 'Admin Access' }}
+                    </span>
+                  </div>
                 </div>
 
-                <div class="bg-[#f8fafc] p-8 flex justify-between items-center relative">
-                  <div class="flex flex-col gap-4">
-                    <div class="flex flex-col">
-                      <span class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Available Assets</span>
-                      <div class="flex items-baseline gap-3">
-                        <span class="text-7xl font-black text-slate-900 tracking-tighter">{{ userStore.balance }}</span>
-                        <span class="text-xl font-bold text-slate-400 uppercase">Tickets</span>
+                <div class="bg-white flex relative">
+                  <div class="bg-slate-50 px-3 py-6 flex items-center justify-center border-r border-slate-100">
+                    <span class="[writing-mode:vertical-lr] rotate-180 text-[7px] font-black uppercase tracking-[0.5em] text-slate-300">
+                      {{ langStore.currentLang === 'ru' ? 'Служебный пропуск' : 'Authority Pass' }}
+                    </span>
+                  </div>
+
+                  <div class="flex-1 p-8 flex justify-between items-center">
+                    <div class="flex flex-col gap-6 text-slate-900">
+                      <div class="flex flex-col">
+                        <span class="text-[8px] font-black uppercase text-slate-400 tracking-[0.3em] leading-none">
+                          {{ langStore.currentLang === 'ru' ? 'Общий реестр миль' : 'Total Miles Registry' }}
+                        </span>
+                        <div class="flex items-baseline gap-2">
+                          <span class="text-7xl font-black text-slate-900 leading-none tracking-tighter">{{ userStore.balance }}</span>
+                          <span class="text-xl font-black text-blue-600 uppercase italic">
+                             {{ langStore.currentLang === 'ru' ? 'Миль' : 'Miles' }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="flex flex-col gap-1.5 opacity-90">
+                        <div class="h-10 w-56 bg-[repeating-linear-gradient(90deg,#111827,#111827_2px,#fff_2px,#fff_4px)]"></div>
+                        <div class="flex justify-between w-56 px-1">
+                          <span class="text-[7px] font-mono text-slate-400 uppercase">ID: {{ userStore.userName }}</span>
+                          <span class="text-[7px] font-mono text-slate-400 uppercase italic">AUTH: 009-X</span>
+                        </div>
                       </div>
                     </div>
 
-                    <div class="flex flex-col gap-1 opacity-80">
-                      <div class="h-10 w-48 bg-[repeating-linear-gradient(90deg,#000,#000_2px,#fff_2px,#fff_4px)]"></div>
-                      <span class="text-[8px] font-mono text-slate-500 tracking-[0.5em]">023 07654 00984</span>
+                    <div class="absolute right-[28%] top-0 bottom-0 flex flex-col justify-center">
+                      <div class="absolute -top-3 -left-[9px] w-5 h-5 bg-black/10 rounded-full"></div>
+                      <div class="h-full border-l-2 border-dashed border-slate-200 mx-auto"></div>
+                      <div class="absolute -bottom-3 -left-[9px] w-5 h-5 bg-black/10 rounded-full"></div>
                     </div>
-                  </div>
 
-                  <div class="absolute right-[30%] top-0 bottom-0 border-l-2 border-dashed border-slate-300"></div>
-
-                  <div class="flex flex-col items-center gap-4 pl-10 border-l-slate-200">
-                    <div class="flex flex-col items-center">
-                      <span class="text-[8px] font-black uppercase text-slate-400">Gate</span>
-                      <span class="text-2xl font-black text-slate-900 leading-none">A-24</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                      <span class="text-[8px] font-black uppercase text-slate-400">Seat</span>
-                      <span class="text-2xl font-black text-[#3b82f6] leading-none">25B</span>
+                    <div class="flex flex-col items-center gap-6 pl-12 pr-4 text-slate-900">
+                      <div class="flex flex-col items-center gap-1">
+                        <span class="text-[8px] font-black text-slate-300 uppercase">
+                          {{ langStore.currentLang === 'ru' ? 'Статус' : 'Status' }}
+                        </span>
+                        <div class="w-12 h-12 rounded-full border-4 border-blue-500 flex items-center justify-center">
+                          <span class="text-[10px] font-black text-blue-600">VIP</span>
+                        </div>
+                      </div>
+                      <div class="flex flex-col items-center gap-1">
+                        <span class="text-[8px] font-black text-slate-300 uppercase">
+                          {{ langStore.currentLang === 'ru' ? 'Терминал' : 'Terminal' }}
+                        </span>
+                        <span class="text-xl font-black text-slate-800 tracking-tighter uppercase">CMD-1</span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <!-- Кнопка сброса -->
                 <button
                     @click="userStore.balance = 0"
-                    class="bg-slate-100 py-3 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all border-t border-slate-200 outline-none cursor-pointer border-none"
+                    class="bg-slate-50 py-4 text-[9px] font-black uppercase tracking-[0.4em] text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all border-t border-slate-100 outline-none border-none cursor-pointer"
                 >
-                  Void and Reset Current Flight Ticket Registry
+                  {{ langStore.currentLang === 'ru' ? 'Аннулировать и очистить полетные мили' : 'Terminate and Wipe Flight Credits' }}
                 </button>
               </div>
 
-              <div class="flex flex-col gap-6 w-full">
+              <div class="flex flex-col gap-6 w-full text-white">
                 <div class="p-8 bg-white/5 border border-white/10 rounded-[36px] flex flex-col gap-6 shadow-xl">
-                  <span class="text-[9px] font-black uppercase tracking-[0.3em] opacity-30 text-white leading-none">Issue New Tickets</span>
+                  <span class="text-[9px] font-black uppercase tracking-[0.3em] opacity-30 leading-none">
+                    {{ langStore.currentLang === 'ru' ? 'Быстрая инъекция активов' : 'Quick Asset Injection' }}
+                  </span>
                   <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <button @click="userStore.addBalance(100)" class="py-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 font-black text-xs uppercase hover:bg-blue-500/20 transition-all border-none outline-none cursor-pointer">+100</button>
-                    <button @click="userStore.addBalance(500)" class="py-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 font-black text-xs uppercase hover:bg-blue-500/20 transition-all border-none outline-none cursor-pointer">+500</button>
-                    <button @click="userStore.addBalance(-100)" class="py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-black text-xs uppercase hover:bg-red-500/20 transition-all border-none outline-none cursor-pointer">-100</button>
-                    <button @click="userStore.addBalance(-500)" class="py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-black text-xs uppercase hover:bg-red-500/20 transition-all border-none outline-none cursor-pointer">-500</button>
+                    <button @click="userStore.addBalance(100)" class="py-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 font-black text-xs uppercase hover:bg-blue-500/20 transition-all active:scale-95 border-none outline-none cursor-pointer">+100</button>
+                    <button @click="userStore.addBalance(500)" class="py-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400 font-black text-xs uppercase hover:bg-blue-500/20 transition-all active:scale-95 border-none outline-none cursor-pointer">+500</button>
+                    <button @click="userStore.addBalance(-100)" class="py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-black text-xs uppercase hover:bg-red-500/20 transition-all active:scale-95 border-none outline-none cursor-pointer">-100</button>
+                    <button @click="userStore.addBalance(-500)" class="py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-black text-xs uppercase hover:bg-red-500/20 transition-all active:scale-95 border-none outline-none cursor-pointer">-500</button>
                   </div>
                 </div>
 
                 <div class="p-8 bg-white/5 border border-white/10 rounded-[36px] flex flex-col gap-5 shadow-xl">
-                  <span class="text-[9px] font-black uppercase tracking-[0.3em] opacity-30 text-white font-sans leading-none">Update Ledger Manually</span>
+                  <span class="text-[9px] font-black uppercase tracking-[0.3em] opacity-30 font-sans leading-none">
+                    {{ langStore.currentLang === 'ru' ? 'Ручная перезапись реестра' : 'Manual Registry Overwrite' }}
+                  </span>
                   <div class="flex flex-col gap-3">
-                    <input v-model="customBalance" type="number" class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-sm font-bold outline-none focus:border-blue-500 transition-all text-white placeholder:opacity-30" placeholder="Count tickets..."/>
-                    <button @click="setExactBalance" class="w-full py-4 rounded-2xl bg-blue-600 text-white font-black text-xs uppercase hover:bg-blue-500 active:scale-95 transition-all border-none outline-none cursor-pointer">Sync Registry</button>
+                    <input
+                        v-model="customBalance"
+                        type="number"
+                        min="0"
+                        class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-5 text-sm font-bold outline-none focus:border-blue-500 transition-all text-white placeholder:opacity-30"
+                        :placeholder="langStore.currentLang === 'ru' ? 'Установить точный баланс...' : 'Set exact balance...'"
+                    />
+                    <button
+                        @click="setExactBalance"
+                        class="w-full py-4 rounded-2xl bg-blue-600 text-white font-black text-xs uppercase hover:bg-blue-500 active:scale-95 transition-all shadow-lg border-none outline-none cursor-pointer"
+                    >
+                      {{ langStore.currentLang === 'ru' ? 'Синхронизировать базу данных' : 'Synchronize Database' }}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -187,18 +247,24 @@
                 <div v-for="t in Object.values(store.themes)" :key="t.id" class="p-6 bg-white/5 border border-white/10 rounded-[40px] flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all group overflow-hidden">
                   <div class="flex items-center gap-6 min-w-0 flex-1">
                     <span class="w-16 h-16 rounded-[24px] bg-white/5 flex items-center justify-center text-3xl shadow-inner shrink-0 text-white">{{ t.id === 'wooden' ? '🪵' : '✨' }}</span>
+
                     <div class="flex flex-col gap-1 min-w-0">
-                      <span class="text-[15px] font-black uppercase tracking-tight text-white whitespace-nowrap overflow-hidden text-ellipsis">{{ t.name }}</span>
-                      <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-md w-fit" :class="userStore.purchasedThemes.includes(t.id) ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'">
-                        {{ userStore.purchasedThemes.includes(t.id) ? 'Owned' : 'Locked' }}
-                      </span>
+                      <div class="flex items-center gap-2.5">
+                        <div
+                            class="w-2 h-2 rounded-full shrink-0 shadow-lg transition-all duration-500"
+                            :class="userStore.purchasedThemes.includes(t.id) ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'"
+                        ></div>
+                        <span class="text-[15px] font-black uppercase tracking-tight text-white whitespace-nowrap overflow-hidden text-ellipsis">{{ t.name }}</span>
+                      </div>
                     </div>
                   </div>
+
                   <div class="flex flex-col gap-2 shrink-0 w-full md:w-auto">
                     <button v-if="userStore.purchasedThemes.includes(t.id) && t.id !== 'classic'" @click="userStore.lockTheme(t.id)" class="px-4 py-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all text-[9px] font-black uppercase whitespace-nowrap border-none outline-none cursor-pointer">Lock</button>
                     <button v-if="!userStore.purchasedThemes.includes(t.id)" @click="userStore.unlockTheme(t.id)" class="px-4 py-2.5 rounded-xl bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white transition-all text-[9px] font-black uppercase whitespace-nowrap border-none outline-none cursor-pointer">Grant</button>
                     <button @click="store.setTheme(t.id)" class="px-4 py-2.5 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all text-[9px] font-black uppercase outline-none border-none cursor-pointer">Equip</button>
                   </div>
+
                 </div>
               </div>
             </div>
