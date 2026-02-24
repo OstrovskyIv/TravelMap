@@ -1,34 +1,45 @@
 <template>
   <div class="flex flex-col gap-4 items-end">
-    <!-- Основная кнопка (Шестеренка) -->
     <button
         @click="isOpen = !isOpen"
         class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-2xl border backdrop-blur-xl outline-none cursor-pointer z-20 group"
         :style="{
         backgroundColor: theme?.mapTools.bg,
-        borderColor: isOpen ? theme?.mapTools.accent : theme?.mapTools.border,
-        color: isOpen ? theme?.mapTools.accent : '#ffffff'
+        borderColor: isOpen ? theme?.mapTools.accent : theme?.mapTools.border
       }"
     >
-      <span
-             class="text-2xl transition-transform duration-700 ease-in-out"
-          :class="{ 'rotate-180 opacity-50': isOpen }"
-      >
-        ⚙️
-      </span>
+      <div class="relative w-8 h-6 flex flex-col justify-between">
+        <div class="relative w-full h-[3px] bg-white/10 rounded-full overflow-visible">
+          <div
+              class="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all duration-500 ease-in-out border border-black/20"
+              :class="isOpen ? 'translate-x-5' : 'translate-x-0'"
+              :style="{
+              backgroundColor: isOpen ? theme?.mapTools.accent : '#ffffff',
+              boxShadow: isOpen ? `0 0 10px ${theme?.mapTools.accent}` : 'none'
+            }"
+          ></div>
+        </div>
+
+        <div class="relative w-full h-[3px] bg-white/10 rounded-full overflow-visible">
+          <div
+              class="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all duration-500 ease-in-out border border-black/20"
+              :class="isOpen ? 'translate-x-0' : 'translate-x-5'"
+              :style="{
+              backgroundColor: isOpen ? theme?.mapTools.accent : '#ffffff',
+              boxShadow: isOpen ? `0 0 10px ${theme?.mapTools.accent}` : 'none'
+            }"
+          ></div>
+        </div>
+      </div>
     </button>
 
-    <!-- Меню инструментов -->
     <Transition
         enter-active-class="transition-all duration-500 ease-out"
         enter-from-class="opacity-0 translate-y-[-20px] scale-95"
         leave-active-class="transition-all duration-400 ease-in"
         leave-to-class="opacity-0 translate-y-[-20px] scale-95"
     >
-      <div
-          v-if="isOpen"
-          class="flex flex-col gap-3 z-10"
-      >
+      <div v-if="isOpen" class="flex flex-col gap-3 z-10">
         <div
             v-for="tool in tools"
             :key="tool.id"
@@ -36,7 +47,6 @@
             @mouseenter="hoveredTool = tool.id"
             @mouseleave="hoveredTool = null"
         >
-          <!-- ПОДСКАЗКА СЛЕВА -->
           <Transition
               enter-active-class="transition-all duration-300 ease-out"
               enter-from-class="opacity-0 translate-x-4"
@@ -55,10 +65,9 @@
             </span>
           </Transition>
 
-          <!-- Мини-кнопка -->
           <button
               @click="handleToolClick(tool.id)"
-              class="w-12 h-12 rounded-xl flex items-center justify-center transition-all hover:scale-110 active:scale-90 border backdrop-blur-xl outline-none cursor-pointer"
+              class="w-12 h-12 rounded-xl flex items-center justify-center transition-all hover:scale-110 active:scale-90 border backdrop-blur-xl outline-none cursor-pointer shadow-lg"
               :style="{
               backgroundColor: (tool.id === 'labels' && mapStore.showLabels) ? theme?.mapTools.activeBg : theme?.mapTools.bg,
               borderColor: (tool.id === 'labels' && mapStore.showLabels) ? theme?.mapTools.accent : theme?.mapTools.border,
@@ -85,6 +94,7 @@ defineProps<{
 
 const langStore = useLangStore()
 const mapStore = useMapStore()
+
 const isOpen = ref(false)
 const hoveredTool = ref<string | null>(null)
 
@@ -100,3 +110,9 @@ const handleToolClick = (id: string) => {
   }
 }
 </script>
+
+<style scoped>
+.transition-all {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+</style>
