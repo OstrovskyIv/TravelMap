@@ -1,2 +1,0 @@
-# TravelMap
-my personal startup
