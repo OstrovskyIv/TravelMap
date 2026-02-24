@@ -1,5 +1,3 @@
----
-
 # 🌍 Traveler Atlas: Elite Navigation Engine
 
 > [!WARNING]
