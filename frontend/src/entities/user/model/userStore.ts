@@ -1,13 +1,9 @@
 import { defineStore } from 'pinia'
-import {
-    ref,
-    watch
-} from 'vue'
-import { LocalStorage } from '@shared/lib/LocalStorage'
+import { ref } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
-    const balance = ref<number>(Number(LocalStorage.load<number>('user_balance')) || 0)
-    const purchasedThemes = ref<string[]>(LocalStorage.load<string[]>('purchased_themes') || ['classic'])
+    const balance = ref<number>(0)
+    const purchasedThemes = ref<string[]>(['classic'])
     const isAdmin = ref(true)
     const userName = ref('Ivan Admin')
 
@@ -18,7 +14,7 @@ export const useUserStore = defineStore('user', () => {
 
     const lockTheme = (themeId: string) => {
         if (themeId === 'classic') return
-        purchasedThemes.value = [...purchasedThemes.value.filter(id => id !== themeId)]
+        purchasedThemes.value = purchasedThemes.value.filter(id => id !== themeId)
     }
 
     const unlockTheme = (themeId: string) => {
@@ -37,17 +33,6 @@ export const useUserStore = defineStore('user', () => {
         return false
     }
 
-    watch(
-        balance,
-        (val) => LocalStorage.save('user_balance', val)
-    )
-
-    watch(
-        purchasedThemes,
-        (val) => LocalStorage.save('purchased_themes', val),
-        { deep: true }
-    )
-
     return {
         balance,
         purchasedThemes,
@@ -58,4 +43,6 @@ export const useUserStore = defineStore('user', () => {
         lockTheme,
         unlockTheme
     }
+}, {
+    persist: true // Авто-сохранение включено
 })
