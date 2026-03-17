@@ -32,9 +32,9 @@
 </template>
 
 <script setup lang="ts">
-import { useMapStore } from '@/stores/mapStore'
-import { useLangStore } from '@/stores/langStore'
-import { LangSwitcher } from '@/shared/ui/LangSwitcher'
+import { useMapStore } from '@entities/map/model/mapStore'
+import { useLangStore } from "@features/lang-switcher/model/langStore";
+import { LangSwitcher } from "@features/lang-switcher";
 
 const store = useMapStore()
 const langStore = useLangStore()

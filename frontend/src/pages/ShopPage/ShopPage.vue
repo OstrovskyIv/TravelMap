@@ -144,9 +144,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMapStore } from '@/stores/mapStore'
-import { useLangStore } from '@/stores/langStore'
-import { useUserStore } from '@/stores/userStore'
+import { useMapStore } from '@entities/map/model/mapStore'
+import { useLangStore } from '@features/lang-switcher/model/langStore'
+import { useUserStore } from '@entities/user/model/userStore'
 
 const store = useMapStore()
 const langStore = useLangStore()

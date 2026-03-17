@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import type { MapTheme } from '@/shared/map-themes/types'
+import type { MapTheme } from '@entities/map/model/types'
 
 interface CountryFeature {
     properties: {
