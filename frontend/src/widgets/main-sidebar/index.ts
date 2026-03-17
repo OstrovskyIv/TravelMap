@@ -1,2 +1,1 @@
-import MainSidebar from './MainSidebar.vue'
-export { MainSidebar }
+export { default as MainSidebar } from './MainSidebar.vue'

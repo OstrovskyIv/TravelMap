@@ -1,2 +1,1 @@
-import AdminConsole from './AdminConsole.vue'
-export { AdminConsole }
+export { default as AdminConsole } from './AdminConsole.vue'

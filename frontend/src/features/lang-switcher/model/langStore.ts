@@ -1,16 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue' // Удалили watch
+import { ref } from 'vue'
 
 export const useLangStore = defineStore('lang', () => {
-    const currentLang = ref(localStorage.getItem('lang') || 'ru')
-
-    const setLang = (lang: string) => {
-        currentLang.value = lang
-        localStorage.setItem('lang', lang)
-    }
-
-    return {
-        currentLang,
-        setLang
-    }
-})
+    const currentLang = ref('ru')
+    const setLang = (lang: string) => { currentLang.value = lang }
+    return { currentLang, setLang }
+}, { persist: true })
