@@ -6,7 +6,7 @@
       leave-to-class="opacity-0 scale-95"
   >
     <div
-        v-if="uiStore.isInfoModalOpen"
+        v-if="uiStore.isInfoModalOpen && countryData"
         class="fixed inset-0 z-[110] flex items-center justify-center p-12 backdrop-blur-2xl"
         :style="{ backgroundColor: theme?.infoModal.overlay }"
         @click.self="close"
@@ -15,59 +15,56 @@
           class="w-full h-full max-w-[1500px] max-h-[850px] flex overflow-hidden rounded-[60px] border shadow-[0_60px_150px_rgba(0,0,0,0.9)] relative"
           :style="{ backgroundColor: theme?.infoModal.bg, borderColor: theme?.infoModal.border }"
       >
+        <!-- Левый блок -->
         <div class="flex-1 relative bg-black/40 overflow-hidden border-r border-white/5">
           <div ref="miniMapContainer" class="w-full h-full"></div>
           <div class="absolute bottom-12 left-12 flex flex-col gap-1 opacity-20 text-white font-mono text-[10px] tracking-[0.5em]">
-            <span class="font-black text-[#fbbf24]">SCANNER_MODE: GEOPOSITION_ACTIVE</span>
-            <span>SELECTED_ID: {{ mapStore.pendingCountryId }}</span>
+            <span class="font-black text-[#fbbf24]">SCANNER_MODE: ACTIVE</span>
+            <span>ID: {{ mapStore.pendingCountryId }}</span>
           </div>
         </div>
 
+        <!-- Правый блок -->
         <div class="w-[550px] flex flex-col gap-12 p-16 overflow-y-auto custom-scrollbar">
           <div class="flex flex-col gap-4">
             <div class="flex justify-between items-start">
               <span class="text-[10px] font-black uppercase tracking-[0.7em]" :style="{ color: theme?.infoModal.accent }">
                 {{ langStore.currentLang === 'ru' ? 'Сектор разведки' : 'Sector Intelligence' }}
               </span>
-              <button @click="close" class="w-12 h-12 rounded-2xl bg-white/5 hover:bg-red-500 transition-all flex items-center justify-center text-white border-none outline-none cursor-pointer">✕</button>
+              <button @click="close" class="w-12 h-12 rounded-2xl bg-white/5 hover:bg-red-500 transition-all flex items-center justify-center text-white border-none cursor-pointer">✕</button>
             </div>
             <h2 class="text-6xl font-black text-white uppercase tracking-tighter italic leading-none">
-              {{ countryData?.names[langStore.currentLang as 'ru' | 'en'] }}
+              {{ countryData.names[langStore.currentLang as 'ru' | 'en'] }}
             </h2>
           </div>
 
+          <!-- Статистика -->
           <div class="grid grid-cols-3 gap-4">
-            <div v-for="(val, key) in countryData?.stats" :key="key" class="flex flex-col gap-1 p-5 bg-white/5 rounded-[24px] border border-white/5">
-              <span class="text-[8px] uppercase opacity-30 font-black text-white tracking-widest">{{ key }}</span>
-              <span class="text-xs font-bold text-white uppercase tracking-tighter">{{ val }}</span>
+            <div v-for="(val, key) in countryData.stats" :key="key" class="flex flex-col gap-1 p-5 bg-white/5 rounded-[24px] border border-white/5">
+              <span class="text-[8px] uppercase opacity-30 font-black text-white">{{ key }}</span>
+              <span class="text-xs font-bold text-white uppercase">{{ val }}</span>
             </div>
           </div>
 
+          <!-- Описание -->
           <div class="flex flex-col gap-4">
-            <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 italic">Briefing</h3>
-            <p class="text-base text-white/60 leading-relaxed font-medium italic">
-              {{ countryData?.description[langStore.currentLang as 'ru' | 'en'] }}
+            <h3 class="text-[10px] font-black uppercase opacity-30 italic">Briefing</h3>
+            <p class="text-base text-white/60 leading-relaxed italic">
+              {{ countryData.description[langStore.currentLang as 'ru' | 'en'] }}
             </p>
           </div>
 
+          <!-- Города -->
           <div class="flex flex-col gap-6">
-            <div class="flex items-center justify-between border-b border-white/10 pb-4">
-              <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-white">
-                {{ langStore.currentLang === 'ru' ? 'Активные узлы' : 'Active Nodes' }}
-              </h3>
-            </div>
+            <h3 class="text-[10px] font-black uppercase text-white">{{ langStore.currentLang === 'ru' ? 'Активные узлы' : 'Active Nodes' }}</h3>
             <div class="flex flex-col gap-2">
-              <div v-for="city in countryData?.cities" :key="city.id" class="group flex items-center justify-between p-6 rounded-[28px] bg-white/[0.02] border border-white/5 hover:border-[#fbbf24]/40 transition-all cursor-pointer" @mouseenter="highlightCity(city.id)" @mouseleave="highlightCity(null)">
-                <div class="flex flex-col gap-1">
-                  <span class="text-sm font-black text-white opacity-40 group-hover:opacity-100 group-hover:text-[#fbbf24] transition-all uppercase tracking-widest">
-                    <!-- ИСПРАВЛЕНО: добавлено as 'ru' | 'en' -->
+              <div v-for="city in countryData.cities" :key="city.id" class="group flex items-center justify-between p-6 rounded-[28px] bg-white/[0.02] border border-white/5 hover:border-[#fbbf24]/40 transition-all cursor-pointer" @mouseenter="highlightCity(city.id)" @mouseleave="highlightCity(null)">
+                <div class="flex flex-col">
+                  <span class="text-sm font-black text-white opacity-40 group-hover:opacity-100 group-hover:text-[#fbbf24] uppercase">
                     {{ city.names[langStore.currentLang as 'ru' | 'en'] }}
                   </span>
-                  <span class="text-[8px] font-mono text-white/10 group-hover:text-white/30 tracking-tighter">
-                    LAT: {{ city.coords.lat }} / LNG: {{ city.coords.lng }}
-                  </span>
                 </div>
-                <span v-if="city.isCapital" class="text-[7px] font-black text-black bg-[#fbbf24] px-2 py-0.5 rounded-md uppercase tracking-tighter">Capital</span>
+                <span v-if="city.isCapital" class="text-[7px] font-black text-black bg-[#fbbf24] px-2 py-0.5 rounded-md uppercase">Capital</span>
               </div>
             </div>
           </div>
@@ -78,11 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
 import * as d3 from 'd3'
-import { useUiStore } from '@shared/lib/uiStore'
-import { useMapStore } from '@entities/map/model/mapStore'
-import { useLangStore } from '@features/lang-switcher/model/langStore'
 import { ALL_COUNTRIES } from '@entities/country/model'
 import type { MapTheme } from '@entities/map/model/types'
 
@@ -92,7 +85,10 @@ const mapStore = useMapStore()
 const langStore = useLangStore()
 const miniMapContainer = ref<HTMLElement | null>(null)
 
-const countryData = computed(() => ALL_COUNTRIES.find(c => c.id === mapStore.pendingCountryId))
+const countryData = computed(() => {
+  if (!mapStore.pendingCountryId) return null
+  return ALL_COUNTRIES.find(c => c.id === mapStore.pendingCountryId) || null
+})
 
 const drawMiniMap = async () => {
   if (!miniMapContainer.value || !mapStore.pendingCountryId) return
@@ -114,13 +110,7 @@ const drawMiniMap = async () => {
     const svg = container.append('svg').attr('width', width).attr('height', height)
     const g = svg.append('g').attr('transform', 'translate(75, 75)')
 
-    g.append('path')
-        .datum(feature)
-        .attr('d', pathGenerator as any)
-        .attr('fill', 'rgba(255,255,255,0.03)')
-        .attr('stroke', props.theme.colors.ui.accent)
-        .attr('stroke-width', 1.5)
-        .attr('opacity', 0.5)
+    g.append('path').datum(feature).attr('d', pathGenerator as any).attr('fill', 'rgba(255,255,255,0.03)').attr('stroke', props.theme.colors.ui.accent).attr('stroke-width', 1.5).attr('opacity', 0.5)
 
     if (countryData.value?.cities) {
       const citiesGroup = g.append('g')

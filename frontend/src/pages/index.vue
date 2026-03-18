@@ -9,12 +9,17 @@
     <div
         v-show="store.showLabels && hoveredCountryName"
         class="fixed pointer-events-none z-[1000] flex flex-col gap-1 px-5 py-3 backdrop-blur-2xl border rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
-        :style="{ left: mousePos.x + 25 + 'px', top: mousePos.y - 40 + 'px', backgroundColor: 'rgba(12, 12, 14, 0.98)', borderColor: store.currentTheme?.colors.ui.accent + '80' }"
+        :style="{
+          left: mousePos.x + 25 + 'px',
+          top: mousePos.y - 40 + 'px',
+          backgroundColor: 'rgba(12, 12, 14, 0.98)',
+          borderColor: store.currentTheme?.colors.ui.accent + '80'
+        }"
     >
       <span class="text-[9px] font-black uppercase tracking-[0.4em] opacity-40" :style="{ color: store.currentTheme?.colors.ui.accent }">
         {{ langStore.currentLang === 'ru' ? 'Объект' : 'Target' }}
       </span>
-      <span class="text-base font-black uppercase tracking-widest text-white italic leading-none mt-1">
+      <span class="text-base font-black uppercase tracking-widest text-white italic mt-1 leading-none">
         {{ hoveredCountryName }}
       </span>
     </div>
@@ -29,11 +34,18 @@
       <SearchDock :key="store.currentTheme?.id" class="pointer-events-auto" :theme="store.currentTheme" @select="store.toggleCountry" />
     </div>
 
-    <CountryModal v-if="store.currentTheme" :theme="store.currentTheme" />
-    <InfoModal v-if="store.currentTheme" :theme="store.currentTheme" />
+    <template v-if="store.currentTheme">
+      <CountryModal :theme="store.currentTheme" />
+      <InfoModal :theme="store.currentTheme" />
+    </template>
 
-    <Transition enter-active-class="transition-all duration-700 ease-out" enter-from-class="opacity-0 scale-105" leave-to-class="opacity-0 scale-95" leave-active-class="transition-all duration-700 ease-in">
-      <div v-if="isLoading || store.isDataLoading" class="absolute inset-0 z-[100]">
+    <Transition
+        enter-active-class="transition-all duration-700 ease-out"
+        enter-from-class="opacity-0 scale-105"
+        leave-to-class="opacity-0 scale-95"
+        leave-active-class="transition-all duration-700 ease-in"
+    >
+      <div v-if="isLoading" class="absolute inset-0 z-[100]">
         <WoodenLoader v-if="nextThemeId === 'wooden'" />
         <ClassicLoader v-else />
       </div>
@@ -62,7 +74,8 @@ const handleHover = (feature: CountryFeature | null) => {
   if (!feature || !store.showLabels) { hoveredCountryName.value = null; return }
   const id = feature.properties.ISO_A3 || feature.properties.iso_a3
   const country = ALL_COUNTRIES.find(c => c.id === id)
-  hoveredCountryName.value = country ? country.names[langStore.currentLang as 'ru' | 'en'] : (id as string)
+  const lang = langStore.currentLang as 'ru' | 'en'
+  hoveredCountryName.value = country ? country.names[lang] : (id as string)
 }
 
 const handleClick = (id: string) => {
@@ -87,17 +100,33 @@ const drawMap = async () => {
       onCountryClick: handleClick,
       onCountryHover: handleHover
     })
-  } catch (e) { console.error('Render failed:', e) }
+  } catch (e) {
+    console.error('Map Draw Failed:', e)
+  }
 }
 
-watch(() => store.currentTheme?.id, async (newId) => {
-  if (!newId) return
-  nextThemeId.value = newId; isLoading.value = true
-  setTimeout(async () => {
-    await nextTick(); await drawMap()
-    setTimeout(() => { isLoading.value = false; nextThemeId.value = null }, 1000)
-  }, 1000)
-})
+watch(
+    () => store.currentTheme?.id,
+    async (newId, oldId) => {
+      if (!oldId) {
+        await nextTick()
+        await drawMap()
+        return
+      }
+
+      nextThemeId.value = newId || null
+      isLoading.value = true
+
+      setTimeout(async () => {
+        await nextTick()
+        await drawMap()
+        setTimeout(() => {
+          isLoading.value = false
+          nextThemeId.value = null
+        }, 1000)
+      }, 1000)
+    }
+)
 
 watch(() => store.visited.length, () => {
   const svg = d3.select(mapContainer.value).select<SVGSVGElement>('svg')
@@ -106,6 +135,20 @@ watch(() => store.visited.length, () => {
   }
 })
 
-onMounted(() => { setTimeout(drawMap, 50); window.addEventListener('resize', drawMap) })
-onUnmounted(() => window.removeEventListener('resize', drawMap))
+onMounted(() => {
+  setTimeout(drawMap, 50)
+  window.addEventListener('resize', drawMap)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', drawMap)
+  uiStore.setInfoModal(false)
+  uiStore.setCountryModal(false)
+})
 </script>
+
+<style scoped>
+.fixed {
+  will-change: left, top;
+}
+</style>
