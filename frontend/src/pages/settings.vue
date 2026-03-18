@@ -8,7 +8,6 @@
     </header>
 
     <div class="flex flex-col gap-10 max-w-2xl">
-      <!-- КАРТОЧКА ЛОКАЛИЗАЦИИ -->
       <section class="flex flex-col gap-8 p-12 bg-white/[0.03] border border-white/5 rounded-[56px] backdrop-blur-3xl shadow-2xl transition-all">
         <header class="flex items-center gap-6">
           <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-2xl shadow-inner">🌍</div>

@@ -32,7 +32,6 @@
               <button @click="close" class="w-12 h-12 rounded-2xl bg-white/5 hover:bg-red-500 transition-all flex items-center justify-center text-white border-none outline-none cursor-pointer">✕</button>
             </div>
             <h2 class="text-6xl font-black text-white uppercase tracking-tighter italic leading-none">
-              <!-- ИСПРАВЛЕНО: добавлено as 'ru' | 'en' -->
               {{ countryData?.names[langStore.currentLang as 'ru' | 'en'] }}
             </h2>
           </div>
@@ -47,7 +46,6 @@
           <div class="flex flex-col gap-4">
             <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 italic">Briefing</h3>
             <p class="text-base text-white/60 leading-relaxed font-medium italic">
-              <!-- ИСПРАВЛЕНО: добавлено as 'ru' | 'en' -->
               {{ countryData?.description[langStore.currentLang as 'ru' | 'en'] }}
             </p>
           </div>
@@ -102,9 +100,7 @@ const drawMiniMap = async () => {
   container.selectAll('*').remove()
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const worldData = await d3.json('/data/custom.geo.json') as any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const feature = worldData.features.find((f: any) =>
         (f.properties.ISO_A3 || f.properties.iso_a3) === mapStore.pendingCountryId
     )
@@ -112,7 +108,6 @@ const drawMiniMap = async () => {
 
     const width = miniMapContainer.value.clientWidth
     const height = miniMapContainer.value.clientHeight
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const projection = d3.geoMercator().fitSize([width - 150, height - 150], feature as any)
     const pathGenerator = d3.geoPath().projection(projection)
 
@@ -121,7 +116,6 @@ const drawMiniMap = async () => {
 
     g.append('path')
         .datum(feature)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .attr('d', pathGenerator as any)
         .attr('fill', 'rgba(255,255,255,0.03)')
         .attr('stroke', props.theme.colors.ui.accent)
@@ -130,7 +124,6 @@ const drawMiniMap = async () => {
 
     if (countryData.value?.cities) {
       const citiesGroup = g.append('g')
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       countryData.value.cities.forEach((city: any) => {
         const [x, y] = projection([city.coords.lng, city.coords.lat]) || [0, 0]
         const node = citiesGroup.append('g').attr('class', `city-node city-${city.id}`).attr('transform', `translate(${x}, ${y})`)

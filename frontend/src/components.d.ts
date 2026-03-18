@@ -11,9 +11,11 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AdminConsole: typeof import('./features/admin-console/AdminConsole.vue')['default']
+    AdminConsole: typeof import('./widgets/admin-console/AdminConsole.vue')['default']
+    BalanceTicket: typeof import('./entities/user/ui/BalanceTicket.vue')['default']
     ClassicLoader: typeof import('./shared/loaders/ClassicLoader/ClassicLoader.vue')['default']
     CountryModal: typeof import('./entities/country/ui/CountryModal.vue')['default']
+    EconomyTab: typeof import('./widgets/admin-console/ui/EconomyTab.vue')['default']
     InfoModal: typeof import('./shared/ui/info-modal/InfoModal.vue')['default']
     LangSwitcher: typeof import('./features/lang-switcher/LangSwitcher.vue')['default']
     MainSidebar: typeof import('./widgets/main-sidebar/MainSidebar.vue')['default']
@@ -22,6 +24,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SearchDock: typeof import('./widgets/search-dock/SearchDock.vue')['default']
     StatsWidget: typeof import('./widgets/stats-widget/StatsWidget.vue')['default']
+    ThemesTab: typeof import('./widgets/admin-console/ui/ThemesTab.vue')['default']
     WoodenLoader: typeof import('./shared/loaders/WoodenLoader/WoodenLoader.vue')['default']
   }
 }

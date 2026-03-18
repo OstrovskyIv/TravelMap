@@ -17,28 +17,28 @@
             <span class="text-[10px] font-bold uppercase tracking-tight text-white/40 leading-none">
               {{ langStore.currentLang === 'ru' ? 'Карта путешественника' : "Traveler's Atlas" }}
             </span>
-            <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-[#fbbf24]/10 border border-[#fbbf24]/20 w-fit shrink-0 overflow-hidden">
-              <div class="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse shrink-0"></div>
-              <span class="text-[8px] font-black uppercase tracking-widest text-[#fbbf24] whitespace-nowrap">
-                {{ langStore.currentLang === 'ru' ? 'Версия: СНГ' : 'Edition: CIS' }}
-              </span>
-            </div>
           </div>
-          <button @click="ui.toggleSidebar" class="shrink-0 group w-11 h-11 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all outline-none border-none cursor-pointer">
+          <button @click="ui.toggleSidebar" class="shrink-0 group w-11 h-11 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-white/10 border-none cursor-pointer outline-none transition-all">
             <span class="text-xs transition-transform group-hover:-translate-x-0.5 text-white/40">◀</span>
           </button>
         </div>
       </header>
 
       <nav class="flex flex-col gap-3 font-sans text-white">
-        <RouterLink v-for="item in menuItems" :key="item.id" :to="item.path" class="group flex items-center gap-5 p-5 rounded-[24px] transition-all duration-300 hover:translate-x-1 active:scale-95 border border-transparent shadow-sm" :style="$route.name === item.id ? { backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' } : {}">
-          <span class="text-2xl filter drop-shadow-md group-hover:scale-110 transition-transform">{{ item.icon }}</span>
-          <span class="text-[13px] font-black tracking-widest uppercase transition-colors" :style="{ color: $route.name === item.id ? '#fbbf24' : '#a1a1aa' }">
+        <RouterLink
+            v-for="item in menuItems"
+            :key="item.id"
+            :to="item.path"
+            class="group flex items-center gap-5 p-5 rounded-[24px] transition-all duration-300 hover:translate-x-1 active:scale-95 border border-transparent"
+            :style="route.name === item.id ? { backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' } : {}"
+        >
+          <span class="text-2xl group-hover:scale-110 transition-transform">{{ item.icon }}</span>
+          <span class="text-[13px] font-black tracking-widest uppercase transition-colors" :style="{ color: route.name === item.id ? '#fbbf24' : '#a1a1aa' }">
             {{ langStore.currentLang === 'ru' ? item.nameRu : item.nameEn }}
           </span>
         </RouterLink>
 
-        <button v-if="userStore.isAdmin" @click="ui.toggleAdminConsole" class="group flex items-center gap-5 p-5 rounded-[24px] transition-all duration-300 hover:translate-x-1 border border-dashed border-white/10 bg-transparent outline-none text-left cursor-pointer" :class="{ 'bg-[#fbbf24]/10 border-[#fbbf24]/30': ui.isAdminConsoleOpen }">
+        <button v-if="userStore.isAdmin" @click="ui.toggleAdminConsole" class="group flex items-center gap-5 p-5 rounded-[24px] transition-all duration-300 border border-dashed border-white/10 bg-transparent outline-none cursor-pointer" :class="{ 'bg-[#fbbf24]/10 border-[#fbbf24]/30': ui.isAdminConsoleOpen }">
           <span class="text-2xl opacity-40 group-hover:opacity-100 transition-opacity">⚙️</span>
           <span class="text-[13px] font-black uppercase tracking-widest transition-colors" :style="{ color: ui.isAdminConsoleOpen ? '#fbbf24' : '#a1a1aa' }">
              {{ langStore.currentLang === 'ru' ? 'Консоль' : 'Admin Console' }}
@@ -49,16 +49,14 @@
       <div class="flex-1"></div>
 
       <section class="flex flex-col gap-6">
-        <StatsWidget :theme="store.currentTheme" />
-
-        <!-- Блок профиля -->
+        <StatsWidget :theme="mapStore.currentTheme" />
         <div class="flex items-center gap-5 p-3 group cursor-pointer border border-transparent hover:bg-white/5 rounded-[28px] transition-all">
-          <div class="w-14 h-14 rounded-[20px] shadow-xl flex items-center justify-center text-[#18181b] font-black text-lg transition-transform group-hover:scale-105 bg-[#fbbf24]">
+          <div class="w-14 h-14 rounded-[20px] shadow-xl flex items-center justify-center text-[#18181b] font-black text-lg bg-[#fbbf24]">
             {{ userStore.userName.charAt(0) }}
           </div>
           <div class="flex flex-col gap-0.5">
-            <span class="text-sm font-black tracking-tight text-white">{{ userStore.userName }}</span>
-            <span class="text-[9px] uppercase tracking-widest opacity-30 font-mono text-white leading-none">Master Navigator</span>
+            <span class="text-sm font-black text-white">{{ userStore.userName }}</span>
+            <span class="text-[9px] uppercase tracking-widest opacity-30 font-mono text-white">Navigator</span>
           </div>
         </div>
       </section>
@@ -67,26 +65,15 @@
 </template>
 
 <script setup lang="ts">
-import { useMapStore } from '@entities/map/model/mapStore'
-import { useLangStore } from '@features/lang-switcher/model/langStore'
-import { useUiStore } from '@shared/lib/uiStore'
-import { useUserStore } from '@entities/user/model/userStore'
-import { StatsWidget } from '@widgets/stats-widget' // Импортируем виджет
-import { RouterLink, useRoute } from 'vue-router'
-import type { MapTheme } from '@entities/map/model/types'
-
-defineProps<{ theme: MapTheme | undefined }>()
-
-const store = useMapStore()
+const mapStore = useMapStore()
 const langStore = useLangStore()
 const userStore = useUserStore()
 const ui = useUiStore()
-const $route = useRoute()
+const route = useRoute()
 
 const menuItems = [
   { id: 'home', path: '/', icon: '🌍', nameRu: 'Атлас', nameEn: 'Atlas' },
   { id: 'shop', path: '/shop', icon: '💎', nameRu: 'Магазин', nameEn: 'Shop' },
-  { id: 'stats', path: '/stats', icon: '📊', nameRu: 'Инфо', nameEn: 'Stats' },
   { id: 'settings', path: '/settings', icon: '🔮', nameRu: 'Опции', nameEn: 'Settings' }
 ]
 </script>

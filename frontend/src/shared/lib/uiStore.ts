@@ -2,13 +2,13 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useUiStore = defineStore('ui', () => {
-    // Состояния видимости окон
+
     const isSidebarOpen = ref(true)
     const isAdminConsoleOpen = ref(false)
     const isCountryModalOpen = ref(false)
     const isInfoModalOpen = ref(false)
 
-    // Функции переключения (Toggles)
+
     const toggleSidebar = () => {
         isSidebarOpen.value = !isSidebarOpen.value
     }
@@ -17,7 +17,7 @@ export const useUiStore = defineStore('ui', () => {
         isAdminConsoleOpen.value = !isAdminConsoleOpen.value
     }
 
-    // Функции установки (Setters)
+
     const setCountryModal = (val: boolean) => {
         isCountryModalOpen.value = val
     }

@@ -10,7 +10,7 @@
         <div v-for="country in filteredCountries" :key="country.id" @click="selectCountry(country.id)" class="flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 group active:scale-[0.97]" :class="theme?.id === 'wooden' ? 'hover:bg-[#2b1a10]/5' : 'hover:bg-white/5'">
           <div class="flex flex-col gap-0.5">
             <span class="text-sm font-bold tracking-tight" :style="{ color: theme?.searchDock.text }">
-              {{ country.names[langStore.currentLang] }}
+              {{ country.names[langStore.currentLang as 'ru' | 'en'] }}
             </span>
             <span class="text-[9px] uppercase tracking-widest opacity-40 font-mono" :style="{ color: theme?.searchDock.text }">
               {{ langStore.currentLang === 'ru' ? 'Профиль территории' : 'Territory Profile' }}
@@ -21,15 +21,14 @@
       </div>
     </Transition>
 
-    <!-- Панель ввода -->
     <div class="group relative flex items-center gap-4 p-2 border backdrop-blur-2xl rounded-[28px] transition-all duration-500" :class="isFocused ? 'shadow-2xl scale-[1.02]' : 'shadow-lg'"
-        :style="{
+         :style="{
         backgroundColor: theme?.searchDock.bg,
         borderColor: isFocused ? theme?.searchDock.accent : theme?.searchDock.border,
         boxShadow: isFocused ? `0 0 25px ${theme?.searchDock.glow}` : 'none'
       }">
       <div class="flex items-center justify-center w-12 h-12 rounded-[20px] transition-all duration-500" :style="{ backgroundColor: theme?.searchDock.iconBg }">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" :stroke="theme?.searchDock.accent" class="w-5 h-5 transition-colors duration-500">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" :stroke="theme?.searchDock.accent" class="w-5 h-5">
           <g stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -44,28 +43,15 @@
           @keydown.esc="handleEscape"
           type="text"
           :placeholder="langStore.currentLang === 'ru' ? 'Поиск территорий...' : 'Search territories...'"
-          class="flex-1 bg-transparent border-none outline-none text-[15px] font-bold tracking-tight pr-4"
+          class="flex-1 bg-transparent border-none outline-none text-[15px] font-bold tracking-tight pr-4 text-white"
           :style="{ color: theme?.searchDock.text }"
       />
-
-      <Transition enter-active-class="transition-opacity" enter-from-class="opacity-0" leave-to-class="opacity-0">
-        <button v-if="searchQuery" @click="searchQuery = ''" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/10 transition-colors pr-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" :stroke="theme?.searchDock.text" class="w-4 h-4 opacity-30">
-            <g stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </g>
-          </svg>
-        </button>
-      </Transition>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import { ALL_COUNTRIES } from '@entities/country/model'
-import { useLangStore } from '@features/lang-switcher/model/langStore'
 import type { MapTheme } from '@entities/map/model/types'
 
 defineProps<{ theme: MapTheme | undefined }>()
@@ -92,17 +78,7 @@ const selectCountry = (id: string) => {
 }
 
 const handleEscape = () => {
-searchQuery.value = ''
-searchInput.value?.blur()
+  searchQuery.value = ''
+  searchInput.value?.blur()
 }
 </script>
-
-<style scoped>
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-}
-</style>

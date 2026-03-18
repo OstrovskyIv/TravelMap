@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import * as d3 from 'd3'
 import { MAP_THEMES, type MapTheme } from '@entities/map/model'
+import { ALL_COUNTRIES } from '@entities/country/model'
+import type { CountryFeature } from '@shared/lib/MapRenderer'
 
 export const useMapStore = defineStore('map', () => {
     const visited = ref<string[]>([])
@@ -8,8 +11,28 @@ export const useMapStore = defineStore('map', () => {
     const pendingCountryId = ref<string | null>(null)
     const showLabels = ref(false)
 
+    // Данные карты
+    const mapFeatures = ref<CountryFeature[]>([])
+    const isDataLoading = ref(false)
+
     const themes = ref<Record<string, MapTheme>>({ ...MAP_THEMES })
     const currentTheme = computed(() => themes.value[currentThemeId.value] || themes.value.classic)
+
+    const loadMapData = async () => {
+        if (mapFeatures.value.length > 0) return
+        isDataLoading.value = true
+        try {
+            const worldData = await d3.json('/data/custom.geo.json') as any
+            mapFeatures.value = worldData.features.filter((f: any) => {
+                const id = f.properties.ISO_A3 || f.properties.iso_a3
+                return !!id && ALL_COUNTRIES.some(c => c.id === id)
+            })
+        } catch (e) {
+            console.error('Failed to load map data:', e)
+        } finally {
+            isDataLoading.value = false
+        }
+    }
 
     const toggleCountry = (id: string) => {
         const index = visited.value.indexOf(id)
@@ -18,9 +41,7 @@ export const useMapStore = defineStore('map', () => {
     }
 
     const setTheme = (themeId: string) => {
-        if (themes.value[themeId]) {
-            currentThemeId.value = themeId
-        }
+        if (themes.value[themeId]) currentThemeId.value = themeId
     }
 
     const resetVisited = () => {
@@ -28,15 +49,12 @@ export const useMapStore = defineStore('map', () => {
     }
 
     return {
-        visited,
-        currentTheme,
-        themes,
-        pendingCountryId,
-        showLabels,
-        setTheme,
-        toggleCountry,
-        resetVisited
+        visited, currentThemeId, currentTheme, themes,
+        pendingCountryId, showLabels, mapFeatures, isDataLoading,
+        loadMapData, setTheme, toggleCountry, resetVisited
     }
 }, {
-    persist: true // Авто-сохранение включено
+    persist: {
+        pick: ['visited', 'currentThemeId', 'showLabels']
+    }
 })

@@ -38,12 +38,6 @@
 
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { MainSidebar } from '@widgets/main-sidebar'
-import { AdminConsole } from '@features/admin-console'
-import { useMapStore } from '@entities/map/model/mapStore'
-import { useUiStore } from '@shared/lib/uiStore'
-import { useLangStore } from '@features/lang-switcher/model/langStore'
-
 const mapStore = useMapStore()
 const uiStore = useUiStore()
 const langStore = useLangStore()
