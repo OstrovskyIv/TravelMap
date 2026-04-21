@@ -8,6 +8,7 @@ import vue from '@vitejs/plugin-vue'
 import path from 'node:path'
 
 export default defineConfig({
+  base: 'TravelMap',
   plugins: [
     vueRouter({
       routesFolder: 'src/pages',
