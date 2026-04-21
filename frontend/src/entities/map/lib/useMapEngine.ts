@@ -1,9 +1,20 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { MapRenderer } from '@shared/lib/MapRenderer'
+import { ALL_COUNTRIES } from '@entities/country/model'
 
 export function useMapEngine() {
     const mapStore = useMapStore()
     const uiStore = useUiStore()
+    const langStore = useLangStore()
+
+    const mapContainer = ref<HTMLElement | null>(null)
+    const isLoading = ref(false)
+    const mousePos = ref({ x: 0, y: 0 })
+    const hoveredCountryName = ref<string | null>(null)
+
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+        mousePos.value = { x: e.clientX, y: e.clientY }
+    }
 
     const draw = async () => {
         if (!mapContainer.value || !mapStore.currentTheme) return
@@ -14,23 +25,29 @@ export function useMapEngine() {
             features: mapStore.mapFeatures,
             theme: mapStore.currentTheme,
             visited: mapStore.visited,
+            showLabels: mapStore.showLabels,
             onCountryClick: (id) => {
                 if (!mapStore.currentTheme) return
                 mapStore.pendingCountryId = id
                 if (mapStore.visited.includes(id)) uiStore.setInfoModal(true)
                 else uiStore.setCountryModal(true)
             },
-            onCountryHover: () => {}
+            onCountryHover: (feature) => {
+                if (!feature || !mapStore.showLabels) {
+                    hoveredCountryName.value = null
+                    return
+                }
+                const id = feature.properties.ISO_A3 || feature.properties.iso_a3
+                const country = ALL_COUNTRIES.find(c => c.id === id)
+                hoveredCountryName.value = country ? country.names[langStore.currentLang] : (id as string)
+            }
         })
     }
 
-    const mapContainer = ref<HTMLElement | null>(null)
-    const isLoading = ref(false)
+    watch(() => mapStore.showLabels, (val) => MapRenderer.toggleLabels(val))
 
     onMounted(draw)
-    onUnmounted(() => {
-        window.removeEventListener('resize', draw)
-    })
+    onUnmounted(() => window.removeEventListener('resize', draw))
 
-    return { mapContainer, isLoading }
+    return { mapContainer, isLoading, mousePos, hoveredCountryName, handleGlobalMouseMove }
 }
