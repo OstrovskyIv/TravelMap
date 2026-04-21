@@ -2,12 +2,18 @@ name: Deploy Frontend to GitHub Pages
 
 on:
   push:
-    branches: [ "main" ] # Убедись, что твоя ветка называется main, а не master
+    branches: [ "main" ]
 
+# Разрешения для работы с GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
+
+# Отменяем текущие деплои, если запустился новый
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   build_and_deploy:
@@ -32,6 +38,9 @@ jobs:
         run: |
           cd frontend
           npm run build
+          # Решение проблемы 404 для Vue Router (SPA) на GitHub Pages
+          # Просто копируем index.html в 404.html
+          cp dist/index.html dist/404.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -39,7 +48,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Загружаем содержимое папки dist, которая находится внутри frontend
+          # Загружаем скомпилированные файлы из папки dist внутри frontend
           path: './frontend/dist'
 
       - name: Deploy to GitHub Pages
