@@ -1,41 +1,37 @@
 <template>
-  <div class="flex overflow-hidden rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] transition-all duration-500 hover:scale-[1.02] group">
-    <div class="bg-blue-600 px-3 py-6 flex items-center justify-center border-r border-white/10 shrink-0">
-      <span class="[writing-mode:vertical-lr] rotate-180 text-[7px] font-black uppercase tracking-[0.4em] text-white/70">Boarding Pass</span>
-    </div>
+  <div class="w-full h-full p-12 flex flex-col gap-12 overflow-y-auto font-sans transition-colors duration-1000 bg-[var(--bg-main)]">
+    <header class="flex flex-col gap-2">
+      <h1 class="text-6xl font-black uppercase tracking-tighter italic text-white">
+        {{ langStore.t.settings.title }}
+      </h1>
+      <span class="text-[10px] font-mono uppercase tracking-[0.5em] opacity-40 text-white">
+        {{ langStore.t.settings.subtitle }}
+      </span>
+    </header>
 
-    <div class="bg-white px-10 py-6 flex flex-col items-center justify-center gap-1 min-w-[160px]">
-      <span class="text-[8px] font-black uppercase text-slate-400 tracking-[0.2em] leading-none">Wallet Balance</span>
-      <div class="flex items-baseline gap-1">
-        <span class="text-5xl font-black text-slate-900 leading-none tracking-tighter">{{ userStore.balance }}</span>
-        <span class="text-[10px] font-black text-blue-500 uppercase italic">Miles</span>
-      </div>
-      <span class="text-[7px] font-bold text-slate-300 uppercase tracking-widest mt-1">Verified Registry</span>
-    </div>
+    <div class="flex flex-col gap-10 max-w-2xl">
+      <section class="flex flex-col gap-8 p-12 bg-white/[0.03] border border-white/5 rounded-[56px] backdrop-blur-3xl shadow-2xl transition-all">
+        <header class="flex items-center gap-6">
+          <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-2xl shadow-inner">🌍</div>
+          <div class="flex flex-col gap-1">
+            <h3 class="text-xl font-black uppercase tracking-tight text-white">{{ langStore.t.settings.localization }}</h3>
+            <span class="text-[10px] opacity-30 font-mono uppercase tracking-widest text-white">{{ langStore.t.settings.setLanguage }}</span>
+          </div>
+        </header>
 
-    <div class="relative w-[2px] bg-white flex flex-col justify-center">
-      <div class="absolute -top-2 -left-[7px] w-4 h-4 bg-black/40 rounded-full"></div>
-      <div class="h-full border-l-2 border-dashed border-slate-200 mx-auto"></div>
-      <div class="absolute -bottom-2 -left-[7px] w-4 h-4 bg-black/40 rounded-full"></div>
-    </div>
+        <div class="w-full max-w-[240px]">
+          <LangSwitcher />
+        </div>
+      </section>
 
-    <div class="bg-white px-8 py-6 flex flex-col justify-between items-end gap-3 shrink-0">
-      <div class="flex flex-col items-end gap-0.5">
-        <span class="text-[7px] font-black text-slate-300 uppercase leading-none">Flight</span>
-        <span class="text-xs font-black text-slate-800 leading-none tracking-tighter">TM-{{ new Date().getFullYear() }}</span>
-      </div>
-      <div class="flex flex-col items-end gap-0.5">
-        <span class="text-[7px] font-black text-slate-300 uppercase leading-none">Date</span>
-        <span class="text-xs font-black text-slate-800 leading-none tracking-tighter">{{ formattedDate }}</span>
+      <div class="p-8 border border-white/5 rounded-[32px] opacity-20 flex justify-between items-center text-white">
+        <span class="text-[9px] font-black uppercase tracking-[0.4em]">{{ langStore.t.settings.buildProtocol }}</span>
+        <span class="text-[9px] font-mono tracking-tighter">v4.0.2 Stable Release</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const userStore = useUserStore()
-const formattedDate = computed(() => {
-  const date = new Date()
-  return `${date.getDate()} ${date.toLocaleString('en-US', { month: 'short' }).toUpperCase()}`
-})
+const langStore = useLangStore()
 </script>

@@ -22,6 +22,31 @@ export const wooden: MapTheme = {
             activeBg: 'rgba(90, 61, 43, 0.1)'
         }
     },
+    countryModal: {
+        bg: '#f3efe9',
+        border: '#5a3d2b',
+        text: '#2b1a10',
+        overlay: 'rgba(43, 26, 16, 0.4)',
+        buttonConfirmBg: '#5a3d2b',
+        buttonConfirmText: '#f3efe9',
+        buttonCancelBg: 'rgba(90, 61, 43, 0.05)',
+        buttonCancelText: '#8c7e6d'
+    },
+    infoModal: {
+        bg: '#f3efe9',
+        border: 'rgba(90, 61, 43, 0.3)',
+        text: '#2b1a10',
+        accent: '#5a3d2b',
+        overlay: 'rgba(0, 0, 0, 0.5)',
+        closeBtnBg: 'rgba(90, 61, 43, 0.05)'
+    },
+    mapTools: {
+        bg: 'rgba(243, 239, 233, 0.8)',
+        border: 'rgba(90, 61, 43, 0.2)',
+        accent: '#5a3d2b',
+        activeBg: 'rgba(90, 61, 43, 0.2)',
+        btnBg: 'rgba(90, 61, 43, 0.05)'
+    },
     strokeWidth: 1.2,
     loader: {
         overlayColor: '#f3efe9',

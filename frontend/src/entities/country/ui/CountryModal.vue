@@ -7,50 +7,37 @@
   >
     <div
         v-if="uiStore.isCountryModalOpen"
-        class="fixed inset-0 z-[100] flex items-center justify-center p-8 backdrop-blur-md"
-        :style="{ backgroundColor: theme?.countryModal.overlay }"
+        class="fixed inset-0 z-[100] flex items-center justify-center p-8 backdrop-blur-md bg-[var(--modal-overlay)]"
         @click.self="close"
     >
       <div
-          class="w-full max-w-md flex flex-col gap-8 p-10 rounded-[40px] border shadow-2xl transition-all duration-500 scale-100"
-          :style="{
-          backgroundColor: theme?.countryModal.bg,
-          borderColor: theme?.countryModal.border + '40'
-        }"
+          class="w-full max-w-md flex flex-col gap-8 p-10 rounded-[40px] border shadow-2xl transition-all duration-500 scale-100 bg-[var(--modal-bg)] border-[var(--ui-accent)]/20"
       >
         <div class="flex flex-col gap-2 items-center text-center">
-          <span class="text-[10px] font-black uppercase tracking-[0.4em] text-[#fbbf24] opacity-50">
-            {{ langStore.currentLang === 'ru' ? 'Подтверждение' : 'Authorization' }}
+          <span class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--ui-accent)] opacity-50">
+            {{ langStore.t.auth.confirmation }}
           </span>
           <h2 class="text-3xl font-black text-white leading-tight uppercase tracking-tighter italic">
-            {{ langStore.currentLang === 'ru' ? 'Разблокировать регион?' : 'Unlock Region?' }}
+            {{ langStore.t.auth.title }}
           </h2>
           <p class="text-sm text-white/40 font-medium">
-            {{ langStore.currentLang === 'ru' ? 'Это действие добавит территорию в ваш журнал полетов.' : 'This action will add the territory to your flight log.' }}
+            {{ langStore.t.auth.subtitle }}
           </p>
         </div>
 
         <div class="flex flex-col gap-3">
           <button
               @click="confirm"
-              class="w-full py-5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 outline-none border-none cursor-pointer"
-              :style="{
-              backgroundColor: theme?.countryModal.buttonConfirmBg,
-              color: theme?.countryModal.buttonConfirmText
-            }"
+              class="w-full py-5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 outline-none border-none cursor-pointer bg-[var(--ui-accent)] text-black"
           >
-            {{ langStore.currentLang === 'ru' ? 'Подтвердить' : 'Confirm Access' }}
+            {{ langStore.t.auth.confirmBtn }}
           </button>
 
           <button
               @click="close"
-              class="w-full py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:bg-white/5 outline-none border-none cursor-pointer"
-              :style="{
-              backgroundColor: theme?.countryModal.buttonCancelBg,
-              color: theme?.countryModal.buttonCancelText
-            }"
+              class="w-full py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:bg-white/5 outline-none border-none cursor-pointer bg-white/5 text-[var(--ui-text-muted)]"
           >
-            {{ langStore.currentLang === 'ru' ? 'Отмена' : 'Abort' }}
+            {{ langStore.t.auth.abortBtn }}
           </button>
         </div>
       </div>
@@ -59,15 +46,6 @@
 </template>
 
 <script setup lang="ts">
-import { useUiStore } from '@shared/lib/uiStore'
-import { useMapStore } from '@entities/map/model/mapStore'
-import { useLangStore } from '@features/lang-switcher/model/langStore'
-import type { MapTheme } from '@entities/map/model/types'
-
-defineProps<{
-  theme: MapTheme
-}>()
-
 const uiStore = useUiStore()
 const mapStore = useMapStore()
 const langStore = useLangStore()

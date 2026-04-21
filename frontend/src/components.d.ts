@@ -20,6 +20,7 @@ declare module 'vue' {
     LangSwitcher: typeof import('./features/lang-switcher/LangSwitcher.vue')['default']
     MainSidebar: typeof import('./widgets/main-sidebar/MainSidebar.vue')['default']
     MapTools: typeof import('./widgets/map-tools/MapTools.vue')['default']
+    MenuToggle: typeof import('./features/navigation/ui/MenuToggle.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SearchDock: typeof import('./widgets/search-dock/SearchDock.vue')['default']

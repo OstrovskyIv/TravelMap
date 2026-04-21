@@ -1,79 +1,71 @@
 <template>
   <Transition
+      :enter-from-class="isMobile ? 'translate-y-full' : '-translate-x-full'"
+      :leave-to-class="isMobile ? 'translate-y-full' : '-translate-x-full'"
       enter-active-class="transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
       leave-active-class="transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
-      enter-from-class="-translate-x-full"
-      leave-to-class="-translate-x-full"
   >
     <aside
         v-if="ui.isSidebarOpen"
-        class="absolute left-0 top-0 bottom-0 w-80 flex flex-col gap-10 p-10 z-50 shadow-[20px_0_60px_rgba(0,0,0,0.6)] border-r backdrop-blur-3xl transition-all duration-500 rounded-r-[48px]"
-        :style="{ backgroundColor: '#18181bE6', borderColor: 'rgba(251, 191, 36, 0.2)' }"
+        :class="[
+          'fixed z-50 flex flex-col shadow-2xl backdrop-blur-3xl border-[var(--sidebar-border)] bg-[var(--sidebar-bg)]/95',
+          isMobile ? 'inset-x-0 bottom-0 h-[85vh] rounded-t-[40px] border-t' : 'left-0 top-0 bottom-0 w-80 rounded-r-[48px] border-r'
+        ]"
     >
-      <header class="flex flex-col gap-4">
-        <div class="flex items-center justify-between gap-4">
+      <div class="flex flex-col h-full p-8 md:p-10 gap-8 overflow-y-auto custom-scrollbar">
+        <!-- Полоска для мобилок -->
+        <div v-if="isMobile" @click="ui.toggleSidebar" class="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-2 cursor-pointer"></div>
+
+        <header class="flex items-center justify-between">
           <div class="flex flex-col gap-1">
-            <h1 class="text-3xl font-black tracking-tighter uppercase leading-none text-white italic">Traveler</h1>
-            <span class="text-[10px] font-bold uppercase tracking-tight text-white/40 leading-none">
-              {{ langStore.currentLang === 'ru' ? 'Карта путешественника' : "Traveler's Atlas" }}
-            </span>
+            <h1 class="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-white leading-none">Traveler</h1>
+            <span class="text-[10px] font-black uppercase tracking-widest text-white/30 italic">{{ langStore.t.navigation.atlas }}</span>
           </div>
-          <button @click="ui.toggleSidebar" class="shrink-0 group w-11 h-11 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-white/10 border-none cursor-pointer outline-none transition-all">
-            <span class="text-xs transition-transform group-hover:-translate-x-0.5 text-white/40">◀</span>
+          <button @click="ui.toggleSidebar" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border-none cursor-pointer">
+            <span class="text-xs text-white/40">{{ isMobile ? '✕' : '◀' }}</span>
           </button>
-        </div>
-      </header>
+        </header>
 
-      <nav class="flex flex-col gap-3 font-sans text-white">
-        <RouterLink
-            v-for="item in menuItems"
-            :key="item.id"
-            :to="item.path"
-            class="group flex items-center gap-5 p-5 rounded-[24px] transition-all duration-300 hover:translate-x-1 active:scale-95 border border-transparent"
-            :style="route.name === item.id ? { backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' } : {}"
-        >
-          <span class="text-2xl group-hover:scale-110 transition-transform">{{ item.icon }}</span>
-          <span class="text-[13px] font-black tracking-widest uppercase transition-colors" :style="{ color: route.name === item.id ? '#fbbf24' : '#a1a1aa' }">
-            {{ langStore.currentLang === 'ru' ? item.nameRu : item.nameEn }}
-          </span>
-        </RouterLink>
+        <nav class="flex flex-col gap-2">
+          <RouterLink
+              v-for="item in menuItems"
+              :key="item.id"
+              :to="item.path"
+              @click="isMobile ? ui.toggleSidebar() : null"
+              class="group flex items-center gap-5 p-5 rounded-[24px] transition-all border border-transparent hover:bg-white/5"
+              :class="route.name === item.id ? 'bg-white/5 border-white/10' : ''"
+          >
+            <span class="text-2xl group-hover:scale-110 transition-transform">{{ item.icon }}</span>
+            <span class="text-[13px] font-black uppercase tracking-widest" :style="{ color: route.name === item.id ? 'var(--ui-accent)' : 'var(--ui-text-muted)' }">
+              {{ langStore.t.navigation[item.id] }}
+            </span>
+          </RouterLink>
 
-        <button v-if="userStore.isAdmin" @click="ui.toggleAdminConsole" class="group flex items-center gap-5 p-5 rounded-[24px] transition-all duration-300 border border-dashed border-white/10 bg-transparent outline-none cursor-pointer" :class="{ 'bg-[#fbbf24]/10 border-[#fbbf24]/30': ui.isAdminConsoleOpen }">
-          <span class="text-2xl opacity-40 group-hover:opacity-100 transition-opacity">⚙️</span>
-          <span class="text-[13px] font-black uppercase tracking-widest transition-colors" :style="{ color: ui.isAdminConsoleOpen ? '#fbbf24' : '#a1a1aa' }">
-             {{ langStore.currentLang === 'ru' ? 'Консоль' : 'Admin Console' }}
-          </span>
-        </button>
-      </nav>
+          <button v-if="userStore.isAdmin" @click="ui.toggleAdminConsole" class="flex items-center gap-5 p-5 rounded-[24px] border border-dashed border-white/10 bg-transparent cursor-pointer transition-all hover:border-[var(--ui-accent)]/50" :class="{ 'bg-[var(--ui-accent)]/10 border-[var(--ui-accent)]/30': ui.isAdminConsoleOpen }">
+            <span class="text-2xl opacity-40">⚙️</span>
+            <span class="text-[13px] font-black uppercase tracking-widest" :style="{ color: ui.isAdminConsoleOpen ? 'var(--ui-accent)' : 'var(--ui-text-muted)' }">{{ langStore.t.navigation.console }}</span>
+          </button>
+        </nav>
 
-      <div class="flex-1"></div>
+        <div class="flex-1 min-h-[20px]"></div>
 
-      <section class="flex flex-col gap-6">
-        <StatsWidget :theme="mapStore.currentTheme" />
-        <div class="flex items-center gap-5 p-3 group cursor-pointer border border-transparent hover:bg-white/5 rounded-[28px] transition-all">
-          <div class="w-14 h-14 rounded-[20px] shadow-xl flex items-center justify-center text-[#18181b] font-black text-lg bg-[#fbbf24]">
-            {{ userStore.userName.charAt(0) }}
+        <section class="flex flex-col gap-6">
+          <StatsWidget v-if="isMobile" />
+          <div class="flex items-center gap-5 p-4 rounded-[32px] bg-white/5 border border-white/5">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg bg-[var(--ui-accent)] text-black">{{ userStore.userName.charAt(0) }}</div>
+            <div class="flex flex-col">
+              <span class="text-sm font-black text-white leading-none">{{ userStore.userName }}</span>
+              <span class="text-[9px] uppercase font-mono mt-1 opacity-30 text-white">Registry Verified</span>
+            </div>
           </div>
-          <div class="flex flex-col gap-0.5">
-            <span class="text-sm font-black text-white">{{ userStore.userName }}</span>
-            <span class="text-[9px] uppercase tracking-widest opacity-30 font-mono text-white">Navigator</span>
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </aside>
   </Transition>
 </template>
 
 <script setup lang="ts">
-const mapStore = useMapStore()
-const langStore = useLangStore()
-const userStore = useUserStore()
-const ui = useUiStore()
-const route = useRoute()
-
-const menuItems = [
-  { id: 'home', path: '/', icon: '🌍', nameRu: 'Атлас', nameEn: 'Atlas' },
-  { id: 'shop', path: '/shop', icon: '💎', nameRu: 'Магазин', nameEn: 'Shop' },
-  { id: 'settings', path: '/settings', icon: '🔮', nameRu: 'Опции', nameEn: 'Settings' }
-]
+import { useScreen } from '@shared/lib/useScreen'
+const { isMobile } = useScreen(); const langStore = useLangStore(); const userStore = useUserStore(); const ui = useUiStore(); const route = useRoute()
+const menuItems: { id: keyof typeof langStore.t.navigation, path: string, icon: string }[] = [{ id: 'atlas', path: '/', icon: '🌍' }, { id: 'shop', path: '/shop', icon: '💎' }, { id: 'options', path: '/settings', icon: '🔮' }]
 </script>

@@ -1,13 +1,9 @@
 <template>
   <div
-      class="flex flex-col gap-2 p-8 backdrop-blur-3xl transition-all duration-500 rounded-[40px] border shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-      :style="{
-      backgroundColor: theme?.sidebar.bg + 'CC',
-      borderColor: theme?.colors.ui.accent + '33'
-    }"
+      class="flex flex-col gap-2 p-8 backdrop-blur-3xl transition-all duration-500 rounded-[40px] border shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-[var(--sidebar-bg)]/80 border-[var(--ui-accent)]/20"
   >
-    <span class="text-[11px] font-black uppercase tracking-[0.4em]" :style="{ color: theme?.colors.ui.accent }">
-      {{ langStore.currentLang === 'ru' ? 'Журнал' : 'Travel Log' }}
+    <span class="text-[11px] font-black uppercase tracking-[0.4em] text-[var(--ui-accent)]">
+      {{ langStore.t.stats.log }}
     </span>
 
     <div class="flex items-baseline gap-3">
@@ -15,21 +11,13 @@
         {{ store.visited.length }}
       </span>
       <span class="text-[11px] text-white/40 font-bold uppercase tracking-widest leading-none">
-        {{ langStore.currentLang === 'ru' ? 'Регионы' : 'Regions' }}
+        {{ langStore.t.stats.regions }}
       </span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useMapStore } from '@entities/map/model/mapStore'
-import { useLangStore } from '@features/lang-switcher/model/langStore'
-import type { MapTheme } from '@entities/map/model/types'
-
-defineProps<{
-  theme: MapTheme | undefined
-}>()
-
 const store = useMapStore()
 const langStore = useLangStore()
 </script>
