@@ -29,7 +29,6 @@ export const MapRenderer = {
     isUpdating: false,
     initialScale: 1,
 
-    // Внутренние переменные для отслеживания дельты
     lastX: 0,
     lastY: 0,
 
@@ -108,12 +107,10 @@ export const MapRenderer = {
 
         const updateElements = () => {
             if (!this.projection || !this.pathGenerator) return
-
             this.cachedPaths?.attr('d', (d) => {
                 const dStr = this.pathGenerator!(d as any)
                 return dStr && !dStr.includes('NaN') ? dStr : null
             })
-
             if (this.cachedLabels && showLabels) {
                 this.cachedLabels.each(function(this: SVGTextElement, d) {
                     if (d.properties.centroid) {
@@ -142,17 +139,18 @@ export const MapRenderer = {
                     const rotation = this.projection!.rotate()
                     const center = this.projection!.center()
 
-                    const sensitivity = 0.25 / transform.k
+                    // НОВАЯ МАТЕМАТИКА ЧУВСТВИТЕЛЬНОСТИ
+                    // Мы рассчитываем сколько градусов приходится на 1 пиксель
+                    // 360 градусов / длина экватора в пикселях
+                    const sens = 360 / (2 * Math.PI * (this.initialScale * transform.k))
 
-                    if (sourceEvent) {
-                        if (sourceEvent.type === 'wheel') {
-                        } else {
-                            const dx = transform.x - this.lastX
-                            const dy = transform.y - this.lastY
+                    if (sourceEvent && sourceEvent.type !== 'wheel') {
+                        const dx = transform.x - this.lastX
+                        const dy = transform.y - this.lastY
 
-                            this.projection!.rotate([rotation[0] + dx * sensitivity, 0])
-                            this.projection!.center([0, Math.max(-60, Math.min(80, center[1] + dy * sensitivity * 0.5))])
-                        }
+                        // Умножаем дельту на рассчитанную чувствительность
+                        this.projection!.rotate([rotation[0] + dx * sens, 0])
+                        this.projection!.center([0, Math.max(-60, Math.min(80, center[1] + dy * sens * 0.5))])
                     }
 
                     this.projection!.scale(transform.k * this.initialScale)
@@ -197,16 +195,17 @@ export const MapRenderer = {
         const feature = this.cachedPaths.data().find(d => (d.properties.ISO_A3 || d.properties.iso_a3) === id)
         if (!feature || !feature.properties.centroid) return
 
+        const centroid = d3.geoCentroid(feature as any)
         const currentK = d3.zoomTransform(this.svgSelection.node()!).k
         const targetK = 5
-
-        const iRotate = d3.interpolateNumber(this.projection!.rotate()[0], -feature.properties.centroid[0])
-        const iCenter = d3.interpolateNumber(this.projection!.center()[1], feature.properties.centroid[1])
-        const iScale = d3.interpolateNumber(currentK, targetK)
 
         this.svgSelection.transition().duration(1000).ease(d3.easeCubicInOut)
             .call(this.zoomBehavior.transform, d3.zoomIdentity.translate(0, 0).scale(targetK))
             .tween("fly", () => (t: number) => {
+                const iRotate = d3.interpolateNumber(this.projection!.rotate()[0], -centroid[0])
+                const iCenter = d3.interpolateNumber(this.projection!.center()[1], centroid[1])
+                const iScale = d3.interpolateNumber(currentK, targetK)
+
                 this.projection!.rotate([iRotate(t), 0])
                 this.projection!.center([0, iCenter(t)])
                 this.projection!.scale(iScale(t) * this.initialScale)
