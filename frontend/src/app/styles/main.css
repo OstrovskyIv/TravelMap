@@ -5,33 +5,44 @@
 }
 
 :root {
-    --app-height: 100dvh;
-    /* Дефолтные значения, чтобы IDE не ругалась */
-    --bg-main: #000;
-    --ui-text: #fff;
-    --ui-text-muted: #666;
-    --ui-accent: #fbbf24;
-    --sidebar-bg: #18181b;
-    --sidebar-border: rgba(255,255,255,0.1);
-    --modal-overlay: rgba(0,0,0,0.8);
-    --modal-bg: #18181b;
-    --search-bg: rgba(30,30,33,0.7);
-    --search-border: rgba(255,255,255,0.1);
+    --app-height: 100dvh; /* Динамическая высота для мобилок */
 }
 
+/* Обнуляем всё, что может дать микро-сдвиги */
 html, body {
-    height: var(--app-height);
-    width: 100vw;
     margin: 0;
     padding: 0;
-    background-color: var(--bg-main);
-    color: var(--ui-text);
+    width: 100%;
+    height: var(--app-height);
     overflow: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg-main, #000);
+
+    /* Отключаем системные жесты, чтобы они не конфликтовали с зумом карты */
+    touch-action: none;
+    overscroll-behavior: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
-* { -webkit-tap-highlight-color: transparent; }
+#app {
+    width: 100%;
+    height: 100%;
+}
 
-::-webkit-scrollbar { width: 4px; }
+/* SVG должен вести себя как блочный элемент и занимать всё пространство */
+svg {
+    display: block;
+    shape-rendering: geometricPrecision;
+    /* Важно: заставляем браузер использовать видеокарту */
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Кастомный скроллбар для панелей */
+::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-thumb { background: var(--ui-accent); border-radius: 10px; }

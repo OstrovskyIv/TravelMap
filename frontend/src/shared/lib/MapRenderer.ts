@@ -29,6 +29,10 @@ export const MapRenderer = {
     isUpdating: false,
     initialScale: 1,
 
+    // Внутренние переменные для отслеживания дельты
+    lastX: 0,
+    lastY: 0,
+
     getDynamicColor(isVisited: boolean, theme: MapTheme): string {
         const palette = isVisited ? theme.colors.map.visited : theme.colors.map.unvisited
         return palette[0] || '#333'
@@ -43,7 +47,8 @@ export const MapRenderer = {
                 .attr('width', container.clientWidth)
                 .attr('height', container.clientHeight)
                 .style('cursor', 'grab')
-                .style('touch-action', 'none') as any
+                .style('touch-action', 'none')
+                .style('overscroll-behavior', 'none') as any
         }
         this.svgSelection = svg
 
@@ -86,15 +91,6 @@ export const MapRenderer = {
                 this.flyTo(id, theme)
                 onCountryClick(id)
             })
-            .on('mouseenter', function(this: SVGPathElement, _e, d) {
-                d3.select(this).attr('fill', theme.colors.map.hover)
-                onCountryHover(d)
-            })
-            .on('mouseleave', function(this: SVGPathElement, _e, d) {
-                const id = d.properties.ISO_A3 || d.properties.iso_a3 || ''
-                d3.select(this).attr('fill', MapRenderer.getDynamicColor(visited.includes(id), theme))
-                onCountryHover(null)
-            })
 
         this.cachedLabels = g.selectAll<SVGTextElement, CountryFeature>('text')
             .data(activeFeatures, (d: any) => d.properties.ISO_A3 || d.properties.iso_a3)
@@ -111,34 +107,59 @@ export const MapRenderer = {
             })
 
         const updateElements = () => {
-            if (this.cachedPaths && this.pathGenerator) this.cachedPaths.attr('d', this.pathGenerator as any)
-            if (this.cachedLabels && this.projection) {
-                this.cachedLabels.each(function(d) {
+            if (!this.projection || !this.pathGenerator) return
+
+            this.cachedPaths?.attr('d', (d) => {
+                const dStr = this.pathGenerator!(d as any)
+                return dStr && !dStr.includes('NaN') ? dStr : null
+            })
+
+            if (this.cachedLabels && showLabels) {
+                this.cachedLabels.each(function(this: SVGTextElement, d) {
                     if (d.properties.centroid) {
                         const coords = MapRenderer.projection!(d.properties.centroid)
-                        if (coords) d3.select(this).attr('x', coords[0]).attr('y', coords[1])
+                        if (coords && isFinite(coords[0]) && isFinite(coords[1])) {
+                            d3.select(this).attr('x', coords[0]).attr('y', coords[1])
+                                .style('opacity', coords[1] < 0 || coords[1] > height ? 0 : 1)
+                        }
                     }
                 })
             }
         }
 
-        updateElements()
-
         const zoom = d3.zoom<SVGSVGElement, unknown>()
             .scaleExtent([1, 20])
+            .on('start', (event) => {
+                this.lastX = event.transform.x
+                this.lastY = event.transform.y
+            })
             .on('zoom', (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
                 if (this.isUpdating) return
                 this.isUpdating = true
+
                 window.requestAnimationFrame(() => {
+                    const { transform, sourceEvent } = event
                     const rotation = this.projection!.rotate()
-                    if (event.sourceEvent) {
-                        const dx = event.sourceEvent.movementX || 0
-                        const dy = event.sourceEvent.movementY || 0
-                        this.projection!.rotate([rotation[0] + dx * (0.25 / event.transform.k), 0])
-                        const currentCenter = this.projection!.center()
-                        this.projection!.center([0, Math.max(-60, Math.min(80, currentCenter[1] + dy * (0.25 / event.transform.k) * 0.5))])
+                    const center = this.projection!.center()
+
+                    const sensitivity = 0.25 / transform.k
+
+                    if (sourceEvent) {
+                        if (sourceEvent.type === 'wheel') {
+                        } else {
+                            const dx = transform.x - this.lastX
+                            const dy = transform.y - this.lastY
+
+                            this.projection!.rotate([rotation[0] + dx * sensitivity, 0])
+                            this.projection!.center([0, Math.max(-60, Math.min(80, center[1] + dy * sensitivity * 0.5))])
+                        }
                     }
-                    this.projection!.scale(event.transform.k * this.initialScale)
+
+                    this.projection!.scale(transform.k * this.initialScale)
+
+                    this.lastX = transform.x
+                    this.lastY = transform.y
+
                     updateElements()
                     this.isUpdating = false
                 })
@@ -146,18 +167,19 @@ export const MapRenderer = {
 
         svg.call(zoom)
         this.zoomBehavior = zoom
+        updateElements()
     },
 
     toggleLabels(visible: boolean) {
         if (!this.cachedLabels || !this.projection) return
         this.cachedLabels.style('display', visible ? 'block' : 'none')
-
-        // Мгновенный пересчет позиций при включении
         if (visible) {
-            this.cachedLabels.each(function(d) {
+            this.cachedLabels.each(function(this: SVGTextElement, d) {
                 if (d.properties.centroid) {
                     const coords = MapRenderer.projection!(d.properties.centroid)
-                    if (coords) d3.select(this).attr('x', coords[0]).attr('y', coords[1])
+                    if (coords && isFinite(coords[0]) && isFinite(coords[1])) {
+                        d3.select(this).attr('x', coords[0]).attr('y', coords[1])
+                    }
                 }
             })
         }
@@ -174,24 +196,29 @@ export const MapRenderer = {
         if (!this.cachedPaths || !this.projection || !this.svgSelection || !this.zoomBehavior) return
         const feature = this.cachedPaths.data().find(d => (d.properties.ISO_A3 || d.properties.iso_a3) === id)
         if (!feature || !feature.properties.centroid) return
+
         const currentK = d3.zoomTransform(this.svgSelection.node()!).k
+        const targetK = 5
+
+        const iRotate = d3.interpolateNumber(this.projection!.rotate()[0], -feature.properties.centroid[0])
+        const iCenter = d3.interpolateNumber(this.projection!.center()[1], feature.properties.centroid[1])
+        const iScale = d3.interpolateNumber(currentK, targetK)
+
         this.svgSelection.transition().duration(1000).ease(d3.easeCubicInOut)
-            .call(this.zoomBehavior.scaleTo, 5)
-            .tween("fly", () => {
-                const iRotate = d3.interpolateNumber(this.projection!.rotate()[0], -feature.properties.centroid![0])
-                const iCenter = d3.interpolateNumber(this.projection!.center()[1], feature.properties.centroid![1])
-                const iScale = d3.interpolateNumber(currentK, 5)
-                return (t) => {
-                    this.projection!.rotate([iRotate(t), 0]); this.projection!.center([0, iCenter(t)]); this.projection!.scale(iScale(t) * this.initialScale)
-                    if (this.cachedPaths) this.cachedPaths.attr('d', this.pathGenerator as any)
-                    if (this.cachedLabels) {
-                        this.cachedLabels.each(function(d) {
-                            if (d.properties.centroid) {
-                                const p = MapRenderer.projection!(d.properties.centroid)
-                                if (p) d3.select(this).attr('x', p[0]).attr('y', p[1])
-                            }
-                        })
-                    }
+            .call(this.zoomBehavior.transform, d3.zoomIdentity.translate(0, 0).scale(targetK))
+            .tween("fly", () => (t: number) => {
+                this.projection!.rotate([iRotate(t), 0])
+                this.projection!.center([0, iCenter(t)])
+                this.projection!.scale(iScale(t) * this.initialScale)
+
+                this.cachedPaths?.attr('d', this.pathGenerator as any)
+                if (this.cachedLabels) {
+                    this.cachedLabels.each(function(this: SVGTextElement, d) {
+                        if (d.properties.centroid) {
+                            const p = MapRenderer.projection!(d.properties.centroid)
+                            if (p) d3.select(this).attr('x', p[0]).attr('y', p[1])
+                        }
+                    })
                 }
             })
         this.highlightCountry(id, theme)
