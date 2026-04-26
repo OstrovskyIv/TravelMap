@@ -8,18 +8,21 @@
     <div
         v-if="uiStore.isCountryModalOpen && country"
         class="fixed inset-0 z-[150] flex items-center justify-center p-8 backdrop-blur-md bg-[var(--modal-overlay)]"
-        @click.self="close"
+        @click.self="uiStore.closeAllModals()"
     >
       <div
           class="w-full max-w-md flex flex-col gap-8 p-10 rounded-[40px] border shadow-2xl transition-all duration-500 scale-100 bg-[var(--modal-bg)] border-[var(--ui-accent)]/20"
       >
-        <div class="flex flex-col gap-2 items-center text-center">
-          <span class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--ui-accent)] opacity-50">
-            {{ langStore.t.auth.confirmation }}
-          </span>
-          <h2 class="text-3xl font-black text-white leading-tight uppercase tracking-tighter italic">
-            {{ country.names[langStore.currentLang] }}
-          </h2>
+        <div class="flex flex-col gap-4 items-center text-center">
+          <span class="text-6xl">{{ country.flag }}</span>
+          <div class="flex flex-col gap-1">
+            <span class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--ui-accent)] opacity-50">
+              {{ langStore.t.auth.confirmation }}
+            </span>
+            <h2 class="text-3xl font-black text-white leading-tight uppercase tracking-tighter italic">
+              {{ country.names[langStore.currentLang] }}
+            </h2>
+          </div>
           <p class="text-sm text-white/40 font-medium italic text-center leading-relaxed">
             {{ langStore.t.auth.subtitle }}
           </p>
@@ -28,14 +31,14 @@
         <div class="flex flex-col gap-3">
           <button
               @click="handleUnlock"
-              class="w-full py-5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 outline-none border-none cursor-pointer bg-[var(--ui-accent)] text-black"
+              class="w-full py-5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 outline-none border-none cursor-pointer bg-[var(--ui-accent)] text-black italic font-bold"
           >
             {{ langStore.t.auth.confirmBtn }}
           </button>
 
           <button
-              @click="close"
-              class="w-full py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:bg-white/5 outline-none border-none cursor-pointer bg-white/5 text-[var(--ui-text-muted)]"
+              @click="uiStore.closeAllModals()"
+              class="w-full py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all hover:bg-white/5 outline-none border-none cursor-pointer bg-white/5 text-[var(--ui-text-muted)] italic font-bold"
           >
             {{ langStore.t.auth.abortBtn }}
           </button>
@@ -55,15 +58,9 @@ const langStore = useLangStore()
 
 const country = computed(() => ALL_COUNTRIES.find(c => c.id === mapStore.pendingCountryId))
 
-const close = () => {
-  uiStore.setCountryModal(false)
-  mapStore.pendingCountryId = null
-}
-
 const handleUnlock = () => {
   if (country.value) {
     mapStore.unlockCountry(country.value.id)
-    // После разблокировки сразу перекрашиваем и открываем ИНФО модалку
     MapRenderer.highlightCountry(country.value.id, mapStore.currentTheme!)
     uiStore.setCountryModal(false)
     uiStore.setInfoModal(true)

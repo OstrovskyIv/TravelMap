@@ -2,17 +2,20 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
-    const balance = ref(0)
-    const purchasedThemes = ref(['classic'])
+    const balance = ref(5000)
+    const purchasedThemes = ref(['atlas'])
+    const purchasedEmojis = ref<string[]>([])
+    const purchasedHats = ref<string[]>([])
+    const activeEmoji = ref<string | null>(null)
+    const activeHat = ref<string | null>(null)
     const isAdmin = ref(true)
     const userName = ref('Ivan Admin')
+    const isVip = ref(false)
 
-    // Добавление/вычитание баланса
     const addBalance = (amount: number) => {
         balance.value = Math.max(0, balance.value + amount)
     }
 
-    // Покупка темы (с проверкой баланса)
     const buyTheme = (themeId: string, price: number): boolean => {
         if (balance.value >= price && !purchasedThemes.value.includes(themeId)) {
             balance.value -= price
@@ -22,28 +25,29 @@ export const useUserStore = defineStore('user', () => {
         return false
     }
 
-    // Забрать доступ к теме
-    const lockTheme = (themeId: string) => {
-        if (themeId === 'classic') return // Классическую нельзя забрать
-        purchasedThemes.value = purchasedThemes.value.filter(id => id !== themeId)
+    const buyEmoji = (emoji: string, price: number): boolean => {
+        if (balance.value >= price && !purchasedEmojis.value.includes(emoji)) {
+            balance.value -= price
+            purchasedEmojis.value.push(emoji)
+            return true
+        }
+        return false
     }
 
-    // Выдать доступ к теме
-    const unlockTheme = (themeId: string) => {
-        if (!purchasedThemes.value.includes(themeId)) {
-            purchasedThemes.value.push(themeId)
+    const buyHat = (hat: string, price: number): boolean => {
+        if (balance.value >= price && !purchasedHats.value.includes(hat)) {
+            balance.value -= price
+            purchasedHats.value.push(hat)
+            return true
         }
+        return false
     }
+
+    const buyVip = () => { isVip.value = true }
 
     return {
-        balance,
-        purchasedThemes,
-        isAdmin,
-        userName,
-        addBalance,
-        buyTheme,
-        lockTheme,
-        unlockTheme
+        balance, purchasedThemes, purchasedEmojis, purchasedHats, activeEmoji, activeHat, isAdmin, userName, isVip,
+        addBalance, buyTheme, buyEmoji, buyHat, buyVip
     }
 }, {
     persist: true

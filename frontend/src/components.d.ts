@@ -17,7 +17,9 @@ declare module 'vue' {
     ClassicLoader: typeof import('./shared/loaders/ClassicLoader/ClassicLoader.vue')['default']
     CountryModal: typeof import('./entities/country/ui/CountryModal.vue')['default']
     EconomyTab: typeof import('./widgets/admin-console/ui/EconomyTab.vue')['default']
-    InfoModal: typeof import('./shared/ui/info-modal/InfoModal.vue')['default']
+    GamesModal: typeof import('./widgets/games-modal/GamesModal.vue')['default']
+    GuessFlagGame: typeof import('./features/games/GuessFlagGame.vue')['default']
+    InfoModal: typeof import('./entities/country/ui/info-modal/InfoModal.vue')['default']
     LangSwitcher: typeof import('./features/lang-switcher/LangSwitcher.vue')['default']
     MainSidebar: typeof import('./widgets/main-sidebar/MainSidebar.vue')['default']
     MapTools: typeof import('./widgets/map-tools/MapTools.vue')['default']
@@ -27,6 +29,7 @@ declare module 'vue' {
     SearchDock: typeof import('./widgets/search-dock/SearchDock.vue')['default']
     StatsWidget: typeof import('./widgets/stats-widget/StatsWidget.vue')['default']
     ThemesTab: typeof import('./widgets/admin-console/ui/ThemesTab.vue')['default']
+    VipModal: typeof import('./shared/ui/vip-modal/VipModal.vue')['default']
     WoodenLoader: typeof import('./shared/loaders/WoodenLoader/WoodenLoader.vue')['default']
   }
 }

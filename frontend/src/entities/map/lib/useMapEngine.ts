@@ -29,16 +29,18 @@ export function useMapEngine() {
             visitedCities: mapStore.visitedCities,
             showLabels: mapStore.showLabels,
             onCountryClick: (id) => {
-                mapStore.pendingCountryId = id
-
-                // ЛОГИКА ВЫБОРА МОДАЛКИ
-                if (mapStore.isUnlocked(id)) {
-                    uiStore.setInfoModal(true)
-                } else {
-                    uiStore.setCountryModal(true)
+                // ИСПРАВЛЕНО: Вызываем addRoutePoint вместо старой функции
+                if (mapStore.isRouteMode) {
+                    mapStore.addRoutePoint(id)
+                    MapRenderer.drawRoute(mapStore.routePoints, mapStore.mapFeatures, mapStore.currentTheme!)
+                    return
                 }
 
-                MapRenderer.highlightCountry(id, mapStore.currentTheme!)
+                mapStore.pendingCountryId = id
+                if (mapStore.isUnlocked(id)) uiStore.setInfoModal(true)
+                else uiStore.setCountryModal(true)
+
+                MapRenderer.flyTo(id, mapStore.currentTheme!)
             },
             onCountryHover: (feature) => {
                 if (!feature || !mapStore.showLabels) {
@@ -50,6 +52,10 @@ export function useMapEngine() {
                 hoveredCountryName.value = country ? country.names[langStore.currentLang] : (id as string)
             }
         })
+
+        if (mapStore.routePoints.length > 0) {
+            MapRenderer.drawRoute(mapStore.routePoints, mapStore.mapFeatures, mapStore.currentTheme!)
+        }
     }
 
     watch(() => mapStore.showLabels, (val) => MapRenderer.toggleLabels(val))

@@ -10,7 +10,11 @@ export interface LanguageTree {
     stats: LanguageCategory
     search: LanguageCategory
     tools: LanguageCategory
-    tooltips: LanguageCategory // Добавили поле в интерфейс
+    tooltips: LanguageCategory
+    vip: LanguageCategory
+    games: LanguageCategory
+    leaderboard: LanguageCategory
+    achievements: LanguageCategory
 }
 
 export const languages = {
@@ -20,7 +24,11 @@ export const languages = {
             shop: "Магазин",
             options: "Опции",
             console: "Консоль",
-            menu: "МЕНЮ"
+            menu: "МЕНЮ",
+            games: "Игры",
+            profile: "Профиль",
+            leaderboard: "Лидеры",
+            achievements: "Награды"
         },
         auth: {
             confirmation: "Подтверждение",
@@ -31,39 +39,58 @@ export const languages = {
         },
         info: {
             sector: "Сектор разведки",
-            briefing: "Брифинг",
-            nodes: "Активные узлы",
-            scannerActive: "СКАНЕР: АКТИВЕН",
-            target: "Объект"
+            summary: "Обзор",
+            memories: "Альбомы",
+            discussion: "Чат",
+            cities: "Города",
+            registry: "Реестр",
+            interest: "Интерес",
+            cleanliness: "Чистота",
+            friendliness: "Люди",
+            difficulty: "Доступ",
+            sendMessage: "Написать сообщение...",
+            createAlbum: "Создать альбом",
+            albumName: "Название альбома",
+            back: "Назад",
+            visitBtn: "Посетить",
+            visited: "Посещено",
+            shareExp: "Поделиться..."
         },
         shop: {
             title: "Магазин",
             subtitle: "Торговая площадка визуальных движков",
             collection: "Твоя коллекция",
             available: "Доступно",
-            wallet: "Баланс кошелька",
+            wallet: "Баланс",
             miles: "Мили"
         },
         settings: {
             title: "Настройки",
             subtitle: "Конфигурация системной среды",
+            general: "Общие",
+            profile: "Профиль",
+            interface: "Интерфейс",
+            security: "Безопасность",
             localization: "Локализация",
-            setLanguage: "Установить основной язык системы",
+            setLanguage: "Язык системы",
+            mapTools: "Инструменты карты",
+            hints: "Подсказки",
+            startTour: "Запустить обучение",
             buildProtocol: "Протокол сборки"
         },
         admin: {
             terminal: "Админ-терминал",
-            controlPanel: "Панель управления",
             economics: "Экономика",
-            themes: "Доступ к темам",
-            general: "Общие",
+            themes: "Темы",
             users: "Пользователи",
-            totalMiles: "Всего миль",
+            logs: "Логи",
+            totalMiles: "Билеты",
             status: "Статус",
-            quickInjection: "Быстрая инъекция",
-            manualOverwrite: "Ручная перезапись реестра",
+            quickInjection: "Инъекция",
+            manualOverwrite: "Перезапись",
             sync: "СИНХРОНИЗИРОВАТЬ",
-            terminate: "Прекратить и очистить реестр"
+            terminate: "Очистить реестр",
+            controlPanel: "Панель управления"
         },
         stats: {
             log: "Журнал",
@@ -79,12 +106,50 @@ export const languages = {
             draw: "Рисовать"
         },
         tooltips: {
-            showLabels: "Показать названия",
-            hideLabels: "Скрыть названия",
-            magnifier: "Режим поиска",
-            draw: "Редактор путей",
+            showLabels: "Глобальные подписи",
+            hideLabels: "Скрыть подписи",
+            cursorLabel: "Сканер у курсора",
+            route: "Построить маршрут",
+            undo: "Отменить шаг",
+            clear: "Очистить путь",
             zoomIn: "Приближение",
             zoomOut: "Отдаление"
+        },
+        vip: {
+            title: "VIP Статус",
+            subtitle: "Протокол расширенного доступа",
+            upgrade: "Купить VIP",
+            active: "VIP Активен",
+            photoLimit: "Лимит фото",
+            posts: "Доступ к чатам",
+            buyBtn: "Активировать статус",
+            close: "Закрыть"
+        },
+        games: {
+            title: "Игровой Терминал",
+            guessFlag: "Угадай флаг",
+            guessFlagDesc: "Зарабатывай билеты, угадывая флаги стран",
+            start: "Начать игру",
+            next: "Следующий вопрос",
+            reward: "Награда",
+            win: "Верно!",
+            lose: "Ошибка!",
+            exit: "Выход"
+        },
+        leaderboard: {
+            title: "Таблица лидеров",
+            distance: "По дистанции",
+            discoveries: "По открытиям",
+            rank: "Ранг",
+            user: "Пилот",
+            value: "Значение"
+        },
+        achievements: {
+            title: "Достижения",
+            unlocked: "Разблокировано",
+            locked: "Заблокировано",
+            explorer: "Исследователь",
+            millionaire: "Миллионер"
         }
     },
     en: {
@@ -93,7 +158,11 @@ export const languages = {
             shop: "Shop",
             options: "Options",
             console: "Console",
-            menu: "MENU"
+            menu: "MENU",
+            games: "Games",
+            profile: "Profile",
+            leaderboard: "Board",
+            achievements: "Rewards"
         },
         auth: {
             confirmation: "Authorization",
@@ -104,39 +173,58 @@ export const languages = {
         },
         info: {
             sector: "Sector Intelligence",
-            briefing: "Briefing",
-            nodes: "Active Nodes",
-            scannerActive: "SCANNER_MODE: ACTIVE",
-            target: "Target"
+            summary: "Summary",
+            memories: "Albums",
+            discussion: "Chat",
+            cities: "Cities",
+            registry: "Registry",
+            interest: "Interest",
+            cleanliness: "Cleanliness",
+            friendliness: "People",
+            difficulty: "Access",
+            sendMessage: "Type a message...",
+            createAlbum: "New Album",
+            albumName: "Album Title",
+            back: "Back",
+            visitBtn: "Visit",
+            visited: "Visited",
+            shareExp: "Share experience..."
         },
         shop: {
             title: "Style Shop",
             subtitle: "Visual Engine Marketplace",
             collection: "Your Collection",
             available: "Available",
-            wallet: "Wallet Balance",
+            wallet: "Wallet",
             miles: "Miles"
         },
         settings: {
             title: "Settings",
             subtitle: "System Environment Configuration",
+            general: "General",
+            profile: "Profile",
+            interface: "Interface",
+            security: "Security",
             localization: "Localization",
-            setLanguage: "Set primary system language",
+            setLanguage: "System Language",
+            mapTools: "Map Tools",
+            hints: "Hints",
+            startTour: "Start Training",
             buildProtocol: "Build Protocol"
         },
         admin: {
             terminal: "Admin Terminal",
-            controlPanel: "Control Panel",
             economics: "Economics",
-            themes: "Theme Access",
-            general: "General",
+            themes: "Themes",
             users: "Users",
-            totalMiles: "Total Miles",
+            logs: "Logs",
+            totalMiles: "Credits",
             status: "Status",
-            quickInjection: "Quick Injection",
-            manualOverwrite: "Manual Registry Overwrite",
+            quickInjection: "Injection",
+            manualOverwrite: "Overwrite",
             sync: "SYNC",
-            terminate: "Terminate and Wipe Registry"
+            terminate: "Wipe Registry",
+            controlPanel: "Control Panel"
         },
         stats: {
             log: "Travel Log",
@@ -152,12 +240,50 @@ export const languages = {
             draw: "Draw"
         },
         tooltips: {
-            showLabels: "Show Labels",
+            showLabels: "Global Labels",
             hideLabels: "Hide Labels",
-            magnifier: "Magnifier Mode",
-            draw: "Path Editor",
+            cursorLabel: "Cursor Scanner",
+            route: "Draw Route",
+            undo: "Undo step",
+            clear: "Clear Path",
             zoomIn: "Increase Scale",
             zoomOut: "Decrease Scale"
+        },
+        vip: {
+            title: "VIP Status",
+            subtitle: "Advanced Access Protocol",
+            upgrade: "Upgrade to VIP",
+            active: "VIP Active",
+            photoLimit: "Photo Limit",
+            posts: "Chat Access",
+            buyBtn: "Activate Access",
+            close: "Close"
+        },
+        games: {
+            title: "Game Terminal",
+            guessFlag: "Guess Flag",
+            guessFlagDesc: "Earn credits by guessing country flags",
+            start: "Start Game",
+            next: "Next Question",
+            reward: "Reward",
+            win: "Correct!",
+            lose: "Wrong!",
+            exit: "Exit"
+        },
+        leaderboard: {
+            title: "Leaderboard",
+            distance: "By Distance",
+            discoveries: "By Discoveries",
+            rank: "Rank",
+            user: "Pilot",
+            value: "Value"
+        },
+        achievements: {
+            title: "Achievements",
+            unlocked: "Unlocked",
+            locked: "Locked",
+            explorer: "Explorer",
+            millionaire: "Millionaire"
         }
     }
 } as const

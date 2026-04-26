@@ -7,6 +7,7 @@ export interface City {
 
 export interface CountryData {
     id: string
+    flag: string
     names: { ru: string; en: string }
     description: { ru: string; en: string }
     stats: {
