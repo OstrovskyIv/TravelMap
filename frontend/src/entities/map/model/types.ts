@@ -5,12 +5,15 @@ export interface MapTheme {
     background: string
     is3D: boolean
     hasGrain: boolean
+
     colors: {
         map: {
             visited: string[]
             unvisited: string[]
             border: string
             hover: string
+            unlockedFill: string
+            selectedFill: string
         },
         ui: {
             accent: string
@@ -20,6 +23,7 @@ export interface MapTheme {
             activeBg: string
         }
     }
+
     countryModal: {
         bg: string
         border: string
@@ -30,6 +34,7 @@ export interface MapTheme {
         buttonCancelBg: string
         buttonCancelText: string
     }
+
     infoModal: {
         bg: string
         border: string
@@ -38,6 +43,7 @@ export interface MapTheme {
         overlay: string
         closeBtnBg: string
     }
+
     mapTools: {
         bg: string
         border: string
@@ -45,13 +51,16 @@ export interface MapTheme {
         activeBg: string
         btnBg: string
     }
+
     strokeWidth: number
+
     loader: {
         overlayColor: string
         blur: string
         spinnerColor: string
         accentColor: string
     }
+
     searchDock: {
         bg: string
         border: string
@@ -61,6 +70,7 @@ export interface MapTheme {
         accent: string
         glow: string
     }
+
     langSwitcher: {
         bg: string
         text: string
@@ -68,6 +78,7 @@ export interface MapTheme {
         activeText: string
         border: string
     }
+
     sidebar: {
         bg: string
         border: string

@@ -5,19 +5,22 @@
 }
 
 :root {
-    --app-height: 100dvh; /* Динамическая высота для мобилок */
+    --app-height: 100dvh;
+    /* Добавляем дефолты, чтобы IDE не ругалась */
+    --bg-main: #0c0c0e;
+    --ui-accent: #fbbf24;
+    --ui-text: #ffffff;
+    --sidebar-bg: #18181b;
 }
 
-/* Обнуляем всё, что может дать микро-сдвиги */
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: var(--app-height);
     overflow: hidden;
-    background-color: var(--bg-main, #000);
+    background-color: var(--bg-main);
 
-    /* Отключаем системные жесты, чтобы они не конфликтовали с зумом карты */
     touch-action: none;
     overscroll-behavior: none;
     -webkit-user-select: none;
@@ -29,11 +32,9 @@ html, body {
     height: 100%;
 }
 
-/* SVG должен вести себя как блочный элемент и занимать всё пространство */
 svg {
     display: block;
     shape-rendering: geometricPrecision;
-    /* Важно: заставляем браузер использовать видеокарту */
     will-change: transform;
     transform: translateZ(0);
 }
@@ -43,6 +44,5 @@ svg {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Кастомный скроллбар для панелей */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-thumb { background: var(--ui-accent); border-radius: 10px; }

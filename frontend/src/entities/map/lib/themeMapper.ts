@@ -20,6 +20,13 @@ export const mapThemeToCssVars = (theme: MapTheme) => {
         '--search-glow': theme.searchDock.glow,
 
         '--loader-overlay': theme.loader.overlayColor,
-        '--loader-spinner': theme.loader.spinnerColor
+        '--loader-spinner': theme.loader.spinnerColor,
+
+        // КАРТА
+        '--map-unvisited': theme.colors.map.unvisited[0],
+        '--map-border': theme.colors.map.border,
+        '--map-hover': theme.colors.map.hover,
+        '--map-unlocked': theme.colors.map.unlockedFill,
+        '--map-selected': theme.colors.map.selectedFill
     } as Record<string, string>
 }

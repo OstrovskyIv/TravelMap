@@ -4,6 +4,8 @@ import { MAP_THEMES, type MapTheme } from '@entities/map/model'
 
 export const useMapStore = defineStore('map', () => {
     const visited = ref<string[]>([])
+    const unlockedCountries = ref<string[]>([])
+    const visitedCities = ref<Record<string, string[]>>({})
     const currentThemeId = ref<string>('classic')
     const zoomLevel = ref(1)
     const showLabels = ref(false)
@@ -13,6 +15,15 @@ export const useMapStore = defineStore('map', () => {
 
     const themes = ref<Record<string, MapTheme>>({ ...MAP_THEMES })
     const currentTheme = computed(() => themes.value[currentThemeId.value] || themes.value.classic)
+
+    const isUnlocked = (id: string) => unlockedCountries.value.includes(id)
+
+    const unlockCountry = (id: string) => {
+        if (!unlockedCountries.value.includes(id)) {
+            unlockedCountries.value.push(id)
+            if (!visitedCities.value[id]) visitedCities.value[id] = []
+        }
+    }
 
     const setZoom = (val: number) => {
         zoomLevel.value = Math.max(1, Math.min(15, val))
@@ -45,12 +56,26 @@ export const useMapStore = defineStore('map', () => {
     }
 
     return {
-        visited, currentThemeId, currentTheme, themes, zoomLevel,
-        pendingCountryId, showLabels, mapFeatures, isDataLoading,
-        loadMapData, setZoom, toggleCountry, setTheme
+        visited,
+        unlockedCountries,
+        visitedCities,
+        currentThemeId,
+        currentTheme,
+        themes,
+        zoomLevel,
+        pendingCountryId,
+        showLabels,
+        mapFeatures,
+        isDataLoading,
+        loadMapData,
+        setZoom,
+        toggleCountry,
+        setTheme,
+        unlockCountry,
+        isUnlocked
     }
 }, {
     persist: {
-        pick: ['visited', 'currentThemeId', 'showLabels']
+        pick: ['visited', 'unlockedCountries', 'visitedCities', 'currentThemeId', 'showLabels']
     }
 })

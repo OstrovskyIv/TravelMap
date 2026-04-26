@@ -1,5 +1,5 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
-import { MapRenderer } from '@shared/lib/MapRenderer'
+import { MapRenderer } from '@shared/lib/map-engine/MapRenderer'
 import { ALL_COUNTRIES } from '@entities/country/model'
 
 export function useMapEngine() {
@@ -24,13 +24,21 @@ export function useMapEngine() {
             container: mapContainer.value,
             features: mapStore.mapFeatures,
             theme: mapStore.currentTheme,
-            visited: mapStore.visited,
+            unlockedCountries: mapStore.unlockedCountries,
+            pendingId: mapStore.pendingCountryId,
+            visitedCities: mapStore.visitedCities,
             showLabels: mapStore.showLabels,
             onCountryClick: (id) => {
-                if (!mapStore.currentTheme) return
                 mapStore.pendingCountryId = id
-                if (mapStore.visited.includes(id)) uiStore.setInfoModal(true)
-                else uiStore.setCountryModal(true)
+
+                // ЛОГИКА ВЫБОРА МОДАЛКИ
+                if (mapStore.isUnlocked(id)) {
+                    uiStore.setInfoModal(true)
+                } else {
+                    uiStore.setCountryModal(true)
+                }
+
+                MapRenderer.highlightCountry(id, mapStore.currentTheme!)
             },
             onCountryHover: (feature) => {
                 if (!feature || !mapStore.showLabels) {

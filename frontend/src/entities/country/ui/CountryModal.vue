@@ -1,13 +1,13 @@
 <template>
   <Transition
       enter-active-class="transition-all duration-300 ease-out"
-      enter-from-class="opacity-0"
+      enter-from-class="opacity-0 scale-95"
       leave-active-class="transition-all duration-200 ease-in"
-      leave-to-class="opacity-0"
+      leave-to-class="opacity-0 scale-95"
   >
     <div
-        v-if="uiStore.isCountryModalOpen"
-        class="fixed inset-0 z-[100] flex items-center justify-center p-8 backdrop-blur-md bg-[var(--modal-overlay)]"
+        v-if="uiStore.isCountryModalOpen && country"
+        class="fixed inset-0 z-[150] flex items-center justify-center p-8 backdrop-blur-md bg-[var(--modal-overlay)]"
         @click.self="close"
     >
       <div
@@ -18,16 +18,16 @@
             {{ langStore.t.auth.confirmation }}
           </span>
           <h2 class="text-3xl font-black text-white leading-tight uppercase tracking-tighter italic">
-            {{ langStore.t.auth.title }}
+            {{ country.names[langStore.currentLang] }}
           </h2>
-          <p class="text-sm text-white/40 font-medium">
+          <p class="text-sm text-white/40 font-medium italic text-center leading-relaxed">
             {{ langStore.t.auth.subtitle }}
           </p>
         </div>
 
         <div class="flex flex-col gap-3">
           <button
-              @click="confirm"
+              @click="handleUnlock"
               class="w-full py-5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all active:scale-95 outline-none border-none cursor-pointer bg-[var(--ui-accent)] text-black"
           >
             {{ langStore.t.auth.confirmBtn }}
@@ -46,19 +46,27 @@
 </template>
 
 <script setup lang="ts">
+import { ALL_COUNTRIES } from '@entities/country/model'
+import { MapRenderer } from '@shared/lib/map-engine/MapRenderer'
+
 const uiStore = useUiStore()
 const mapStore = useMapStore()
 const langStore = useLangStore()
+
+const country = computed(() => ALL_COUNTRIES.find(c => c.id === mapStore.pendingCountryId))
 
 const close = () => {
   uiStore.setCountryModal(false)
   mapStore.pendingCountryId = null
 }
 
-const confirm = () => {
-  if (mapStore.pendingCountryId) {
-    mapStore.toggleCountry(mapStore.pendingCountryId)
+const handleUnlock = () => {
+  if (country.value) {
+    mapStore.unlockCountry(country.value.id)
+    // После разблокировки сразу перекрашиваем и открываем ИНФО модалку
+    MapRenderer.highlightCountry(country.value.id, mapStore.currentTheme!)
+    uiStore.setCountryModal(false)
+    uiStore.setInfoModal(true)
   }
-  close()
 }
 </script>

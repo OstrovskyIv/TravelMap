@@ -10,9 +10,11 @@ export const classic: MapTheme = {
     colors: {
         map: {
             visited: ['#fbbf24'],
-            unvisited: ['#1a1a1c', '#1e1e20', '#222224'],
-            border: '#2a2a2d',
-            hover: '#3f3f46'
+            unvisited: ['#1a1a1c'],
+            border: '#fbbf24',       // ЗОЛОТЫЕ ГРАНИЦЫ
+            hover: '#3f3f46',
+            unlockedFill: '#ef4444', // КРАСНЫЙ (Разблокировано)
+            selectedFill: '#fbbf24'  // ЗОЛОТОЙ (При клике)
         },
         ui: {
             accent: '#fbbf24',
@@ -34,7 +36,7 @@ export const classic: MapTheme = {
     },
     infoModal: {
         bg: '#0c0c0e',
-        border: 'rgba(251, 191, 36, 0.3)',
+        border: 'rgba(fbbf24, 0.3)',
         text: '#ffffff',
         accent: '#fbbf24',
         overlay: 'rgba(0, 0, 0, 0.6)',

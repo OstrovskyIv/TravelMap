@@ -1,24 +1,19 @@
 import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
 import vueRouter from 'unplugin-vue-router/vite'
 import autoImport from 'unplugin-auto-import/vite'
 import components from 'unplugin-vue-components/vite'
 import { VueRouterAutoImports } from 'unplugin-vue-router'
 import tailwindcss from '@tailwindcss/vite'
-import vue from '@vitejs/plugin-vue'
 import path from 'node:path'
 
 export default defineConfig({
-  base: '/TravelMap/',
+  base: process.env.NODE_ENV === 'production' ? '/TravelMap/' : '/',
   plugins: [
-    vueRouter({
-      routesFolder: 'src/pages',
-      extensions: ['.vue'],
-    }),
+    vueRouter({ routesFolder: 'src/pages', extensions: ['.vue'] }),
     autoImport({
       imports: [
-        'vue',
-        'pinia',
-        VueRouterAutoImports,
+        'vue', 'pinia', VueRouterAutoImports,
         {
           '@entities/map/model/mapStore': ['useMapStore'],
           '@entities/user/model/userStore': ['useUserStore'],

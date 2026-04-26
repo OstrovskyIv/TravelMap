@@ -31,7 +31,6 @@
         leave-to-class="opacity-0 -translate-y-2 scale-95"
     >
       <div v-if="isOpen" class="flex flex-col gap-3 items-end pointer-events-auto">
-        <!-- Кнопки инструментов -->
         <div v-for="tool in tools" :key="tool.id" class="flex items-center justify-center">
           <button
               @click="handleToolClick(tool.id)"
@@ -57,17 +56,10 @@
         ]">
           <button @click="adjustZoom(1.5)" class="text-white hover:text-[var(--ui-accent)] border-none bg-transparent cursor-pointer font-black leading-none" :class="isMobile ? 'text-xs' : 'text-base'">+</button>
 
-          <!-- Контейнер для вертикального инпута -->
           <div :class="['relative flex items-center justify-center', isMobile ? 'h-24 w-1.5' : 'h-32 w-2']">
-            <!-- Визуальная дорожка -->
             <div class="absolute inset-0 bg-white/10 rounded-full overflow-hidden flex flex-col justify-end">
-              <div
-                  class="w-full bg-[var(--ui-accent)] transition-all duration-200"
-                  :style="{ height: `${((mapStore.zoomLevel - 1) / 14) * 100}%` }"
-              ></div>
+              <div class="w-full bg-[var(--ui-accent)] transition-all duration-200" :style="{ height: `${((mapStore.zoomLevel - 1) / 14) * 100}%` }"></div>
             </div>
-
-            <!-- Реальный инпут (прозрачный и повернутый) -->
             <input
                 type="range" min="1" max="15" step="0.1"
                 :value="mapStore.zoomLevel"
@@ -91,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import { MapRenderer } from '@shared/lib/MapRenderer'
+import { MapRenderer } from '@shared/lib/map-engine/MapRenderer' // ИСПРАВЛЕН ПУТЬ
 import { useScreen } from '@shared/lib/useScreen'
 
 const { isMobile } = useScreen()
@@ -99,38 +91,20 @@ const mapStore = useMapStore()
 const isOpen = ref(false)
 
 type ToolId = 'labels' | 'magnifier' | 'draw'
-const tools: { id: ToolId, icon: string }[] = [
-  { id: 'labels', icon: '🏷️' },
-  { id: 'magnifier', icon: '🔍' },
-  { id: 'draw', icon: '✏️' }
-]
+const tools: { id: ToolId, icon: string }[] = [{ id: 'labels', icon: '🏷️' }, { id: 'magnifier', icon: '🔍' }, { id: 'draw', icon: '✏️' }]
 
-const handleToolClick = (id: ToolId) => {
-  if (id === 'labels') mapStore.showLabels = !mapStore.showLabels
-}
-
+const handleToolClick = (id: ToolId) => { if (id === 'labels') mapStore.showLabels = !mapStore.showLabels }
 const onZoomInput = (e: Event) => {
   const val = parseFloat((e.target as HTMLInputElement).value)
-  mapStore.setZoom(val)
-  MapRenderer.programmaticZoom(val)
+  mapStore.setZoom(val); MapRenderer.programmaticZoom(val)
 }
-
 const adjustZoom = (delta: number) => {
   const newVal = mapStore.zoomLevel + delta
-  mapStore.setZoom(newVal)
-  MapRenderer.programmaticZoom(mapStore.zoomLevel)
+  mapStore.setZoom(newVal); MapRenderer.programmaticZoom(mapStore.zoomLevel)
 }
 </script>
 
 <style scoped>
-/* Убираем любые системные отступы у инпута */
-input[type=range] {
-  -webkit-appearance: none;
-  appearance: none;
-}
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 40px;
-  width: 40px;
-}
+input[type=range] { -webkit-appearance: none; appearance: none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 40px; width: 40px; }
 </style>
