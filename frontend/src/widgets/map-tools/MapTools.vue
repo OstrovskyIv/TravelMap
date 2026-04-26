@@ -32,21 +32,28 @@
     >
       <div v-if="isOpen" class="flex flex-col gap-3 items-end pointer-events-auto">
         <div v-for="tool in tools" :key="tool.id" class="flex items-center justify-center">
-          <button
-              @click="handleToolClick(tool.id)"
-              :class="[
-                'flex items-center justify-center transition-all hover:scale-110 active:scale-95 border backdrop-blur-xl outline-none cursor-pointer shadow-lg bg-[var(--search-bg)]',
-                isMobile ? 'w-10 h-10 rounded-xl' : 'w-12 h-12 rounded-2xl'
-              ]"
-              :style="{
-                borderColor: (tool.id === 'labels' && mapStore.showLabels) ? 'var(--ui-accent)' : 'var(--ui-border)',
-                color: (tool.id === 'labels' && mapStore.showLabels) ? 'var(--ui-accent)' : '#ffffff'
-              }"
+          <BaseTooltip
+              :text="(tool.id === 'labels'
+              ? (mapStore.showLabels ? langStore.t.tooltips.hideLabels : langStore.t.tooltips.showLabels)
+              : langStore.t.tooltips[tool.id]) || ''"
+              position="left"
           >
-            <span :class="isMobile ? 'text-base' : 'text-xl'" class="leading-none flex items-center justify-center">
-              {{ tool.icon }}
-            </span>
-          </button>
+            <button
+                @click="handleToolClick(tool.id)"
+                :class="[
+                  'flex items-center justify-center transition-all hover:scale-110 active:scale-95 border backdrop-blur-xl outline-none cursor-pointer shadow-lg bg-[var(--search-bg)]',
+                  isMobile ? 'w-10 h-10 rounded-xl' : 'w-12 h-12 rounded-2xl'
+                ]"
+                :style="{
+                  borderColor: (tool.id === 'labels' && mapStore.showLabels) ? 'var(--ui-accent)' : 'var(--ui-border)',
+                  color: (tool.id === 'labels' && mapStore.showLabels) ? 'var(--ui-accent)' : '#ffffff'
+                }"
+            >
+              <span :class="isMobile ? 'text-base' : 'text-xl'" class="leading-none flex items-center justify-center">
+                {{ tool.icon }}
+              </span>
+            </button>
+          </BaseTooltip>
         </div>
 
         <!-- Слайдер Зума -->
@@ -54,7 +61,9 @@
           'flex flex-col items-center bg-[var(--sidebar-bg)]/90 backdrop-blur-3xl border border-white/5 shadow-2xl',
           isMobile ? 'w-10 py-4 rounded-xl gap-3' : 'w-12 py-6 rounded-2xl gap-4'
         ]">
-          <button @click="adjustZoom(1.5)" class="text-white hover:text-[var(--ui-accent)] border-none bg-transparent cursor-pointer font-black leading-none" :class="isMobile ? 'text-xs' : 'text-base'">+</button>
+          <BaseTooltip :text="langStore.t.tooltips.zoomIn || ''" position="left">
+            <button @click="adjustZoom(1.5)" class="text-white hover:text-[var(--ui-accent)] border-none bg-transparent cursor-pointer font-black leading-none" :class="isMobile ? 'text-xs' : 'text-base'">+</button>
+          </BaseTooltip>
 
           <div :class="['relative flex items-center justify-center', isMobile ? 'h-24 w-1.5' : 'h-32 w-2']">
             <div class="absolute inset-0 bg-white/10 rounded-full overflow-hidden flex flex-col justify-end">
@@ -66,16 +75,18 @@
                 @input="onZoomInput"
                 class="absolute cursor-pointer opacity-0"
                 :style="{
-                width: isMobile ? '96px' : '128px',
-                height: '40px',
-                transform: 'rotate(-90deg)',
-                margin: '0',
-                padding: '0'
-              }"
+                  width: isMobile ? '96px' : '128px',
+                  height: '40px',
+                  transform: 'rotate(-90deg)',
+                  margin: '0',
+                  padding: '0'
+                }"
             />
           </div>
 
-          <button @click="adjustZoom(-1.5)" class="text-white hover:text-[var(--ui-accent)] border-none bg-transparent cursor-pointer font-black leading-none" :class="isMobile ? 'text-xs' : 'text-base'">-</button>
+          <BaseTooltip :text="langStore.t.tooltips.zoomOut || ''" position="left">
+            <button @click="adjustZoom(-1.5)" class="text-white hover:text-[var(--ui-accent)] border-none bg-transparent cursor-pointer font-black leading-none" :class="isMobile ? 'text-xs' : 'text-base'">-</button>
+          </BaseTooltip>
         </div>
       </div>
     </Transition>
@@ -83,24 +94,36 @@
 </template>
 
 <script setup lang="ts">
-import { MapRenderer } from '@shared/lib/map-engine/MapRenderer' // ИСПРАВЛЕН ПУТЬ
+import BaseTooltip from '@shared/ui/base-tooltip/BaseTooltip.vue'
+import { MapRenderer } from '@shared/lib/map-engine/MapRenderer'
 import { useScreen } from '@shared/lib/useScreen'
 
 const { isMobile } = useScreen()
 const mapStore = useMapStore()
+const langStore = useLangStore()
 const isOpen = ref(false)
 
 type ToolId = 'labels' | 'magnifier' | 'draw'
-const tools: { id: ToolId, icon: string }[] = [{ id: 'labels', icon: '🏷️' }, { id: 'magnifier', icon: '🔍' }, { id: 'draw', icon: '✏️' }]
+const tools: { id: ToolId, icon: string }[] = [
+  { id: 'labels', icon: '🏷️' },
+  { id: 'magnifier', icon: '🔍' },
+  { id: 'draw', icon: '✏️' }
+]
 
-const handleToolClick = (id: ToolId) => { if (id === 'labels') mapStore.showLabels = !mapStore.showLabels }
+const handleToolClick = (id: ToolId) => {
+  if (id === 'labels') mapStore.showLabels = !mapStore.showLabels
+}
+
 const onZoomInput = (e: Event) => {
   const val = parseFloat((e.target as HTMLInputElement).value)
-  mapStore.setZoom(val); MapRenderer.programmaticZoom(val)
+  mapStore.setZoom(val)
+  MapRenderer.programmaticZoom(val)
 }
+
 const adjustZoom = (delta: number) => {
   const newVal = mapStore.zoomLevel + delta
-  mapStore.setZoom(newVal); MapRenderer.programmaticZoom(mapStore.zoomLevel)
+  mapStore.setZoom(newVal)
+  MapRenderer.programmaticZoom(mapStore.zoomLevel)
 }
 </script>
 

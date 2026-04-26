@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AdminConsole: typeof import('./widgets/admin-console/AdminConsole.vue')['default']
     BalanceTicket: typeof import('./entities/user/ui/BalanceTicket.vue')['default']
+    BaseTooltip: typeof import('./shared/ui/base-tooltip/BaseTooltip.vue')['default']
     ClassicLoader: typeof import('./shared/loaders/ClassicLoader/ClassicLoader.vue')['default']
     CountryModal: typeof import('./entities/country/ui/CountryModal.vue')['default']
     EconomyTab: typeof import('./widgets/admin-console/ui/EconomyTab.vue')['default']

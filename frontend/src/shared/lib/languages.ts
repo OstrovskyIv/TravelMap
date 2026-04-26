@@ -10,6 +10,7 @@ export interface LanguageTree {
     stats: LanguageCategory
     search: LanguageCategory
     tools: LanguageCategory
+    tooltips: LanguageCategory // Добавили поле в интерфейс
 }
 
 export const languages = {
@@ -76,6 +77,14 @@ export const languages = {
             labels: "Названия",
             magnifier: "Лупа",
             draw: "Рисовать"
+        },
+        tooltips: {
+            showLabels: "Показать названия",
+            hideLabels: "Скрыть названия",
+            magnifier: "Режим поиска",
+            draw: "Редактор путей",
+            zoomIn: "Приближение",
+            zoomOut: "Отдаление"
         }
     },
     en: {
@@ -141,6 +150,14 @@ export const languages = {
             labels: "Labels",
             magnifier: "Magnifier",
             draw: "Draw"
+        },
+        tooltips: {
+            showLabels: "Show Labels",
+            hideLabels: "Hide Labels",
+            magnifier: "Magnifier Mode",
+            draw: "Path Editor",
+            zoomIn: "Increase Scale",
+            zoomOut: "Decrease Scale"
         }
     }
 } as const
