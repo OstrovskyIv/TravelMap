@@ -49,6 +49,9 @@
 <script setup lang="ts">
 import { ALL_COUNTRIES } from '@entities/country/model'
 import type { CountryData } from '@entities/country/model'
+import { useUserStore } from '@entities/user/model/userStore'
+import { useLangStore } from '@features/lang-switcher/model/langStore'
+import { ref } from 'vue'
 
 const langStore = useLangStore()
 const userStore = useUserStore()
@@ -77,12 +80,15 @@ const startGame = () => {
   options.value = [random, ...others].sort(() => 0.5 - Math.random())
 }
 
-const handleAnswer = (id: string) => {
-  if (!currentCountry.value) return
+const handleAnswer = async (id: string) => {
+  if (!currentCountry.value || isAnswered.value) return
+
   selectedId.value = id
   isAnswered.value = true
+
   if (id === currentCountry.value.id) {
-    userStore.addBalance(50)
+    // ВАЖНО: вызываем асинхронный метод стора, который делает запрос в БД
+    await userStore.addBalance(50)
     sessionCredits.value += 50
   }
 }

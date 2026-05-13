@@ -2,16 +2,16 @@ import { defineStore } from 'pinia'
 import { ref, computed, shallowRef } from 'vue'
 import { MAP_THEMES, type MapTheme } from '@entities/map/model'
 import { MapHelpers } from '@shared/lib/map-engine/helpers'
-
-export interface ChatMessage { id: string; author: string; text: string; timestamp: number }
-export interface Album { id: string; name: string; images: string[]; timestamp: number }
-export interface Ratings { interest: number; cleanliness: number; friendliness: number; difficulty: number }
+import api from '@shared/api/index'
 
 export const useMapStore = defineStore('map', () => {
-    const visited = ref<string[]>([])
+    // Данные прогресса
     const unlockedCountries = ref<string[]>([])
     const visitedCities = ref<Record<string, string[]>>({})
-    const currentThemeId = ref<string>('atlas')
+    const countryRatings = ref<Record<string, any>>({})
+
+    // UI Состояние
+    const currentThemeId = ref<string>('classic')
     const zoomLevel = ref(1)
     const showLabels = ref(false)
     const showCursorLabel = ref(true)
@@ -21,13 +21,84 @@ export const useMapStore = defineStore('map', () => {
     const isRouteMode = ref(false)
     const routePoints = ref<string[]>([])
 
-    const countryRatings = ref<Record<string, Ratings>>({})
-    const cityRatings = ref<Record<string, number>>({})
-    const publicChats = ref<Record<string, ChatMessage[]>>({})
-    const personalAlbums = ref<Record<string, Album[]>>({})
-
     const themes = ref<Record<string, MapTheme>>({ ...MAP_THEMES })
-    const currentTheme = computed(() => themes.value[currentThemeId.value] || themes.value.atlas)
+    const currentTheme = computed(() => themes.value[currentThemeId.value] || themes.value.classic)
+
+    // --- СИНХРОНИЗАЦИЯ С БЭКЕНДОМ ---
+
+    const fetchProgress = async () => {
+        try {
+            const { data } = await api.get('/map/progress')
+            unlockedCountries.value = data.unlockedCountries || []
+
+            // Преобразуем массив городов в объект для удобства
+            const citiesObj: Record<string, string[]> = {}
+            data.visitedCities?.forEach((item: any) => {
+                if (!citiesObj[item.country_id]) citiesObj[item.country_id] = []
+                citiesObj[item.country_id].push(item.city_id)
+            })
+            visitedCities.value = citiesObj
+
+            // Преобразуем рейтинги
+            const ratingsObj: Record<string, any> = {}
+            data.ratings?.forEach((item: any) => {
+                ratingsObj[item.country_id] = {
+                    interest: item.interest,
+                    cleanliness: item.cleanliness,
+                    friendliness: item.friendliness,
+                    difficulty: item.difficulty
+                }
+            })
+            countryRatings.value = ratingsObj
+        } catch (err) {
+            console.error('Failed to sync map progress:', err)
+        }
+    }
+
+    const unlockCountry = async (id: string) => {
+        if (unlockedCountries.value.includes(id)) return
+        try {
+            await api.post('/map/unlock', { countryId: id })
+            unlockedCountries.value.push(id)
+            if (!visitedCities.value[id]) visitedCities.value[id] = []
+        } catch (err) {
+            console.error('Unlock sync failed:', err)
+        }
+    }
+
+    const toggleCityVisit = async (countryId: string, cityId: string) => {
+        try {
+            await api.post('/map/city', { countryId, cityId })
+            if (!visitedCities.value[countryId]) visitedCities.value[countryId] = []
+
+            const index = visitedCities.value[countryId].indexOf(cityId)
+            if (index > -1) visitedCities.value[countryId].splice(index, 1)
+            else visitedCities.value[countryId].push(cityId)
+        } catch (err) {
+            console.error('City toggle sync failed:', err)
+        }
+    }
+
+    const saveCountryRating = async (countryId: string, ratings: any) => {
+        try {
+            await api.post('/map/rating', { countryId, ...ratings })
+            countryRatings.value[countryId] = ratings
+        } catch (err) {
+            console.error('Rating sync failed:', err)
+        }
+    }
+
+    // --- ОСТАЛЬНАЯ ЛОГИКА (БЕЗ ИЗМЕНЕНИЙ) ---
+
+    const loadMapData = async () => {
+        if (mapFeatures.value.length > 0) return
+        isDataLoading.value = true
+        try {
+            const d3 = await import('d3')
+            const worldData = await d3.json(`${import.meta.env.BASE_URL}data/custom.geo.json`) as any
+            mapFeatures.value = worldData.features
+        } catch (e) { console.error(e) } finally { isDataLoading.value = false }
+    }
 
     const totalDistance = computed(() => {
         if (routePoints.value.length < 2) return 0
@@ -42,73 +113,16 @@ export const useMapStore = defineStore('map', () => {
         return dist
     })
 
-    const isUnlocked = (id: string) => unlockedCountries.value.includes(id)
-    const isCityVisited = (countryId: string, cityId: string) => visitedCities.value[countryId]?.includes(cityId) || false
-
-    const toggleCityVisit = (countryId: string, cityId: string) => {
-        if (!visitedCities.value[countryId]) visitedCities.value[countryId] = []
-        const index = visitedCities.value[countryId].indexOf(cityId)
-        if (index > -1) visitedCities.value[countryId].splice(index, 1)
-        else visitedCities.value[countryId].push(cityId)
-    }
-
-    const getCityRating = (cityId: string) => cityRatings.value[cityId] || 0
-
-    const getCountryScore = (countryId: string, citiesIds: string[]) => {
-        const r = countryRatings.value[countryId] || { interest: 0, cleanliness: 0, friendliness: 0, difficulty: 0 }
-        const sum = (r.interest || 0) + (r.cleanliness || 0) + (r.friendliness || 0) + (r.difficulty || 0)
-        const weightedBase = (sum / 4) * 0.9
-        let cityAvg = 0
-        if (citiesIds.length > 0) {
-            const cSum = citiesIds.reduce((acc, cid) => acc + (cityRatings.value[cid] || 0), 0)
-            cityAvg = (cSum / citiesIds.length) / 10
-        }
-        const res = weightedBase + cityAvg
-        return isNaN(res) ? 0 : parseFloat(res.toFixed(1))
-    }
-
-    const addChatMessage = (id: string, msg: ChatMessage) => {
-        if (!publicChats.value[id]) publicChats.value[id] = []
-        publicChats.value[id].push(msg)
-    }
-
-    const addAlbum = (id: string, album: Album) => {
-        if (!personalAlbums.value[id]) personalAlbums.value[id] = []
-        personalAlbums.value[id].unshift(album)
-    }
-
-    const setCountryRating = (id: string, r: Ratings) => { countryRatings.value[id] = r }
-    const setCityRating = (id: string, s: number) => { cityRatings.value[id] = s }
-    const addRoutePoint = (id: string) => { routePoints.value.push(id) }
-    const removeLastPoint = () => { if (routePoints.value.length > 0) routePoints.value.pop() }
-    const clearRoute = () => { routePoints.value = [] }
-    const setZoom = (v: number) => { zoomLevel.value = Math.max(1, Math.min(15, v)) }
-    const setTheme = (id: string) => { if (themes.value[id]) currentThemeId.value = id }
-
-    const unlockCountry = (id: string) => {
-        if (!unlockedCountries.value.includes(id)) {
-            unlockedCountries.value.push(id)
-            if (!visitedCities.value[id]) visitedCities.value[id] = []
-        }
-    }
-
-    const loadMapData = async () => {
-        if (mapFeatures.value.length > 0) return
-        isDataLoading.value = true
-        try {
-            const d3 = await import('d3')
-            const worldData = await d3.json(`${import.meta.env.BASE_URL}data/custom.geo.json`) as any
-            mapFeatures.value = worldData.features
-        } catch (e) { console.error(e) } finally { isDataLoading.value = false }
-    }
-
     return {
-        visited, unlockedCountries, visitedCities, currentThemeId, currentTheme, themes, zoomLevel,
+        unlockedCountries, visitedCities, currentThemeId, currentTheme, themes, zoomLevel,
         pendingCountryId, showLabels, showCursorLabel, mapFeatures, isDataLoading, isRouteMode, routePoints,
-        countryRatings, cityRatings, publicChats, personalAlbums, totalDistance,
-        loadMapData, setZoom, setTheme, unlockCountry, isUnlocked, addRoutePoint, removeLastPoint, clearRoute,
-        getCountryScore, toggleCityVisit, isCityVisited, addChatMessage, addAlbum, setCountryRating, setCityRating, getCityRating
+        countryRatings, totalDistance,
+        loadMapData, fetchProgress, unlockCountry, toggleCityVisit, saveCountryRating,
+        setZoom: (v: number) => { zoomLevel.value = v },
+        setTheme: (id: string) => { if (themes.value[id]) currentThemeId.value = id },
+        isUnlocked: (id: string) => unlockedCountries.value.includes(id),
+        addRoutePoint: (id: string) => { routePoints.value.push(id) },
+        removeLastPoint: () => routePoints.value.pop(),
+        clearRoute: () => { routePoints.value = [] }
     }
-}, {
-    persist: true
-})
+}, { persist: true })

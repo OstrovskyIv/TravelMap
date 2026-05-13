@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AdminConsole: typeof import('./widgets/admin-console/AdminConsole.vue')['default']
+    AuthModal: typeof import('./features/auth/AuthModal.vue')['default']
     BalanceTicket: typeof import('./entities/user/ui/BalanceTicket.vue')['default']
     BaseTooltip: typeof import('./shared/ui/base-tooltip/BaseTooltip.vue')['default']
     ClassicLoader: typeof import('./shared/loaders/ClassicLoader/ClassicLoader.vue')['default']

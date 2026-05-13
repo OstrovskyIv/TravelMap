@@ -19,27 +19,20 @@
 
           <div class="h-[1px] bg-white/5 my-2"></div>
 
+          <!-- Кнопка Игры -->
           <button @click="ui.setGamesModal(true)" class="flex items-center gap-5 p-5 rounded-[24px] bg-transparent border-none cursor-pointer transition-all hover:bg-white/5 group">
             <span class="text-2xl group-hover:rotate-12 transition-transform">🎮</span>
             <span class="text-[13px] font-black uppercase tracking-widest text-[var(--ui-text-muted)] group-hover:text-white">{{ langStore.t.navigation.games }}</span>
           </button>
 
-          <RouterLink to="/leaderboard" class="group flex items-center gap-5 p-5 rounded-[24px] transition-all border border-transparent hover:bg-white/5">
-            <span class="text-2xl group-hover:scale-110 transition-transform">🏆</span>
-            <span class="text-[13px] font-black uppercase tracking-widest text-[var(--ui-text-muted)] group-hover:text-white">{{ langStore.t.navigation.leaderboard }}</span>
-          </RouterLink>
-
-          <RouterLink to="/achievements" class="group flex items-center gap-5 p-5 rounded-[24px] transition-all border border-transparent hover:bg-white/5">
-            <span class="text-2xl group-hover:scale-110 transition-transform">🎖️</span>
-            <span class="text-[13px] font-black uppercase tracking-widest text-[var(--ui-text-muted)] group-hover:text-white">{{ langStore.t.navigation.achievements }}</span>
-          </RouterLink>
-
+          <!-- Консоль админа (если админ) -->
           <button v-if="userStore.isAdmin" @click="ui.toggleAdminConsole" class="flex items-center gap-5 p-5 rounded-[24px] border border-dashed border-white/10 bg-transparent cursor-pointer transition-all hover:border-[var(--ui-accent)]/50 group" :class="{ 'bg-[var(--ui-accent)]/10 border-[var(--ui-accent)]/30': ui.isAdminConsoleOpen }">
             <span class="text-2xl opacity-40 group-hover:opacity-100 transition-opacity italic font-black">⚙️</span>
             <span class="text-[13px] font-black uppercase tracking-widest" :style="{ color: ui.isAdminConsoleOpen ? 'var(--ui-accent)' : 'var(--ui-text-muted)' }">{{ langStore.t.navigation.console }}</span>
           </button>
         </nav>
 
+        <!-- VIP блок -->
         <div class="relative p-[1px] rounded-2xl overflow-hidden cursor-pointer active:scale-95 transition-all group" @click="ui.setVipModal(true)">
           <div class="absolute inset-0 vip-shimmer"></div>
           <div class="relative bg-black/90 rounded-[15px] px-5 py-3.5 flex items-center justify-between">
@@ -51,19 +44,32 @@
 
         <div class="flex-1 min-h-[20px]"></div>
 
-        <section class="flex flex-col gap-6">
+        <!-- СЕКЦИЯ ПРОФИЛЯ И ВЫХОДА -->
+        <section class="flex flex-col gap-3">
+          <!-- Ссылка на профиль -->
           <RouterLink to="/profile" class="flex items-center gap-5 p-4 rounded-[32px] bg-white/5 border border-white/5 shadow-inner hover:bg-white/[0.08] transition-all no-underline" :class="userStore.isVip ? 'border-yellow-500/30' : ''">
-            <div class="relative">
+            <div class="relative shrink-0">
               <div class="absolute -top-6 left-1/2 -translate-x-1/2 text-2xl drop-shadow-2xl z-10" v-if="userStore.activeHat">{{ userStore.activeHat }}</div>
-              <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg bg-[var(--ui-accent)] text-black relative z-0" :class="userStore.isVip ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' : ''">{{ userStore.userName.charAt(0) }}</div>
-              <div v-if="userStore.activeEmoji" class="absolute -bottom-1 -right-1 text-xs bg-black/80 rounded-full w-5 h-5 flex items-center justify-center border border-white/10">{{ userStore.activeEmoji }}</div>
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg bg-[var(--ui-accent)] text-black relative z-0 uppercase" :class="userStore.isVip ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' : ''">
+                {{ userStore.userName.charAt(0) }}
+              </div>
             </div>
-            <div class="flex flex-col gap-1 leading-none">
-              <span class="text-sm font-black italic text-white leading-none">{{ userStore.userName }}</span>
+            <div class="flex flex-col gap-1 leading-none overflow-hidden">
+              <span class="text-sm font-black italic text-white leading-none truncate">{{ userStore.userName }}</span>
               <span class="text-[8px] uppercase font-mono opacity-30 tracking-tighter text-white">View Profile</span>
             </div>
           </RouterLink>
+
+          <!-- КНОПКА ВЫХОДА -->
+          <button
+              @click="handleLogout"
+              class="flex items-center gap-4 px-6 py-4 rounded-2xl bg-red-500/5 hover:bg-red-500/20 border border-red-500/10 hover:border-red-500/40 transition-all cursor-pointer group group"
+          >
+            <span class="text-lg opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all">⏻</span>
+            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-red-500/60 group-hover:text-red-500 italic">Terminate Session</span>
+          </button>
         </section>
+
       </div>
     </aside>
   </Transition>
@@ -71,11 +77,40 @@
 
 <script setup lang="ts">
 import { useScreen } from '@shared/lib/useScreen'
-const { isMobile } = useScreen(); const langStore = useLangStore(); const userStore = useUserStore(); const ui = useUiStore(); const route = useRoute()
-const menuItems: { id: keyof typeof langStore.t.navigation, path: string, icon: string }[] = [{ id: 'atlas', path: '/', icon: '🌍' }, { id: 'shop', path: '/shop', icon: '💎' }, { id: 'options', path: '/settings', icon: '🔮' }]
+import { useRouter, useRoute } from 'vue-router'
+import { useUserStore } from '@/entities/user/model/userStore'
+import { useUiStore } from '@shared/lib/uiStore'
+import { useLangStore } from '@features/lang-switcher/model/langStore'
+
+const { isMobile } = useScreen()
+const langStore = useLangStore()
+const userStore = useUserStore()
+const ui = useUiStore()
+const route = useRoute()
+const router = useRouter()
+
+const menuItems: { id: 'atlas' | 'shop' | 'options', path: string, icon: string }[] = [
+  { id: 'atlas', path: '/', icon: '🌍' },
+  { id: 'shop', path: '/shop', icon: '💎' },
+  { id: 'options', path: '/settings', icon: '🔮' }
+]
+
+const handleLogout = () => {
+  if (confirm('Вы уверены, что хотите прервать сессию?')) {
+    userStore.logout()
+    // Закрываем сайдбар, чтобы при следующем входе он не перекрывал экран
+    ui.isSidebarOpen = false
+    // Перенаправляем на главную (там сработает AuthModal)
+    router.push('/')
+  }
+}
 </script>
 
 <style scoped>
 .vip-shimmer { background: linear-gradient(115deg, transparent 0%, #facc15 50%, transparent 100%); background-size: 200% 100%; animation: shimmer 3s linear infinite; }
 @keyframes shimmer { 0% { background-position: 150% 0%; } 100% { background-position: -150% 0%; } }
+
+/* Стили для скроллбара */
+.custom-scrollbar::-webkit-scrollbar { width: 3px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
 </style>

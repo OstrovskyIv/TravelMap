@@ -1,6 +1,9 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { MapRenderer } from '@shared/lib/map-engine/MapRenderer'
 import { ALL_COUNTRIES } from '@entities/country/model'
+import { useMapStore } from '@entities/map/model/mapStore'
+import { useUiStore } from '@shared/lib/uiStore'
+import { useLangStore } from '@features/lang-switcher/model/langStore'
 
 export function useMapEngine() {
     const mapStore = useMapStore()
@@ -16,6 +19,7 @@ export function useMapEngine() {
         mousePos.value = { x: e.clientX, y: e.clientY }
     }
 
+    // Делаем функцию draw доступной снаружи
     const draw = async () => {
         if (!mapContainer.value || !mapStore.currentTheme) return
         if (mapStore.mapFeatures.length === 0) await mapStore.loadMapData()
@@ -29,7 +33,6 @@ export function useMapEngine() {
             visitedCities: mapStore.visitedCities,
             showLabels: mapStore.showLabels,
             onCountryClick: (id) => {
-                // ИСПРАВЛЕНО: Вызываем addRoutePoint вместо старой функции
                 if (mapStore.isRouteMode) {
                     mapStore.addRoutePoint(id)
                     MapRenderer.drawRoute(mapStore.routePoints, mapStore.mapFeatures, mapStore.currentTheme!)
@@ -63,5 +66,6 @@ export function useMapEngine() {
     onMounted(draw)
     onUnmounted(() => window.removeEventListener('resize', draw))
 
-    return { mapContainer, isLoading, mousePos, hoveredCountryName, handleGlobalMouseMove }
+    // Возвращаем draw, чтобы его можно было вызвать вручную после загрузки данных
+    return { mapContainer, isLoading, mousePos, hoveredCountryName, handleGlobalMouseMove, draw }
 }
