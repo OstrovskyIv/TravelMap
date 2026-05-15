@@ -19,6 +19,7 @@ export const MapRenderer = {
         this.lastOptions = options
         const { container, features, theme, unlockedCountries, pendingId, visitedCities, showLabels, onCountryClick, onCountryHover } = options
         const width = container.clientWidth; const height = container.clientHeight
+
         let svg = d3.select(container).select<SVGSVGElement>('svg')
         if (svg.empty()) {
             svg = d3.select(container).append('svg')
@@ -26,6 +27,7 @@ export const MapRenderer = {
                 .style('cursor', 'grab').style('touch-action', 'none').style('overscroll-behavior', 'none') as any
         }
         this.svgSelection = svg
+
         const activeFeatures = features.filter(f => {
             const id = f.properties.ISO_A3 || f.properties.iso_a3
             if (ALL_COUNTRIES.some(c => c.id === id)) {
@@ -34,10 +36,13 @@ export const MapRenderer = {
             }
             return false
         })
+
         const projection = d3.geoMercator().rotate([-100, 0]).scale(width / (2 * Math.PI)).translate([width / 2, height / 2]).center([0, 45]).precision(0.5)
         this.initialScale = projection.scale(); this.projection = projection; this.pathGenerator = d3.geoPath().projection(projection)
+
         let g = svg.select<SVGGElement>('g')
         if (g.empty()) g = svg.append('g')
+
         this.cachedPaths = g.selectAll<SVGPathElement, CountryFeature>('path.country')
             .data(activeFeatures, (d: any) => d.properties.ISO_A3 || d.properties.iso_a3)
             .join('path').attr('class', 'country')
@@ -59,11 +64,13 @@ export const MapRenderer = {
                     .attr('fill', MapHelpers.getColor(id, options.unlockedCountries, options.pendingId, options.visitedCities, theme))
                 onCountryHover(null)
             })
+
         g.selectAll('.country-label').remove()
         this.cachedLabels = g.selectAll<SVGGElement, CountryFeature>('.country-label')
             .data(activeFeatures, (d: any) => d.properties.ISO_A3 || d.properties.iso_a3)
             .enter().append('g').attr('class', 'country-label').attr('pointer-events', 'none')
             .style('display', showLabels ? 'block' : 'none')
+
         this.cachedLabels.append('text').attr('class', 'label-text').attr('text-anchor', 'middle').attr('fill', 'white')
             .style('font-weight', '900').style('paint-order', 'stroke').style('stroke', 'rgba(0,0,0,0.8)').style('stroke-width', '3px')
             .text((d: any) => {
@@ -73,27 +80,37 @@ export const MapRenderer = {
                 const visitedCount = visitedCities[id]?.length || 0
                 return `${c.flag || '📍'} ${c.names.ru} ${visitedCount}/${c.cities.length}`
             })
+
         const update = (k: number = 1) => {
             if (!this.projection || !this.pathGenerator) return
             this.cachedPaths?.attr('d', this.pathGenerator as any)
             this.drawRouteUpdate()
+
             if (this.cachedLabels && showLabels) {
-                this.cachedLabels.each(function(this: SVGGElement, d) {
+                this.cachedLabels.each(function(this: SVGGElement, d: any) {
                     if (d.properties.centroid) {
                         const p = MapRenderer.projection!(d.properties.centroid)
-                        const id = d.properties.ISO_A3 || d.properties.iso_a3
-                        const c = ALL_COUNTRIES.find(item => item.id === id)
-                        if (p && isFinite(p[0]) && c) {
-                            const isSmall = c.cities.length < 3
-                            const importanceScale = isSmall ? 3.5 : 1.1
-                            const opacity = k >= importanceScale ? 1 : (isSmall ? 0 : 0.6)
+                        if (p && isFinite(p[0])) {
+                            const id = d.properties.ISO_A3 || d.properties.iso_a3
+                            const c = ALL_COUNTRIES.find(item => item.id === id)
+
+                            // УМНАЯ ВИДИМОСТЬ:
+                            // Крупные страны при зуме > 2.5, мелкие (меньше 3 городов) при зуме > 5
+                            const isSmall = c && c.cities.length < 3
+                            const threshold = isSmall ? 5.0 : 2.5
+                            const opacity = k > threshold ? 1 : 0
                             const fontSize = Math.max(7, Math.min(15, 6 + Math.log2(k) * 2.5))
-                            d3.select(this).attr('transform', `translate(${p[0]}, ${p[1]})`).style('opacity', opacity).select('text').style('font-size', `${fontSize}px`)
+
+                            d3.select(this)
+                                .attr('transform', `translate(${p[0]}, ${p[1]})`)
+                                .style('opacity', opacity)
+                                .select('text').style('font-size', `${fontSize}px`)
                         }
                     }
                 })
             }
         }
+
         const zoom = d3.zoom<SVGSVGElement, unknown>().scaleExtent([1, 20])
             .on('start', (e) => { this.lastX = e.transform.x; this.lastY = e.transform.y })
             .on('zoom', (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
@@ -111,6 +128,7 @@ export const MapRenderer = {
                     update(transform.k); this.isUpdating = false
                 })
             })
+
         svg.call(zoom); update(d3.zoomTransform(svg.node()!).k)
         this.zoomBehavior = zoom
     },
@@ -179,13 +197,26 @@ export const MapRenderer = {
     },
 
     programmaticZoom(level: number) { if (this.svgSelection && this.zoomBehavior) this.svgSelection.transition().duration(500).call(this.zoomBehavior.scaleTo, level) },
+
+// Найди функцию toggleLabels и замени её целиком:
     toggleLabels(visible: boolean) {
         if (!this.cachedLabels) return
         this.cachedLabels.style('display', visible ? 'block' : 'none')
+
         if (visible && this.projection) {
             const k = this.zoomBehavior ? d3.zoomTransform(this.svgSelection!.node()!).k : 1
-            this.cachedLabels.each(function(this: SVGGElement, d) {
-                const p = MapRenderer.projection!(d.properties.centroid!); if (p) d3.select(this).attr('transform', `translate(${p[0]}, ${p[1]})`)
+            this.cachedLabels.each(function(this: SVGGElement, d: any) {
+                const p = MapRenderer.projection!(d.properties.centroid!);
+                if (p) {
+                    const id = d.properties.ISO_A3 || d.properties.iso_a3
+                    const c = ALL_COUNTRIES.find(item => item.id === id)
+                    // Условие: если страна маленькая (меньше 3 городов) - порог 5, иначе 2.5
+                    const threshold = (c && c.cities.length < 3) ? 5.0 : 2.5
+
+                    d3.select(this)
+                        .attr('transform', `translate(${p[0]}, ${p[1]})`)
+                        .style('opacity', k > threshold ? 1 : 0)
+                }
             })
         }
     }

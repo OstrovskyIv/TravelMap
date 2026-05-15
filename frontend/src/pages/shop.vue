@@ -31,7 +31,6 @@
     </header>
 
     <div class="flex flex-col gap-20 pb-20">
-      <!-- Секция: Куплено -->
       <section v-if="purchasedItems.length > 0" class="flex flex-col gap-10">
         <h2 class="text-xs font-black uppercase tracking-[0.5em] text-white/20 italic flex items-center gap-4">
           <span class="w-12 h-[1px] bg-white/10"></span>
@@ -53,7 +52,6 @@
         </div>
       </section>
 
-      <!-- Секция: Доступно -->
       <section v-if="availableItems.length > 0" class="flex flex-col gap-10">
         <h2 class="text-xs font-black uppercase tracking-[0.5em] text-white/20 italic flex items-center gap-4">
           <span class="w-12 h-[1px] bg-white/10"></span>
@@ -168,9 +166,7 @@ const handleEquip = async (item: ShopItem) => {
     if (item.type === 'themes') {
       mapStore.setTheme(item.id)
     } else {
-      // Сохраняем выбор в БД
       await api.post('/economy/equip', { itemId: item.display, itemType: item.type })
-      // Обновляем данные пользователя в приложении
       await userStore.fetchProfile()
     }
   } catch (e) {
@@ -187,10 +183,8 @@ const handleBuy = async (item: ShopItem) => {
       price: item.price
     })
 
-    // После покупки обновляем профиль, чтобы подтянуть новый инвентарь и баланс
     await userStore.fetchProfile()
 
-    alert('Purchased successfully!')
   } catch (e: any) {
     alert(e.response?.data?.message || 'Transaction failed')
   }

@@ -11,10 +11,8 @@ export const purchaseItem = async (req: AuthRequest, res: Response) => {
             return res.status(400).json({ message: 'Insufficient credits' })
         }
 
-        // 1. Списываем баланс
         await query('UPDATE users SET balance = balance - $1 WHERE id = $2', [price, req.userId])
 
-        // 2. Добавляем в инвентарь
         await query('INSERT INTO user_inventory (user_id, item_id, item_type) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING',
             [req.userId, itemId, itemType])
 

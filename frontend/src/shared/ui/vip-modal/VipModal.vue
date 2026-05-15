@@ -6,24 +6,39 @@
           <h2 class="text-4xl font-black text-white italic uppercase tracking-tighter">{{ langStore.t.vip.title }}</h2>
           <p class="text-[10px] text-white/30 uppercase font-mono tracking-[0.4em]">{{ langStore.t.vip.subtitle }}</p>
         </div>
-        <div class="w-full flex flex-col gap-4">
+        <div class="w-full flex flex-col gap-4 text-white">
           <div v-for="feat in features" :key="feat" class="flex justify-between items-center p-5 rounded-2xl bg-white/5 border border-white/5 italic">
             <span class="text-[10px] font-bold text-white/50 uppercase tracking-widest">{{ feat }}</span>
             <span class="text-yellow-500 text-xs">✓</span>
           </div>
         </div>
-        <button @click="handleBuy" class="w-full py-5 rounded-2xl bg-yellow-500 text-black text-[11px] font-black uppercase tracking-[0.3em] border-none cursor-pointer hover:scale-105 transition-all shadow-lg shadow-yellow-500/20 italic">{{ langStore.t.vip.buyBtn }}</button>
+        <button @click="handleBuy" class="w-full py-5 rounded-2xl bg-yellow-500 text-black text-[11px] font-black uppercase tracking-[0.3em] border-none cursor-pointer hover:scale-105 transition-all shadow-lg shadow-yellow-500/20 italic">
+          {{ userStore.isAuthLoading ? 'Processing...' : langStore.t.vip.buyBtn }}
+        </button>
       </div>
     </div>
   </Transition>
 </template>
 
 <script setup lang="ts">
-const uiStore = useUiStore(); const userStore = useUserStore(); const langStore = useLangStore()
+import { computed } from 'vue'
+import { useUiStore } from '@shared/lib/uiStore'
+import { useUserStore } from '@entities/user/model/userStore'
+import { useLangStore } from '@features/lang-switcher/model/langStore'
+
+const uiStore = useUiStore()
+const userStore = useUserStore()
+const langStore = useLangStore()
+
 const features = computed(() => [
   langStore.t.vip.photoLimit + ": 100",
   langStore.t.vip.posts + ": Active",
   "Global Registry Pass"
 ])
-const handleBuy = () => { userStore.buyVip(); uiStore.isVipModalOpen = false }
+
+const handleBuy = async () => {
+  const res = await userStore.buyVip()
+  if (res.success) uiStore.isVipModalOpen = false
+  else alert(res.message || 'Check balance')
+}
 </script>

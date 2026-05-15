@@ -41,20 +41,26 @@ export const languages = {
             sector: "Сектор разведки",
             summary: "Обзор",
             memories: "Альбомы",
-            discussion: "Чат",
+            discussion: "Обсуждение",
             cities: "Города",
-            registry: "Реестр",
+            gallery: "Галерея",
+            registry: "Реестр данных",
             interest: "Интерес",
             cleanliness: "Чистота",
             friendliness: "Люди",
             difficulty: "Доступ",
+            infrastructure: "Инфраструктура",
             sendMessage: "Написать сообщение...",
+            searchPlaceholder: "Поиск в логах...",
             createAlbum: "Создать альбом",
             albumName: "Название альбома",
-            back: "Назад",
+            back: "Назад к стране",
             visitBtn: "Посетить",
             visited: "Посещено",
-            shareExp: "Поделиться..."
+            reply: "Ответ на",
+            photoAttached: "Фото прикреплено",
+            addCaption: "Описание...",
+            noData: "Данных в этом секторе пока нет..."
         },
         shop: {
             title: "Магазин",
@@ -76,7 +82,15 @@ export const languages = {
             mapTools: "Инструменты карты",
             hints: "Подсказки",
             startTour: "Запустить обучение",
-            buildProtocol: "Протокол сборки"
+            buildProtocol: "Протокол сборки",
+            interfaceProtocol: "Протокол интерфейса",
+            enabled: "Включено",
+            disabled: "Выключено",
+            theme: "Тема оформления",
+            training: "Обучение системы",
+            initiateCourse: "Начать курс",
+            tourDesc: "Интерактивный гид по системе",
+            profileDesc: "Настройка личного узла данных скоро будет доступна..."
         },
         admin: {
             terminal: "Админ-терминал",
@@ -137,12 +151,16 @@ export const languages = {
             exit: "Выход"
         },
         leaderboard: {
-            title: "Таблица лидеров",
-            distance: "По дистанции",
-            discoveries: "По открытиям",
+            title: "Элита Мира",
+            users: "Пилоты",
+            countries: "Страны",
+            cities: "Города",
             rank: "Ранг",
             user: "Пилот",
-            value: "Значение"
+            score: "Рейтинг",
+            balance: "Билеты",
+            visits: "Визиты",
+            pts: "pts"
         },
         achievements: {
             title: "Достижения",
@@ -175,20 +193,26 @@ export const languages = {
             sector: "Sector Intelligence",
             summary: "Summary",
             memories: "Albums",
-            discussion: "Chat",
+            discussion: "Discussion",
             cities: "Cities",
-            registry: "Registry",
+            gallery: "Gallery",
+            registry: "Data Registry",
             interest: "Interest",
             cleanliness: "Cleanliness",
             friendliness: "People",
             difficulty: "Access",
+            infrastructure: "Infrastructure",
             sendMessage: "Type a message...",
+            searchPlaceholder: "Search logs...",
             createAlbum: "New Album",
             albumName: "Album Title",
-            back: "Back",
+            back: "Back to Country",
             visitBtn: "Visit",
             visited: "Visited",
-            shareExp: "Share experience..."
+            reply: "Reply to",
+            photoAttached: "Photo Attached",
+            addCaption: "Caption...",
+            noData: "No telemetry in this sector..."
         },
         shop: {
             title: "Style Shop",
@@ -210,7 +234,15 @@ export const languages = {
             mapTools: "Map Tools",
             hints: "Hints",
             startTour: "Start Training",
-            buildProtocol: "Build Protocol"
+            buildProtocol: "Build Protocol",
+            interfaceProtocol: "Interface Protocol",
+            enabled: "Enabled",
+            disabled: "Disabled",
+            theme: "Visual Theme",
+            training: "System Training",
+            initiateCourse: "Initiate Course",
+            tourDesc: "Interactive site walkthrough",
+            profileDesc: "Profile customization protocol coming soon..."
         },
         admin: {
             terminal: "Admin Terminal",
@@ -271,12 +303,16 @@ export const languages = {
             exit: "Exit"
         },
         leaderboard: {
-            title: "Leaderboard",
-            distance: "By Distance",
-            discoveries: "By Discoveries",
+            title: "Global Elite",
+            users: "Pilots",
+            countries: "Regions",
+            cities: "Cities",
             rank: "Rank",
             user: "Pilot",
-            value: "Value"
+            score: "Score",
+            balance: "Credits",
+            visits: "Visits",
+            pts: "pts"
         },
         achievements: {
             title: "Achievements",

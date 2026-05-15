@@ -87,7 +87,6 @@ const handleAnswer = async (id: string) => {
   isAnswered.value = true
 
   if (id === currentCountry.value.id) {
-    // ВАЖНО: вызываем асинхронный метод стора, который делает запрос в БД
     await userStore.addBalance(50)
     sessionCredits.value += 50
   }

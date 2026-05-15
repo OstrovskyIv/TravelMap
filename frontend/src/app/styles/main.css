@@ -6,7 +6,6 @@
 
 :root {
     --app-height: 100dvh;
-    /* Добавляем дефолты, чтобы IDE не ругалась */
     --bg-main: #0c0c0e;
     --ui-accent: #fbbf24;
     --ui-text: #ffffff;

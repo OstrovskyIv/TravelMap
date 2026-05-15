@@ -19,7 +19,6 @@ export function useMapEngine() {
         mousePos.value = { x: e.clientX, y: e.clientY }
     }
 
-    // Делаем функцию draw доступной снаружи
     const draw = async () => {
         if (!mapContainer.value || !mapStore.currentTheme) return
         if (mapStore.mapFeatures.length === 0) await mapStore.loadMapData()
@@ -66,6 +65,5 @@ export function useMapEngine() {
     onMounted(draw)
     onUnmounted(() => window.removeEventListener('resize', draw))
 
-    // Возвращаем draw, чтобы его можно было вызвать вручную после загрузки данных
     return { mapContainer, isLoading, mousePos, hoveredCountryName, handleGlobalMouseMove, draw }
 }

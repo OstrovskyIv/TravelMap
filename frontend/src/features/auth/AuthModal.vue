@@ -5,14 +5,11 @@
       leave-active-class="transition-all duration-500 ease-in"
       leave-to-class="opacity-0 scale-95"
   >
-    <!-- Модалка видна, пока в сторе нет токена -->
     <div v-if="!userStore.token" class="fixed inset-0 z-[300] flex items-center justify-center p-6 backdrop-blur-3xl bg-black/90 font-sans text-white">
       <div class="w-full max-w-md p-10 md:p-14 rounded-[56px] bg-zinc-900 border border-white/5 shadow-[0_0_100px_rgba(0,0,0,0.8)] flex flex-col gap-8 relative overflow-hidden">
 
-        <!-- Декоративное свечение -->
         <div class="absolute -top-24 -left-24 w-48 h-48 bg-[var(--ui-accent)]/10 blur-[80px]"></div>
 
-        <!-- Заголовок -->
         <div class="flex flex-col gap-2 text-center relative z-10">
           <h2 class="text-4xl font-black uppercase italic tracking-tighter leading-none transition-all duration-500">
             {{ isLogin ? 'System Login' : 'Registry' }}
@@ -22,7 +19,6 @@
           </p>
         </div>
 
-        <!-- Переключатель режима -->
         <div class="flex p-1 bg-white/5 rounded-2xl border border-white/5 relative z-10">
           <button
               @click="isLogin = true; error = ''; successMessage = ''"
@@ -36,9 +32,7 @@
           >Регистрация</button>
         </div>
 
-        <!-- Поля ввода -->
         <div class="flex flex-col gap-4 relative z-10">
-          <!-- Username -->
           <div class="flex flex-col gap-1.5">
             <span class="text-[9px] font-black uppercase text-[var(--ui-accent)] ml-6 italic opacity-50">Username</span>
             <input
@@ -49,7 +43,6 @@
             />
           </div>
 
-          <!-- Email (Только при регистрации) -->
           <Transition enter-active-class="transition-all duration-300" enter-from-class="opacity-0 -translate-y-2">
             <div v-if="!isLogin" class="flex flex-col gap-1.5">
               <span class="text-[9px] font-black uppercase text-[var(--ui-accent)] ml-6 italic opacity-50">Email Address</span>
@@ -62,7 +55,6 @@
             </div>
           </Transition>
 
-          <!-- Access Key -->
           <div class="flex flex-col gap-1.5">
             <span class="text-[9px] font-black uppercase text-[var(--ui-accent)] ml-6 italic opacity-50">Access Key</span>
             <input
@@ -74,7 +66,6 @@
           </div>
         </div>
 
-        <!-- Кнопка действия -->
         <div class="flex flex-col gap-4 relative z-10">
           <button
               @click="handleSubmit"
@@ -85,7 +76,6 @@
           </button>
         </div>
 
-        <!-- Статус-сообщения -->
         <div class="min-h-[20px] flex items-center justify-center">
           <Transition enter-active-class="animate-shake" leave-active-class="opacity-0">
             <div v-if="error" class="text-center text-red-500 text-[10px] font-black uppercase tracking-widest italic">
@@ -146,7 +136,6 @@ const handleSubmit = async () => {
   if (!validate()) return
 
   if (isLogin.value) {
-    // ВХОД
     const res = await userStore.login({
       username: form.value.username,
       password: form.value.password
@@ -155,16 +144,12 @@ const handleSubmit = async () => {
       error.value = res.message
     }
   } else {
-    // РЕГИСТРАЦИЯ
     const res = await userStore.register(form.value)
     if (res.success) {
-      // Показываем сообщение об успехе
       successMessage.value = 'Success! Check your email to verify account.'
 
-      // Очищаем форму пароля для безопасности
       form.value.password = ''
 
-      // Через 4 секунды переключаем на вход автоматически
       setTimeout(() => {
         isLogin.value = true
         successMessage.value = ''

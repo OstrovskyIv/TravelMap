@@ -1,14 +1,11 @@
 <template>
   <div class="w-full h-full relative bg-[var(--bg-main)] overflow-hidden font-sans select-none" @mousemove="handleGlobalMouseMove">
-    <!-- Слой карты -->
     <div ref="mapContainer" class="w-full h-full transition-opacity duration-1000"></div>
 
-    <!-- Кастомный тултип у курсора -->
     <div v-if="!isMobile && mapStore.showLabels && mapStore.showCursorLabel && hoveredCountryName"
          class="fixed pointer-events-none z-[1000] flex flex-col gap-1 px-5 py-3 backdrop-blur-2xl border rounded-2xl shadow-2xl bg-black/95 border-[var(--ui-accent)]/50"
          :style="{ left: mousePos.x + 25 + 'px', top: mousePos.y - 40 + 'px' }"
     >
-      <!-- Используем langStore здесь, чтобы убрать ошибку unused variable -->
       <span class="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--ui-accent)] leading-none italic">
         {{ langStore.t.info.sector }}
       </span>
@@ -19,7 +16,6 @@
       </div>
     </div>
 
-    <!-- Виджеты -->
     <div class="absolute top-8 left-8 z-40 hidden md:block pointer-events-none">
       <StatsWidget class="pointer-events-auto" />
     </div>
@@ -32,11 +28,9 @@
       <SearchDock class="pointer-events-auto" @select="handleSelect" />
     </div>
 
-    <!-- Модалки -->
     <CountryModal />
     <InfoModal />
 
-    <!-- Лоадеры -->
     <Transition enter-active-class="transition-opacity duration-500" leave-active-class="opacity-0">
       <div v-if="isLoading || mapStore.isDataLoading" class="absolute inset-0 z-[100]"><ClassicLoader /></div>
     </Transition>
@@ -58,21 +52,17 @@ const { isMobile } = useScreen()
 const mapStore = useMapStore()
 const uiStore = useUiStore()
 const userStore = useUserStore()
-const langStore = useLangStore() // Теперь используется в шаблоне выше
+const langStore = useLangStore()
 
-// Извлекаем draw из хука
 const { mapContainer, isLoading, mousePos, hoveredCountryName, handleGlobalMouseMove, draw } = useMapEngine()
 
 onMounted(async () => {
   if (userStore.token) {
-    // 1. Сначала загружаем данные с бэкенда
     await Promise.all([
       userStore.fetchProfile(),
       mapStore.fetchProgress()
     ])
 
-    // 2. После того как данные (unlockedCountries) обновились,
-    // принудительно перерисовываем карту с новыми цветами
     await draw()
   }
 })

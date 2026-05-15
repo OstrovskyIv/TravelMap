@@ -4,12 +4,11 @@ import jwt from 'jsonwebtoken'
 import { query } from '../../shared/db/index.js'
 import crypto from 'crypto'
 import dns from 'dns/promises'
-import nodemailer from 'nodemailer' // Импортируем Nodemailer
+import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
 
 dotenv.config()
 
-// Настройка "транспорта" для Gmail
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -57,7 +56,6 @@ export const register = async (req: Request, res: Response) => {
 
         console.log(`[AUTH] User created: ${username}. Sending verification email...`)
 
-        // ОТПРАВКА ЧЕРЕЗ GMAIL (NODEMAILER)
         try {
             const mailOptions = {
                 from: `"TravelMap Team" <${process.env.SMTP_USER}>`,
